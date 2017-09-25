@@ -6,10 +6,10 @@ var Schema = mongoose.Schema;
 
 var CarModelSchema = new Schema({
     brand: String,
-    car: String,
     model: String,
-    Color: String,
-    plate_number: String,
+    model_trim: String,
+    year: Number,
+    body: String,
     transmission_type: {type: String, enum: ["Automatic", "Manual"]},
 }, {versionKey: false});
 

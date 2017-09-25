@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 
 var config = require("../config");
 var car_helper = require("../helpers/car_helper");
+var car_model_helper = require("../helpers/car_model_helper");
 var user_helper = require("../helpers/user_helper");
 var driver_helper = require("../helpers/driver_helper");
 var mail_helper = require("../helpers/mail_helper");
@@ -26,10 +27,10 @@ router.get('/socket',function(req,res){
  * @apiName User Login
  * @apiGroup Root
  * 
+ * @apiHeader {String}  Content-Type application/json    
+ * 
  * @apiParam {String} email Email
  * @apiParam {String} password Password
- * 
- * @apiHeader {String}  Content-Type application/json    
  * 
  * @apiSuccess (Success 200) {JSON} user User object.
  * @apiSuccess (Success 200) {String} token Unique token which needs to be passed in subsequent requests.
@@ -738,6 +739,52 @@ router.post('/reset_password',function(req,res){
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
     });
+});
+
+/**
+ * @api {get} /car_brands Get car brands
+ * @apiName Get car brands
+ * @apiGroup Root
+ * 
+ * @apiSuccess (Success 200) {Array} brands Listing of available car brands
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/car_brands',function(req,res){
+    car_model_helper.get_distinct_brand(function(brand_data){
+        if(brand_data.status === 0){
+            res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in fetching brand details"});
+        } else if(brand_data.status === 404) {
+            res.status(config.BAD_REQUEST).json({"message":"No brand found"});
+        } else {
+            res.status(config.OK_STATUS).json({"brands":brand_data.car_brand});
+        }
+    });
+});
+
+/**
+ * @api {get} /car_model_by_brand Get car models based on brand
+ * @apiName Get car models based on brand
+ * @apiGroup Root
+ * 
+ * @apiParam {String} brand Car brand
+ * 
+ * @apiSuccess (Success 200) {Array} models Listing of available car models
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/car_model_by_brand',function(req,res){
+    if(req.query.brand) {
+        car_model_helper.get_car_model_by_brand(req.query.brand,function(model_data){
+            if(model_data.status === 0){
+                res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in fetching model details"});
+            } else if(model_data.status === 404) {
+                res.status(config.BAD_REQUEST).json({"message":"No Model found for given brand"});
+            } else {
+                res.status(config.OK_STATUS).json({"brands":model_data.car_model});
+            }
+        });
+    } else {
+        res.status(config.VALIDATION_FAILURE_STATUS).json({"message":"Brand name is required"});
+    }
 });
 
 module.exports = router;

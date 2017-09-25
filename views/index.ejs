@@ -10,7 +10,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
-      socket.emit('message1');  // 'file1Event triggered' will be shown
+      socket.emit('update_driver_location',{"location":{"latitude":25.52,"longitude":52.25}});  // 'file1Event triggered' will be shown
     </script>
   </body>
 </html>

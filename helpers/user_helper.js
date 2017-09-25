@@ -161,4 +161,29 @@ user_helper.delete_card_from_user = function(user_id,card_id,callback){
     });
 }
 
+/*
+ * find_car_by_user_id is used to fetch single car by user_id
+ * 
+ * @param   user_id   user_id for which car info need to find
+ * 
+ * @return  status  0 - If any error occur in finding car, with error
+ *          status  1 - If Car found, with found car document
+ *          status  404 - If Car not found, with appropriate error message
+ * 
+ * @developed by "ar"
+ */
+user_helper.find_car_by_user_id = function(user_id,callback){
+    User.findOne({_id:user_id}).select('car').populate({path : 'car',model:'cars'}).lean().exec(function (err, car_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(car_data){
+                callback({"status":1,"car":car_data.car});
+            } else {
+                callback({"status":404,"err":"Car not available"});
+            }
+        }
+    });
+};
+
 module.exports = user_helper;
