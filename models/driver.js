@@ -21,6 +21,7 @@ var DriverSchema = new Schema({
     ssn: String,
     current_lat: String,
     current_long: String,
+    location_updated_at: Date,
     refresh_token: String,
     is_active: {type: Boolean, default: true},
     is_deleted: {type: Boolean, default: false},

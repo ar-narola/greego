@@ -221,7 +221,6 @@ router.put('/update', function (req, res) {
                     // User updation
                     var user_obj = {
                         "email": req.body.email,
-                        
                         "car": req.body.car_id
                     };
 
