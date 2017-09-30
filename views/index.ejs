@@ -9,20 +9,51 @@
     <p>Welcome to <%= title %></p>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io();
+      var driver = io();
 
       //  Driver event
-      /*  socket.emit('join',{"data":{"id":"59bb77375ab21d1c98dd93ea","first_name":"Mikinj","last_name":"Mistry","email":"mim@narola.email"},"role":"driver"});
-        socket.emit('update_driver_location',{"location":{"latitude":25.52,"longitude":52.25}});  // 'file1Event triggered' will be shown
-        socket.on('listen_invitation',function(data){
-            console.log("in listen_invitation : ",data);
+        driver.emit('join',{"data":{"_id":"59bb77375ab21d1c98dd93ea","first_name":"Mikinj","last_name":"Mistry","email":"mim@narola.email"},"role":"driver"},function(resp){
+            console.log("response back = ",resp);
         });
-        */
 
+        driver.emit('update_driver_location',{"location":{"latitude":21.2020893,"longitude":72.7980589}},function(resp){
+            console.log("response back = ",resp);
+        });
+
+        driver.on('listen_invitation',function(data){
+            console.log("Driver : listen_invitation : ",data);
+        });
+        
+        driver.on('request_accepted',function(data){
+            console.log("Driver : request_accepted : ",data);
+        });
+        
       //  User event
-        socket.emit('join',{"data":{"id":"59b90c594061720fe040b2f4","first_name":"Ashish","last_name":"Rana","email":"ar@narola.email"},"role":"user"});
-        socket.emit('request_for_driver',{"location":{"latitude":"21.1593458","longitude":"72.7522557"},"pickup_location":{"placename":"Surat","latitude":"21.1593458","longitude":"72.7522557"},"destination_location":{"placename":"Ahmedabad","latitude":"22.1912517","longitude":"72.3128816"},"fare":"650"});
+        var user = io();
+        user.emit('join',{"data":{"id":"59b90c594061720fe040b2f4","first_name":"Ashish","last_name":"Rana","email":"ar@narola.email"},"role":"user"},function(resp){
+            console.log("response back = ",resp);
+        });
 
+        user.on('updated_driver_location',function(data){
+            console.log("User : updated_driver_location : ",data);
+        });
+
+        user.on('request_accepted',function(data){
+            console.log("User : request_accepted : ",data);
+        });
+
+        user.on('all_request_rejected',function(data){
+            console.log("User : all_request_rejected : ",data);
+        });
+
+        user.on('driver_reached',function(data){
+            console.log("User : driver_reached : ",data);
+        });
+/*
+        user.emit('request_for_driver',{"pickup_location":{"placename":"Surat","latitude":"21.1593458","longitude":"72.7522557"},"destination_location":{"placename":"Ahmedabad","latitude":"22.1912517","longitude":"72.3128816"},"fare":"650"},function(resp){
+            console.log("response back = ",resp);
+        });
+*/
     </script>
   </body>
 </html>

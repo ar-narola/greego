@@ -1,3 +1,5 @@
+var async = require('async');
+
 var Trip = require("../models/trip");
 var trip_helper = {};
 
@@ -19,6 +21,98 @@ trip_helper.insert_trip = function(trip_object,callback){
         } else {
             console.log(trip_data);
             callback({"status":1,"message":"Trip inserted","trip":trip_data});
+        }
+    });
+};
+
+/*
+ * find_trip_by_id is used to fetch single trip by trip_id
+ * 
+ * @param   trip_id   Specify trip_id of trip
+ * 
+ * @return  status  0 - If any error occur in finding trip, with error
+ *          status  1 - If trip found, with found trip document
+ *          status  404 - If trip not found, with appropriate error message
+ * 
+ * @developed by "ar"
+ */
+trip_helper.find_trip_by_id = function(trip_id,callback){
+    Trip.findOne({ _id: trip_id }).lean().exec(function (err, trip_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(trip_data){
+                callback({"status":1,"trip":trip_data});
+            } else {
+                callback({"status":404,"err":"Trip not available"});
+            }
+        }
+    });
+};
+
+/*
+ * update_trip_by_id is used to update trip data based on trip_id
+ * 
+ * @param   trip_id         String  _id of trip that need to be update
+ * @param   trip_object     JSON    object consist of all property that need to update
+ * 
+ * @return  status  0 - If any error occur in updating trip, with error
+ *          status  1 - If trip updated successfully, with appropriate message
+ *          status  2 - If trip not updated, with appropriate message
+ * 
+ * @developed by "ar"
+ */
+trip_helper.update_trip_by_id = function(trip_id,update_obj,callback){
+    Trip.update({_id:{$eq : trip_id}},{$set:update_obj},function(err,update_data){
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if (update_data.nModified == 1) {
+                callback({"status":1,"message":"Record has been updated"});
+            } else {
+                callback({"status":2,"message":"Record has not updated"});
+            }
+        }
+    });
+};
+
+trip_helper.accept_trip_request = function(trip_id,driver_id,callback){
+    Trip.update({_id:{$eq:trip_id},"sent_request.driver_id" : {$eq:driver_id}},{$set:{"driver_id":driver_id,"status":"request-accepted","request_accepted_at":Date.now(),"sent_request.$.status":"accepted","sent_request.$.updated_at":Date.now()}},function(err,update_data){
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if (update_data.nModified == 1) {
+                Trip.find({_id:{$eq:trip_id}}).exec(function(err,records){
+                    if(err){
+                        console.log("Error in find = ",err);
+                    }
+                    
+                    async.eachSeries(records[0].sent_request,function(record,loop_callback){
+                        Trip.update({_id:{$eq:trip_id},"sent_request.status" : {$eq:"not-answered"}},{$set:{"sent_request.$.status":"aborted"}},{multi:true},function(err,result){
+                            if(err){
+                                console.log("Error = ",err);
+                            } else {
+                                console.log("Result = ",result);
+                            }
+                            loop_callback();
+                        });
+                    },function(err){
+                        callback({"status":1,"message":"Record has been updated"});
+                    });
+                });
+            } else {
+                callback({"status":2,"message":"Record has not updated"});
+            }
+        }
+    });
+};
+
+trip_helper.reject_trip_request = function(trip_id,driver_id,callback){
+    Trip.update({_id:{$eq:trip_id},"sent_request.driver_id" : {$eq:driver_id}},{$set:{"sent_request.$.status":"rejected","sent_request.$.updated_at":Date.now()}},function(err,update_data){
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            callback({"status":1,"message":"Request has been rejected"});
         }
     });
 };
