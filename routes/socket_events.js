@@ -4,6 +4,7 @@ var distance = require('google-distance');
 
 var driver_helper = require('./../helpers/driver_helper');
 var trip_helper = require('./../helpers/trip_helper');
+var notification_helper = require('./../helpers/notification_helper');
 
 var users = [];
 var drivers = [];
@@ -58,12 +59,110 @@ module.exports = function (io) {
                 data: data.data, // personal data of user
                 role: data.role // User/driver
             };
-            if (data.role == "user") {
+            if (data.role === "user") {
                 users.push(obj);
-            } else if (data.role == "driver") {
+            } else if (data.role === "driver") {
                 drivers.push(obj);
             }
             socket_callback({"status": 1, "message": "User joined successfully."});
+        });
+
+        /*
+         * User/Driver can emit logout event to logout their self.
+         * 
+         * @param data, {"data":personal info,"role":"driver/user"}
+         * 
+         * @developed by "ar"
+         */
+        socket.on('logout',function(data,socket_callback){
+            console.log(data.role, " has logged out");
+            console.log("Data = ", data.data);
+
+            if(data.role === "user"){
+                _.each(drivers,function(driver){
+                    driver.socket.emit('user_logout',{"data":data});
+                });
+                socket_callback({"status":1,"message":"User has logged out"});
+            } else if(data.role === "driver"){
+                _.each(users,function(user){
+                    user.socket.emit('driver_logout',{"data":data});
+                });
+                socket_callback({"status":1,"message":"Driver has logged out"});
+            }
+        });
+
+        /*
+         * User/Driver can emit logout event to logout their self.
+         * 
+         * @param data, {"data":personal info,"role":"driver/user"}
+         * 
+         * @developed by "ar"
+         */
+        socket.on('disconnect',function(){
+            console.log("User/Driver has disconnect");
+/*
+            if(data.role === "user"){
+                _.each(drivers,function(driver){
+                    driver.socket.emit('user_logout',{"data":data});
+                });
+            } else if(data.role === "driver"){
+                _.each(users,function(user){
+                    user.socket.emit('driver_logout',{"data":data});
+                });
+            }*/
+        });
+        
+        /*
+         * User/Driver can emit notification event to send notification to other user.
+         * Other user/driver will receive notification via "listen_notification"
+         * 
+         * @param data, {"to_user/to_driver":"","data":"Notification data","role":"driver/user"} // If notification need to send to user then "to_user" parameter is required otherwise to_driver parameter needed.
+         * 
+         * @developed by "ar"
+         */
+        socket.on('notification',function(data,socket_callback){
+            if(data.role === "user" || data.role === "driver") {
+                var from_user = {};
+                if(data.role === "user"){
+                    var u = find_user_by_socket(socket);
+                    from_user = u.data;
+                } else {
+                    var d = find_driver_by_socket(socket);
+                    from_user = d.data;
+                }
+
+                if(data.to_user || data.to_driver){
+                    var obj = {
+                        "from_id":from_user._id,
+                        "from_role":data.role,
+                        "message":JSON.stringify(data.data)
+                    };
+
+                    var to_user = {};
+                    if(data.to_user){
+                        obj.to_id = data.to_user;
+                        obj.to_role = "user";
+                        to_user = find_user_by_id(data.to_user);
+                    } else {
+                        obj.to_id = data.to_driver;
+                        obj.to_role = "driver";
+                        to_user = find_driver_by_id(data.to_driver);
+                    }
+                    
+                    notification_helper.insert_notification(obj,function(notification_data){
+                        if(notification_data.status === 0){
+                            socket_callback({"status":0,"message":"Fail to send notification"});
+                        } else {
+                            to_user.socket.emit('listen_notification',{"data":data.data,"from":from_user._id,"from_role":data.role});
+                            socket_callback({"status":1,"message":"Notification sent"});
+                        }
+                    });
+                } else {
+                    socket_callback({"status":0,"message":"Invalid request"});
+                }
+            } else {
+                socket_callback({"status":0,"message":"Invalid request"});
+            }
         });
 
 // -----------------------------------------------------------------------------------------------
@@ -306,6 +405,108 @@ module.exports = function (io) {
                     socket_callback({"status":0,"message":"Error in notify user"});
                 } else {
                     socket_callback({"status":1,"message":"User has notified"});
+                }
+            });
+        });
+        
+        /*
+         * Driver can emit start_trip event when driver will start trip
+         * User will be notify for the same via "trip_started" event
+         * 
+         * @param data, {"trip_id":""}
+         * 
+         * @developed by "ar"
+         */
+        socket.on('start_trip',function(data,socket_callback){
+            console.log("Trip started");
+            console.log("Data = ", data);
+
+            async.waterfall([
+                function (callback) {
+                    trip_helper.find_trip_by_id(data.trip_id, function (trip_data) {
+                        if (trip_data.status === 0) {
+                            callback({"status": 0, "message": "Error occured in finding trip info"});
+                        } else if (trip_data.status === 404) {
+                            callback({"status": 0, "message": "Invalid trip id"});
+                        } else {
+                            callback(null,trip_data.trip);
+                        }
+                    });
+                },
+                function (trip,callback) {
+                    var update_obj = {
+                        "status":"in-progress",
+                        "pickup.pickup_time":Date.now()
+                    };
+                    
+                    trip_helper.update_trip_by_id(data.trip_id,update_obj,function(update_data){
+                        if(update_data.status === 0){
+                            callback({"status":0,"message":"Error occured in updating trip record"});
+                        } else if(update_data.status === 2) {
+                            callback({"status":0,"message":"Trip has not updated"});
+                        } else {
+                            var user = find_user_by_id(trip.user_id);
+                            user.socket.emit("trip_started",{"message":"Your trip has been started","trip_id":data.trip_id});
+                            callback(null,{"status":1,"message":"Trip has updated"});
+                        }
+                    });
+                }
+            ], function (err, results) {
+                if(err){
+                    socket_callback({"status":0,"message":results.message});
+                } else {
+                    socket_callback({"status":1,"message":"Trip has started"});
+                }
+            });
+        });
+        
+        /*
+         * Driver can emit complete_trip event when trip has been over
+         * User will be notify for the same via "trip_completed" event
+         * 
+         * @param data, {"trip_id":""}
+         * 
+         * @developed by "ar"
+         */
+        socket.on('complete_trip',function(data,socket_callback){
+            console.log("Trip Complete");
+            console.log("Data = ", data);
+
+            async.waterfall([
+                function (callback) {
+                    trip_helper.find_trip_by_id(data.trip_id, function (trip_data) {
+                        if (trip_data.status === 0) {
+                            callback({"status": 0, "message": "Error occured in finding trip info"});
+                        } else if (trip_data.status === 404) {
+                            callback({"status": 0, "message": "Invalid trip id"});
+                        } else {
+                            callback(null,trip_data.trip);
+                        }
+                    });
+                },
+                function (trip,callback) {
+                    var update_obj = {
+                        "status":"completed",
+                        "destination.reached_time":Date.now()
+                    };
+                    
+                    trip_helper.update_trip_by_id(data.trip_id,update_obj,function(update_data){
+                        if(update_data.status === 0){
+                            callback({"status":0,"message":"Error occured in updating trip record"});
+                        } else if(update_data.status === 2) {
+                            callback({"status":0,"message":"Trip has not updated"});
+                        } else {
+                            var user = find_user_by_id(trip.user_id);
+                            user.socket.emit("trip_completed",{"message":"Your trip has been completed","trip_id":data.trip_id});
+                            callback(null,{"status":1,"message":"Trip has updated"});
+                        }
+                    });
+                }
+            ], function (err, results) {
+                if(err){
+                    socket_callback({"status":0,"message":results.message});
+                } else {
+                    socket_callback({"status":1,"message":"Trip has completed"});
                 }
             });
         });

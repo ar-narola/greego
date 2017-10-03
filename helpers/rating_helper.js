@@ -7,7 +7,7 @@ var rating_helper = {};
  * @param   rating_object     JSON object consist of all property that need to insert in collection
  * 
  * @return  status  0 - If any error occur in inserting rating, with error
- *          status  1 - If rating inserted, with inserted user document and appropriate message
+ *          status  1 - If rating inserted, with inserted rating document and appropriate message
  * 
  * @developed by "ar"
  */

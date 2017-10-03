@@ -8,14 +8,14 @@ var PickupSchema = new Schema({
     "location_name":String,
     "location_lat":String,
     "location_long":String,
-    "pickup_time":Date
+    "pickup_time":Date              // Trip start time
 });
 
 var DestinationSchema = new Schema({
     "location_name":String,
     "location_lat":String,
     "location_long":String,
-    "reached_time":Date
+    "reached_time":Date             // Trip completed time
 });
 
 var SentRequestSchema = new Schema({

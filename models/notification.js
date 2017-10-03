@@ -5,10 +5,13 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var NotificationSchema = new Schema({
-    user_id: mongoose.Schema.Types.ObjectId,
+    to_id: mongoose.Schema.Types.ObjectId,
+    to_role: String,
+    from_id: mongoose.Schema.Types.ObjectId,
+    from_role: String,
     message: String,
     is_read: Boolean,
-    date_time: Date
+    date_time: {type:Date,default:Date.now}
 }, {versionKey: false});
 
 // Compile model from schema
