@@ -25,14 +25,14 @@ var find_user_by_socket = function (socket) {
 
 var find_driver_by_id = function (driver_id) {
     var driver = _.find(drivers, function (driver) {
-        return driver.data._id === driver_id;
+        return driver.data._id == driver_id;
     });
     return driver;
 }
 
 var find_user_by_id = function (user_id) {
     var user = _.find(users, function (user) {
-        return user.data._id === user_id;
+        return user.data._id == user_id;
     });
     return user;
 }
@@ -111,7 +111,7 @@ module.exports = function (io) {
                 });
             }*/
         });
-        
+
         /*
          * User/Driver can emit notification event to send notification to other user.
          * Other user/driver will receive notification via "listen_notification"
@@ -253,18 +253,21 @@ module.exports = function (io) {
                 },
                 function (trip, callback) {
                     var user = find_user_by_id(trip.user_id);
-                    distance.get({
-                        origin: accepted_driver.data.current_lat + ',' + accepted_driver.data.current_long,
-                        destination: trip.pickup.location_lat + ',' + trip.pickup.location_long
-                    }, function (err, data) {
-                        if (err) {
-                            console.log("can't get distance between user and driver location");
-                            user.socket.emit("request_accepted", {"trip_id": trip._id, "driver": accepted_driver.data, "estimation_time": "10 minutes"});
-                        } else {
-                            user.socket.emit("request_accepted", {"trip_id": trip._id, "driver": accepted_driver.data, "estimation_time": (data.duration / 60) + "minutes"});
-                        }
+                    if(user){
+                        distance.get({
+                            origin: accepted_driver.data.current_lat + ',' + accepted_driver.data.current_long,
+                            destination: trip.pickup.location_lat + ',' + trip.pickup.location_long
+                        }, function (err, data) {
+                            if (err) {
+                                user.socket.emit("request_accepted", {"trip_id": trip._id, "driver": accepted_driver.data, "estimation_time": "10 minutes"});
+                            } else {
+                                user.socket.emit("request_accepted", {"trip_id": trip._id, "driver": accepted_driver.data, "estimation_time": (data.duration / 60) + "minutes"});
+                            }
+                            callback(null, trip);
+                        });
+                    } else {
                         callback(null, trip);
-                    });
+                    }
                 },
                 function (trip, callback) {
                     async.eachSeries(drivers, function (driver, loop_callback) {
@@ -395,7 +398,9 @@ module.exports = function (io) {
                             callback({"status":0,"message":"Trip has not updated"});
                         } else {
                             var user = find_user_by_id(trip.user_id);
-                            user.socket.emit("driver_reached",{"message":"Driver has reached at pickup location","trip_id":data.trip_id});
+                            if(user){
+                                user.socket.emit("driver_reached",{"message":"Driver has reached at pickup location","trip_id":data.trip_id});
+                            }
                             callback(null,{"status":1,"message":"Trip has updated"});
                         }
                     });

@@ -1193,6 +1193,104 @@ define({ "api": [
     "groupTitle": "User_card"
   },
   {
+    "type": "get",
+    "url": "/user/notification",
+    "title": "Get notification",
+    "name": "Get_notification",
+    "group": "User_notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "notification",
+            "description": "<p>Array of notification's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/notification.js",
+    "groupTitle": "User_notification"
+  },
+  {
+    "type": "get",
+    "url": "/user/trip/history",
+    "title": "Get users past trip",
+    "name": "Get_users_past_trip",
+    "group": "User_trip",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "trip",
+            "description": "<p>Array of trip's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/trip.js",
+    "groupTitle": "User_trip"
+  },
+  {
     "type": "post",
     "url": "/user/rate_driver",
     "title": "rate driver",

@@ -99,7 +99,7 @@ user_helper.update_user_by_id = function(user_id,update_obj,callback){
 };
 
 /*
- * add_card_to_user is used to add given card to user's collection
+ * add_card_to_user is used to add given card to user's collection - Not working properly
  * 
  * @param   user_id         String  _id of user that need to be update
  * @param   card_id         String  _id of card
@@ -118,7 +118,7 @@ user_helper.add_card_to_user = function(user_id,card_id,is_default,callback){
         } else {
             if(update_data.nModified == 1){
                 if(is_default == 1){
-                    User.update({_id:{$eq: user_id},"card.is_default":{$eq:true}},{$set:{"card.$.is_default":false}},function(err,update_data){
+                    User.update({_id:{$eq: user_id},"card.is_default":{$eq:true},"card.card":{$ne:card_id}},{$set:{"card.$.is_default":false}},function(err,update_data){
                         if(err){
                             console.log("error in unseting other card : ",err);
                         }

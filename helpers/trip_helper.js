@@ -117,4 +117,38 @@ trip_helper.reject_trip_request = function(trip_id,driver_id,callback){
     });
 };
 
+/*
+ * 
+ */
+trip_helper.get_trips_by_user_id = function(user_id,callback){
+    Trip.find({ "user_id":{$eq:user_id}}).lean().exec(function (err, trip_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(trip_data.length > 0){
+                callback({"status":1,"trip":trip_data});
+            } else {
+                callback({"status":404,"err":"No trip found"});
+            }
+        }
+    });
+};
+
+/*
+ * 
+ */
+trip_helper.get_trips_by_driver_id = function(driver_id,callback){
+    Trip.find({ "driver_id":{$eq:driver_id}}).lean().exec(function (err, trip_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(trip_data.length > 0){
+                callback({"status":1,"trip":trip_data});
+            } else {
+                callback({"status":404,"err":"No trip found"});
+            }
+        }
+    });
+};
+
 module.exports = trip_helper;

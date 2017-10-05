@@ -4,6 +4,12 @@ var mongoose = require('mongoose');
 //Define a schema
 var Schema = mongoose.Schema;
 
+var RateSchema = new Schema({
+    total_rate_point : Number, // Total rate point for user
+    total_rate : Number, // Total number of times rate has been given to user
+    avg_rate : Number
+});
+
 var DriverSchema = new Schema({
     first_name: String,
     last_name: String,
@@ -22,6 +28,7 @@ var DriverSchema = new Schema({
     current_lat: String,
     current_long: String,
     location_updated_at: Date,
+    rate : RateSchema,
     refresh_token: String,
     is_active: {type: Boolean, default: true},
     is_deleted: {type: Boolean, default: false},

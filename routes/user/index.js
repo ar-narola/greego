@@ -7,7 +7,6 @@ var _ = require('underscore');
 var distance = require('google-distance');
 
 var config = require('../../config');
-var rating_helper = require("../../helpers/rating_helper");
 var car_helper = require("../../helpers/car_helper");
 var user_helper = require("../../helpers/user_helper");
 var feedback_helper = require("../../helpers/feedback_helper");
@@ -15,57 +14,6 @@ var fare_helper = require("../../helpers/fare_helper");
 var twilio_helper = require("../../helpers/twilio_helper");
 
 distance.apiKey = config.GOOGLE_API_KEY; // https://github.com/edwlook/node-google-distance
-
-/**
- * @api {post} /user/rate_driver rate driver
- * @apiName rate driver
- * @apiGroup User
- * 
- * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
- * 
- * @apiParam {String} driver_id Id of driver
- * @apiParam {Number} rating Rating given by user
- * 
- * @apiSuccess (Success 200) {String} message Success message
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.post('/rate_driver', function (req, res) {
-    var schema = {
-        'driver_id': {
-            notEmpty: true,
-            errorMessage: "Driver id is required"
-        },
-        'rating': {
-            notEmpty: true,
-            errorMessage: "Rating point is required"
-        }
-    };
-    req.checkBody(schema);
-
-    req.getValidationResult().then(function (result) {
-        if (result.isEmpty()) {
-            rating_obj = {
-                "user_id": req.userInfo.id,
-                "driver_id": req.body.driver_id,
-                "rating": req.body.rating
-            };
-            rating_helper.insert_rating(rating_obj, function (resp) {
-                if (resp.status === 0) {
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error occur while inserting rating"});
-                } else {
-                    res.status(config.OK_STATUS).json({"message": "Rating has been given"});
-                }
-            });
-        } else {
-            var result = {
-                message: "Validation Error",
-                error: result.array()
-            };
-            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
-        }
-    });
-});
 
 /**
  * @api {post} /user/feedback Customer support

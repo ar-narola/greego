@@ -33,8 +33,8 @@ var TripSchema = new Schema({
     sent_request : [SentRequestSchema],
     car_id: mongoose.Schema.Types.ObjectId,
     status: {type:String, enum:["driver-requested","request-accepted","driver-reached","in-progress","completed"]},
-    rate_user: { type: Number, min:1, max : 5}, // Driver will rate to user
-    rate_driver : { type: Number, min:1, max : 5}, // User will rate to driver
+    rate_to_user: { type: Number, min:1, max : 5}, // Driver will rate to user
+    rate_to_driver : { type: Number, min:1, max : 5}, // User will rate to driver
     date: {type: Date, default: Date.now},
     request_accepted_at : Date,
     driver_reached_at : Date

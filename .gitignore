@@ -58,3 +58,4 @@ typings/
 .env
 
 /nbproject/private/
+package-lock.json
