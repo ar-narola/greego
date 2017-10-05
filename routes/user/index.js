@@ -12,6 +12,7 @@ var user_helper = require("../../helpers/user_helper");
 var feedback_helper = require("../../helpers/feedback_helper");
 var fare_helper = require("../../helpers/fare_helper");
 var twilio_helper = require("../../helpers/twilio_helper");
+var driver_helper = require("../../helpers/driver_helper");
 
 distance.apiKey = config.GOOGLE_API_KEY; // https://github.com/edwlook/node-google-distance
 
@@ -534,6 +535,48 @@ router.post('/calculate_fare',function(req,res){
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
     });
+});
+
+/**
+ * @api {get} /user/get_driver_by_id Get driver by id
+ * @apiName Get driver by id
+ * @apiGroup User
+ * 
+ * @apiHeader {String}  x-access-token User's unique access-key
+ * 
+ * @apiParam {String} driver_id Id of driver
+ * 
+ * @apiSuccess (Success 200) {String} car List of car.
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/get_driver_by_id',function(req,res){
+    if(req.query.driver_id){
+        driver_helper.find_driver_by_id(req.query.driver_id,function(driver_data){
+            if(driver_data.status === 0){
+                res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in finding driver"});
+            } else if(driver_data.status === 404){
+                res.status(config.BAD_REQUEST).json({"message":"No driver found"});
+            } else {
+                var ret_driver = {
+                    "_id":driver_data.driver._id,
+                    "first_name":driver_data.driver.first_name,
+                    "last_name":driver_data.driver.last_name,
+                    "email":driver_data.driver.email,
+                    "phone":driver_data.driver.phone,
+                    "transmission_type":driver_data.driver.transmission_type,
+                    "ssn":driver_data.driver.ssn,
+                    "driver_avatar":driver_data.driver.driver_avatar,
+                    "drive_type":driver_data.driver.drive_type,
+                    "current_lat":driver_data.driver.current_lat,
+                    "current_long":driver_data.driver.current_long,
+                    "avg_rate":driver_data.driver.rate.avg_rate
+                }
+                res.status(config.OK_STATUS).json(ret_driver);
+            }
+        });
+    } else {
+        res.status(config.VALIDATION_FAILURE_STATUS).json({"message":"Driver id is required"});
+    }
 });
 
 module.exports = router;

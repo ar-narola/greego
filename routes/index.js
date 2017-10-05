@@ -290,7 +290,7 @@ router.get('/refresh_token', function (req, res) {
                             /*
                              driver_helper.find_driver_by_id(decoded.id,function(driver_data){
                              if(driver_data.status === 1) {
-                             callback(null,driver_data,'driver');
+                             callback(null,driver_data.driver,'driver');
                              } else if(driver_data.status === 404) {
                              callback({"status":config.BAD_REQUEST,"err":"Driver not found"});
                              } else {

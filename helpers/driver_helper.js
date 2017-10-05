@@ -43,7 +43,7 @@ driver_helper.find_driver_by_id = function(driver_id,callback){
             callback({"status":0,"err":err});
         } else {
             if(driver_data){
-                callback({"status":1,"user":driver_data});
+                callback({"status":1,"driver":driver_data});
             } else {
                 callback({"status":404,"err":"Driver not available"});
             }

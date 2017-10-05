@@ -1,5 +1,103 @@
 define({ "api": [
   {
+    "type": "get",
+    "url": "/driver/notification",
+    "title": "Get notification",
+    "name": "Get_notification",
+    "group": "Driver_notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Driver's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "notification",
+            "description": "<p>Array of notification's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/driver/notification.js",
+    "groupTitle": "Driver_notification"
+  },
+  {
+    "type": "get",
+    "url": "/driver/trip/history",
+    "title": "Get driver's past trip",
+    "name": "Get_driver_s_past_trip",
+    "group": "Driver_trip",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Driver's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "trip",
+            "description": "<p>Array of trip's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/driver/trip.js",
+    "groupTitle": "Driver_trip"
+  },
+  {
     "type": "post",
     "url": "/driver_signup",
     "title": "Driver Signup",
@@ -755,6 +853,68 @@ define({ "api": [
     "groupTitle": "User"
   },
   {
+    "type": "get",
+    "url": "/user/get_driver_by_id",
+    "title": "Get driver by id",
+    "name": "Get_driver_by_id",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "driver_id",
+            "description": "<p>Id of driver</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "car",
+            "description": "<p>List of car.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/index.js",
+    "groupTitle": "User"
+  },
+  {
     "type": "post",
     "url": "/user/verifyotp",
     "title": "Verify OTP",
@@ -1292,20 +1452,13 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/rate_driver",
-    "title": "rate driver",
-    "name": "rate_driver",
-    "group": "User",
+    "url": "/user/trip/rate_driver",
+    "title": "Rate driver",
+    "name": "Rate_driver",
+    "group": "User_trip",
     "header": {
       "fields": {
         "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
           {
             "group": "Header",
             "type": "String",
@@ -1323,15 +1476,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "driver_id",
-            "description": "<p>Id of driver</p>"
+            "field": "trip_id",
+            "description": "<p>Trip id for which user is giving rate</p>"
           },
           {
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "rating",
-            "description": "<p>Rating given by user</p>"
+            "field": "rate_point",
+            "description": "<p>Rating point that user has given to driver</p>"
           }
         ]
       }
@@ -1363,7 +1516,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/index.js",
-    "groupTitle": "User"
+    "filename": "routes/user/trip.js",
+    "groupTitle": "User_trip"
   }
 ] });

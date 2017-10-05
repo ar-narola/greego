@@ -5,9 +5,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var RateSchema = new Schema({
-    total_rate_point : Number, // Total rate point for user
-    total_rate : Number, // Total number of times rate has been given to user
-    avg_rate : Number
+    total_rate_point : {type:Number, default:0}, // Total rate point for user
+    total_rate : {type:Number, default:0}, // Total number of times rate has been given to user
+    avg_rate : {type:Number, default:0}
 });
 
 var DriverSchema = new Schema({

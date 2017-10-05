@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
+var async = require('async');
+
 var config = require('../../config');
 var trip_helper = require("../../helpers/trip_helper");
+var driver_helper = require("../../helpers/driver_helper");
 
 /**
  * @api {get} /user/trip/history Get users past trip
@@ -39,7 +42,7 @@ router.get('/history', function (req, res) {
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/rate_driver',function(req,res){
+router.post('/rate_driver',function(req,res){
     var schema = {
         "trip_id":{
             notEmpty: true,
@@ -56,21 +59,66 @@ router.get('/rate_driver',function(req,res){
         if (result.isEmpty()) {
             async.waterfall([
                 function(callback){
-                    trip_helper.find_trip_by_id(data.trip_id, function (trip_data) {
+                    trip_helper.find_trip_by_id(req.body.trip_id, function (trip_data) {
                         if (trip_data.status === 0) {
-                            callback({"status": 0, "message": "Error occured in finding trip info"});
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding trip info"});
                         } else if (trip_data.status === 404) {
-                            callback({"status": 0, "message": "Invalid trip id"});
+                            callback({"status": config.BAD_REQUEST, "message": "Invalid trip id"});
                         } else {
                             callback(null, trip_data.trip);
                         }
                     });
                 },
                 function(trip,callback){
-                    
+                    update_obj = {
+                        "rate_to_driver":req.body.rate_point
+                    };
+                    trip_helper.update_trip_by_id(req.body.trip_id,update_obj,function(resp_data){
+                        if(resp_data.status === 0){
+                            callback({"status":config.INTERNAL_SERVER_ERROR,"message":"Error occured in updating trip"});
+                        } else if(resp_data.status === 2){
+                            callback({"status":config.BAD_REQUEST,"message":"Error occured in updating trip"});
+                        } else {
+                            callback(null,trip);
+                        }
+                    });
+                },
+                function(trip,callback){
+                    driver_helper.find_driver_by_id(trip.driver_id,function(driver_data){
+                        if(driver_data.status === 0){
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding driver info"});
+                        } else if(driver_data.status === 404){
+                            callback({"status": config.BAD_REQUEST, "message": "Driver not found"});
+                        } else {
+                            callback(null,driver_data.driver);
+                        }
+                    });
+                },
+                function(driver,callback){
+                    update_obj = {
+                        "rate":{
+                            "total_rate_point":driver.rate.total_rate_point + req.body.rate_point,
+                            "total_rate":driver.rate.total_rate + 1,
+                            "avg_rate": ((driver.rate.total_rate_point + req.body.rate_point) / (driver.rate.total_rate + 1))
+                        }
+                    }
+                    driver_helper.update_driver_by_id(driver._id,update_obj,function(resp_data){
+                        if(resp_data.status === 0){
+                            console.log("error = ",resp_data.err);
+                            callback({"status":config.INTERNAL_SERVER_ERROR,"message":"Error occured in updating driver"});
+                        } else if(resp_data.status === 2){
+                            callback({"status":config.BAD_REQUEST,"message":"Error occured in updating driver"});
+                        } else {
+                            callback(null);
+                        }
+                    });
                 }
             ],function(err,result){
-                
+                if(err){
+                    res.status(err.status).json({"message":err.message});
+                } else {
+                    res.status(config.OK_STATUS).json({"message":"Rate has been given to driver"});
+                }
             });
         } else {
             var result = {
