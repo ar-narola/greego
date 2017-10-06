@@ -694,6 +694,723 @@
     "groupTitle": "Root"
   },
   {
+    "type": "Socket",
+    "url": "join",
+    "title": "To connect user",
+    "name": "Join",
+    "group": "Socket",
+    "description": "<p>User/Driver can emit join event to register their self with socket.</p> <p>User/Driver need to compulsory call this event immediately after connecting with socket</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;data&quot;:personal info,&quot;role&quot;:&quot;driver/user&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket"
+  },
+  {
+    "type": "Socket",
+    "url": "accept_request",
+    "title": "Accept ride request",
+    "name": "accept_request",
+    "group": "Socket_Driver_Events",
+    "description": "<p>Driver can emit accept_request event to accept user request</p> <p>User will receive this details via &quot;request_accepted&quot; event</p> <p>All other online driver will receive this details via &quot;request_accepted&quot; event that notify other drivers that request has accepted by other driver</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;trip_id&quot;:&quot;&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_Driver_Events"
+  },
+  {
+    "type": "Socket",
+    "url": "complete_trip",
+    "title": "When trip has completed",
+    "name": "complete_trip",
+    "group": "Socket_Driver_Events",
+    "description": "<p>Driver can emit complete_trip event when trip has been over</p> <p>User will be notify for the same via &quot;trip_completed&quot; event</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;trip_id&quot;:&quot;&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_Driver_Events"
+  },
+  {
+    "type": "Socket",
+    "url": "driver_reached",
+    "title": "Driver reached",
+    "name": "driver_reached",
+    "group": "Socket_Driver_Events",
+    "description": "<p>Driver can emit driver_reached event when driver reached at pickup location</p> <p>User will be notify for the same via &quot;driver_reached&quot; event</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;trip_id&quot;:&quot;&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_Driver_Events"
+  },
+  {
+    "type": "Socket",
+    "url": "reject_request",
+    "title": "Reject/decline ride request",
+    "name": "reject_request",
+    "group": "Socket_Driver_Events",
+    "description": "<p>Driver can emit reject_request event to reject/decline user request</p> <p>User will receive message via &quot;all_request_rejected&quot; if all driver has rejected request of user</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;trip_id&quot;:&quot;&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_Driver_Events"
+  },
+  {
+    "type": "Socket",
+    "url": "start_trip",
+    "title": "To start trip",
+    "name": "start_trip",
+    "group": "Socket_Driver_Events",
+    "description": "<p>Driver can emit start_trip event when driver will start trip</p> <p>User will be notify for the same via &quot;trip_started&quot; event</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;trip_id&quot;:&quot;&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_Driver_Events"
+  },
+  {
+    "type": "Socket",
+    "url": "update_driver_location",
+    "title": "To Update driver's location",
+    "name": "update_driver_location",
+    "group": "Socket_Driver_Events",
+    "description": "<p>Driver can emit update_driver_location event to update his/her current location.</p> <p>All other online user will receive this location via &quot;updated_driver_location&quot; event</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;location&quot;:{&quot;latitude&quot;:&quot;&quot;,&quot;longitude&quot;:&quot;&quot;}}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_Driver_Events"
+  },
+  {
+    "type": "Socket",
+    "url": "request_for_driver",
+    "title": "Request for driver",
+    "name": "request_for_driver",
+    "group": "Socket_User_Events",
+    "description": "<p>User can call request_for_driver event to ask for available driver within range of 10 mile</p> <p>All available driver within range of 10 mile can get request via &quot;listen_invitation&quot; event</p> <p>If no driver available then user can get message for the same via &quot;request_for_driver&quot; event</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;pickup_location&quot;:{&quot;placename&quot;:&quot;abcd&quot;,&quot;latitude&quot;:&quot;&quot;,&quot;longitude&quot;:&quot;&quot;},&quot;destination_location&quot;:{&quot;placename&quot;:&quot;abcd&quot;,&quot;latitude&quot;:&quot;&quot;,&quot;longitude&quot;:&quot;&quot;},&quot;fare&quot;:&quot;&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "trip",
+            "description": "<p>Trip info</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_User_Events"
+  },
+  {
+    "type": "Socket",
+    "url": "logout",
+    "title": "To logout",
+    "name": "logout",
+    "group": "Socket",
+    "description": "<p>User/Driver can emit logout event to logout their self.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;data&quot;:personal info,&quot;role&quot;:&quot;driver/user&quot;}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket"
+  },
+  {
+    "type": "Socket",
+    "url": "notification",
+    "title": "To send notification",
+    "name": "notification",
+    "group": "Socket",
+    "description": "<p>User/Driver can emit notification event to send notification to other user.</p> <p>Other user/driver will receive notification via &quot;listen_notification&quot;</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;to_user/to_driver&quot;:&quot;&quot;,&quot;data&quot;:&quot;Notification data&quot;,&quot;role&quot;:&quot;driver/user&quot;} - If notification need to send to user then &quot;to_user&quot; parameter is required otherwise to_driver parameter needed.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket"
+  },
+  {
     "type": "post",
     "url": "/user/calculate_fare",
     "title": "Calculate fare",
