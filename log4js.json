@@ -1,0 +1,14 @@
+{
+    appenders: { 
+        development: { 
+            type: 'file', 
+            filename: 'cheese.log' 
+        }
+    },
+    categories: { 
+        default: { 
+            appenders: ['development'], 
+            level: 'error' 
+        } 
+    }
+}

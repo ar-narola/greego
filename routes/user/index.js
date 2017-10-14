@@ -15,6 +15,7 @@ var twilio_helper = require("../../helpers/twilio_helper");
 var driver_helper = require("../../helpers/driver_helper");
 
 distance.apiKey = config.GOOGLE_API_KEY; // https://github.com/edwlook/node-google-distance
+var logger = config.logger;
 
 /**
  * @api {post} /user/feedback Customer support

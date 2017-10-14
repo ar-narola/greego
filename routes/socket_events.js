@@ -2,6 +2,9 @@ var _ = require('underscore');
 var async = require('async');
 var distance = require('google-distance');
 
+var config = require('../config');
+var logger = config.logger;
+
 var driver_helper = require('./../helpers/driver_helper');
 var trip_helper = require('./../helpers/trip_helper');
 var notification_helper = require('./../helpers/notification_helper');
@@ -712,6 +715,54 @@ module.exports = function (io) {
                 } else {
                     socket_callback(results);
                 }
+            });
+        });
+        
+        /**
+         * @api {Socket} load_driver Load driver available within 10 miles of distance
+         * @apiName load_driver
+         * @apiGroup Socket-User-Events
+         * 
+         * @apiDescription User can call load_driver event to ask for load all available driver within 10 miles of his/her current location
+         * 
+         * @apiParam {JSON} data {"current_location":{"latitude":"","longitude":""}}
+         * @apiParam {Callback} socket_callback callback function
+         * 
+         * @apiSuccess (Callback response - Success) {Boolean} status 1
+         * @apiSuccess (Callback response - Success) {String} message Success message
+         * @apiSuccess (Callback response - Success) {JSON} driver available driver in 10 miles
+         * @apiError (Callback response - Error) {Boolean} status 0
+         * @apiError (Callback response - Error) {String} message Failure message
+         * 
+         * @developed by "ar"
+         */
+        socket.on("load_driver",function(data,socket_callback){
+            logger.trace("load_driver called");
+            logger.trace("Data = ", data);
+            
+            var available_driver = [];
+            async.eachSeries(drivers, function (driver, loop_callback) {
+
+                distance.get({
+                    origin: data.current_location.latitude + ',' + data.current_location.longitude,
+                    destination: driver.data.current_lat + ',' + driver.data.current_long
+                }, function (err, data) {
+                    if (err) {
+                        console.log("\ncan't get distance between user and driver location = ", err);
+                    } else {
+                        if (data.distanceValue <= 1609.344 * 10) // Distance is within 10 mile ??
+                        {
+                            // Driver is available with in 10 mile of user's location, send him/her request
+                            available_driver.push(driver.data);
+                        } else {
+                            console.log("Driver skipped : ", driver.data);
+                            console.log("Location data = ", data);
+                        }
+                    }
+                    loop_callback();
+                });
+            }, function (err) {
+                socket_callback({"status": 1, "message": "Driver location fetched","driver":available_driver});
             });
         });
     });

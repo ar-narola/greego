@@ -12,13 +12,16 @@ var driver_helper = require("../helpers/driver_helper");
 var mail_helper = require("../helpers/mail_helper");
 
 var router = express.Router();
+var logger = config.logger;
 
 /* GET home page. */
 router.get('/', function (req, res) {
+    logger.trace("Document loaded");
     res.sendFile(path.join(__dirname, '../doc', 'index.html'));
 });
 
 router.get('/socket',function(req,res){
+    logger.trace("Web page for socket loaded");
     res.render('index', { title: 'Express' });
 });
 
@@ -38,6 +41,8 @@ router.get('/socket',function(req,res){
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post('/user_login', function (req, res) {
+    logger.trace("API - User login called");
+    logger.debug("req.body = ",req.body);
     var schema = {
         'email': {
             notEmpty: true,
@@ -53,23 +58,30 @@ router.post('/user_login', function (req, res) {
 
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
+            logger.trace("Valid request");
             async.waterfall([
                 function (callback) {
                     // Checking for user availability
+                    logger.trace("Checking for user availability");
                     user_helper.find_user_by_email(req.body.email, function (user_resp) {
                         if (user_resp.status === 0) {
+                            logger.error("Error in finding user by email in user_login API. Err = ",user_resp.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 1) {
+                            logger.trace("User found. Executing next instruction");
                             callback(null, user_resp.user);
                         } else {
+                            logger.info("Account doesn't exist.");
                             callback({"status": config.BAD_REQUEST, "err": "Account doesn't exist."});
                         }
                     });
                 },
                 function (user, callback) {
                     // Authentication of user
+                    logger.trace("Authenticating user");
                     if (user.password == req.body.password) { // Valid password
                         // Generate token
+                        logger.trace("valid user. Generating token");
                         var refreshToken = jwt.sign({id: user._id, role: 'user'}, config.REFRESH_TOKEN_SECRET_KEY, {});
                         user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken, "last_login_date": Date.now()}, function (update_resp) {
                             if (update_resp.status === 1) {
@@ -84,14 +96,18 @@ router.post('/user_login', function (req, res) {
                                 delete user.is_deleted;
                                 delete user.last_login_date;
 
+                                logger.trace("Token generated. Executing next instruction");
                                 callback(null, {"user": user, "token": token, "refresh_token": refreshToken});
                             } else if (update_resp.status === 0) {
+                                logger.error("Error in updating user in user_login API. Err = ",update_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
                             } else {
+                                logger.info("");
                                 callback({"status": config.OK_STATUS, "err": update_resp.message});
                             }
                         });
                     } else { // Invalid password
+                        logger.info("Invalid password of user");
                         callback({"status": config.BAD_REQUEST, "err": "Invalid email or password."});
                     }
                 }
@@ -107,6 +123,7 @@ router.post('/user_login', function (req, res) {
                 message: "Validation Error",
                 error: result.array()
             };
+            logger.error("Validation Error = ",result);
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
     });
@@ -131,6 +148,8 @@ router.post('/user_login', function (req, res) {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post('/user_signup', function (req, res) {
+    logger.trace("API - User signup called");
+    logger.debug("req.body = ",req.body);
     var schema = {
         'first_name': {
             notEmpty: true,
@@ -161,15 +180,20 @@ router.post('/user_signup', function (req, res) {
 
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
+            logger.trace("Request is valid. ");
             async.waterfall([
                 function (callback) {
                     // Check for valid car reference
+                    logger.trace("Check for valid car reference");
                     car_helper.find_car_by_id(req.body.car_id, function (car_resp) {
                         if (car_resp.status === 0) {
+                            logger.error("Error occured in finding car by id in user signup. Err = ",car_resp.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": car_resp.err});
                         } else if (car_resp.status === 404) {
+                            logger.info("Car not found in user signup.");
                             callback({"status": config.BAD_REQUEST, "err": car_resp.err});
                         } else {
+                            logger.trace("Car found. Executing next instruction");
                             callback(null);
                         }
                     });
@@ -178,16 +202,20 @@ router.post('/user_signup', function (req, res) {
                     // Car reference is valid, Check user validity
                     user_helper.find_user_by_email(req.body.email, function (user_resp) {
                         if (user_resp.status === 0) {
+                            logger.error("Error occured in finding user by email in user signup. Err = ",user_resp.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 1) {
+                            logger.info("User with given email is already exist.");
                             callback({"status": config.BAD_REQUEST, "err": "User with given email is already exist"});
                         } else {
+                            logger.trace("User found. Executing next instruction");
                             callback(null);
                         }
                     });
                 },
                 function (callback) {
                     // Upload user avatar
+                    logger.trace("Uploading user avatar in user signup API");
                     if (req.files && req.files['avatar']) {
                         var file = req.files['avatar'];
                         var dir = "./uploads/user_avatar";
@@ -201,20 +229,25 @@ router.post('/user_signup', function (req, res) {
                             filename = "user_" + new Date().getTime() + extention;
                             file.mv(dir + '/' + filename, function (err) {
                                 if (err) {
+                                    logger.error("There was an issue in uploading image");
                                     callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
                                 } else {
+                                    logger.trace("image has been uploaded. Image name = ",filename);
                                     callback(null, filename);
                                 }
                             });
                         } else {
+                            logger.error("Image format is invalid");
                             callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
                         }
                     } else {
+                        logger.info("Image not available to upload. Executing next instruction");
                         callback(null, null);
                     }
                 },
                 function (image_name, callback) {
                     // User Insertion
+                    logger.trace("Inserting user in database");
                     var user_obj = {
                         "first_name": req.body.first_name,
                         "last_name": req.body.last_name,
@@ -230,8 +263,10 @@ router.post('/user_signup', function (req, res) {
 
                     user_helper.insert_user(user_obj, function (user_data) {
                         if (user_data.status === 0) {
+                            logger.error("There was an issue in user registration. Err = ",user_data.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in user registration"});
                         } else {
+                            logger.debug("User inserted. Executed next instruction");
                             callback(null);
                         }
                     });
@@ -240,10 +275,12 @@ router.post('/user_signup', function (req, res) {
                 if (err) {
                     res.status(err.status).json({"message": err.err});
                 } else {
+                    logger.info("Registration done");
                     res.status(config.OK_STATUS).json({"message": "Registration done successfully"});
                 }
             });
         } else {
+            logger.error("Validation error ",result);
             var result = {
                 message: "Validation Error",
                 error: result.array()
@@ -267,25 +304,36 @@ router.post('/user_signup', function (req, res) {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get('/refresh_token', function (req, res) {
+    logger.trace("API - Refresh token");
+    logger.debug("req.headers = ",req.headers);
     var token = req.headers['refresh_token'];
     if (token) {
+        logger.trace("Request is valid");
         async.waterfall([
             function (callback) {
+                logger.trace("Verifing refresh token");
                 jwt.verify(token, config.REFRESH_TOKEN_SECRET_KEY, function (err, decoded) {
                     if (err) {
+                        logger.error("Invalid token. Err = ",err.message);
                         callback({"status": config.UNAUTHORIZED, "err": err.message});
                     } else {
+                        logger.trace("Checking role");
                         if (decoded.role === "user") {
+                            logger.trace("User role. Finding user by id");
                             user_helper.find_user_by_id(decoded.id, function (user_data) {
                                 if (user_data.status === 1) {
+                                    logger.debug("User found. Executing next instruction");
                                     callback(null, user_data.user, 'user');
                                 } else if (user_data.status === 404) {
+                                    loggger.info("User not found");
                                     callback({"status": config.BAD_REQUEST, "err": "User not found"});
                                 } else {
+                                    logger.error("Error occured in finding user by id in refresh token API. Err = ",user_data.err);
                                     callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_data.err});
                                 }
                             });
                         } else if (token_data.role === "driver") {
+                            logger.trace("driver role");
                             // Refresh token code for driver
                             /*
                              driver_helper.find_driver_by_id(decoded.id,function(driver_data){
@@ -299,6 +347,7 @@ router.get('/refresh_token', function (req, res) {
                              });
                              */
                         } else {
+                            logger.error("Invalid request. Role not specified");
                             callback({"status": config.UNAUTHORIZED, "message": "You are not authorized to use this"});
                         }
                     }
@@ -306,21 +355,23 @@ router.get('/refresh_token', function (req, res) {
             },
             function (user, role, callback) {
                 // Setup JWT token
+                logger.trace("Generating tokrn");
                 var refreshToken = jwt.sign({id: user._id, role: role}, config.REFRESH_TOKEN_SECRET_KEY, {});
                 if (role === "user") {
+                    logger.trace("Uodating user");
                     user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken}, function (update_resp) {
-                        
-                        console.log(update_resp);
-                        
                         if (update_resp.status === 1) {
                             var userJson = {id: user._id, email: user.email, role: "user"};
                             var token = jwt.sign(userJson, config.ACCESS_TOKEN_SECRET_KEY, {
                                 expiresIn: 60 * 60 * 24 // expires in 24 hours
                             });
+                            logger.debug("token has generated for user")
                             callback(null, {"token": token, "refresh_token": refreshToken});
                         } else if (update_resp.status === 0) {
+                            logger.error("Error has occured in updating user in refresh token API. Err = ",update_resp.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
                         } else {
+                            logger.error("Error has occured in updating user in refresh token API.");
                             callback({"status": config.OK_STATUS, "err": "Error in updating refresh token"});
                         }
                     });
@@ -335,6 +386,7 @@ router.get('/refresh_token', function (req, res) {
                 }
             });
     } else {
+        logger.trace("Request is invalid - Token missing");
         return res.status(config.UNAUTHORIZED).json({"message": 'Invalid refresh token'});
     }
 });
@@ -365,6 +417,8 @@ router.get('/refresh_token', function (req, res) {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post('/driver_signup', function (req, res) {
+    logger.trace("API - Driver signup");
+    logger.debug("req.body = ",req.body);
     var schema = {
         'first_name': {
             notEmpty: true,
@@ -412,10 +466,12 @@ router.post('/driver_signup', function (req, res) {
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
             if(req.files && req.files['license'] && req.files['birth_certi'] && req.files['insurance']){
+                logger.trace("Request is valid");
                 req.body.drive_type = JSON.parse(req.body.drive_type);
                 async.waterfall([
                     function (callback) {
                         // Check driver's validity
+                        logger.trace("");
                         driver_helper.find_driver_by_email(req.body.email, function (driver_resp) {
                             if (driver_resp.status === 0) {
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": driver_resp.err});
@@ -589,6 +645,7 @@ router.post('/driver_signup', function (req, res) {
                     message: "Validation Error",
                     error: result.array()
                 };
+                logger.error("Validation error. ",result);
                 res.status(config.VALIDATION_FAILURE_STATUS).json(result);
             }
         } else {
@@ -596,6 +653,7 @@ router.post('/driver_signup', function (req, res) {
                 message: "Validation Error",
                 error: result.array()
             };
+            logger.error("Validation error. ",result);
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
     });

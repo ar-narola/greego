@@ -1,3 +1,9 @@
+var log4js = require( "log4js" );
+log4js.configure({
+  appenders: { development: { type: 'file', filename: 'log_file.log' } },
+  categories: { default: { appenders: ['development'], level: 'trace' } }
+});
+
 module.exports = {
     "node_port": 4000,
     "database": "mongodb://127.0.0.1:27017/greego",
@@ -23,5 +29,7 @@ module.exports = {
     "MEDIA_ERROR_STATUS": 415,
     "VALIDATION_FAILURE_STATUS": 417,
     "DATABASE_ERROR_STATUS": 422,
-    "INTERNAL_SERVER_ERROR": 500
+    "INTERNAL_SERVER_ERROR": 500,
+    
+    "logger": log4js.getLogger( "development" )
 };

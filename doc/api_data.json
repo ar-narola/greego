@@ -1192,6 +1192,84 @@
   },
   {
     "type": "Socket",
+    "url": "load_driver",
+    "title": "Load driver available within 10 miles of distance",
+    "name": "load_driver",
+    "group": "Socket_User_Events",
+    "description": "<p>User can call load_driver event to ask for load all available driver within 10 miles of his/her current location</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{&quot;current_location&quot;:{&quot;latitude&quot;:&quot;&quot;,&quot;longitude&quot;:&quot;&quot;}}</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Callback",
+            "optional": false,
+            "field": "socket_callback",
+            "description": "<p>callback function</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Callback response - Success": [
+          {
+            "group": "Callback response - Success",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          },
+          {
+            "group": "Callback response - Success",
+            "type": "JSON",
+            "optional": false,
+            "field": "driver",
+            "description": "<p>available driver in 10 miles</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Callback response - Error": [
+          {
+            "group": "Callback response - Error",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Callback response - Error",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Failure message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/socket_events.js",
+    "groupTitle": "Socket_User_Events"
+  },
+  {
+    "type": "Socket",
     "url": "request_for_driver",
     "title": "Request for driver",
     "name": "request_for_driver",
