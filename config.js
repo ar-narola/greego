@@ -6,6 +6,7 @@ log4js.configure({
 
 module.exports = {
     "node_port": 4000,
+	"SITE_URL": "http://clientapp.narola.online/HD/greego/",
     "database": "mongodb://127.0.0.1:27017/greego",
     //"database": "mongodb://greego:greego_2017@52.45.35.157/greego?authSource=greego",
     // Twilio account

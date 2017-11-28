@@ -102,7 +102,7 @@ router.post('/user_login', function (req, res) {
                                 logger.error("Error in updating user in user_login API. Err = ",update_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
                             } else {
-                                logger.info("");
+                                logger.info("Token has generated. but user has not updated.");
                                 callback({"status": config.OK_STATUS, "err": update_resp.message});
                             }
                         });
@@ -469,15 +469,18 @@ router.post('/driver_signup', function (req, res) {
                 logger.trace("Request is valid");
                 req.body.drive_type = JSON.parse(req.body.drive_type);
                 async.waterfall([
-                    function (callback) {
+                    function (d) {
                         // Check driver's validity
-                        logger.trace("");
+                        logger.trace("Check driver's validity");
                         driver_helper.find_driver_by_email(req.body.email, function (driver_resp) {
                             if (driver_resp.status === 0) {
+                                logger.error("Error in finding driver by email in driver_signup API. Err = ",user_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": driver_resp.err});
                             } else if (driver_resp.status === 1) {
+                                logger.error("Error in finding driver by email in driver_signup API. Err = Driver with given email is already exist.")
                                 callback({"status": config.BAD_REQUEST, "err": "Driver with given email is already exist"});
                             } else {
+                                logger.trace("No driver with same email found. Executing next instruction.");
                                 callback(null);
                             }
                         });
@@ -700,8 +703,8 @@ router.post('/send_link_for_forget_password',function(req,res){
                     
                     var msg = "Hi <b>"+user.first_name+",</b><br/><br/>";
                     msg += "You recently requested to reset your password for your greego account.<br/>";
-                    msg += "Click on <a href='http://localhost:3000/reset_password/"+user._id+"'>http://localhost:3000/reset_password/"+user._id+"</a> to reset it.<br/><br/>";
-
+                    //msg += "Click on <a href='http://localhost:3000/reset_password/"+user._id+"'>http://localhost:3000/reset_password/"+user._id+"</a> to reset it.<br/><br/>";
+					msg += "Click on <a href=/"+config.SITE_URL+'reset_password/'+user._id+"'>"+config.SITE_URL+'reset_password/'+user._id+"</a> to reset it.<br/><br/>";
                     msg += "Thanks,<br/>Greego Team<hr/>";
                     msg += "<h5>If you're having trouble clicking the given link, copy and paste URL into your web browser.<br/>";
                     msg += "If you did not request a password reset, please reply to let us know.</h5>"
