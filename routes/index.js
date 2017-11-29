@@ -140,7 +140,7 @@ router.post('/user_login', function (req, res) {
  * @apiParam {String} phone Phone number of user
  * @apiParam {String} password Password
  * @apiParam {File} [avatar] Profile image of user
- * @apiParam {String} car_id Reference of selected car
+ * @apiParam {String} [car_id] Reference of selected car
  * 
  * @apiDescription  You need to pass form-data
  * 
@@ -171,10 +171,10 @@ router.post('/user_signup', function (req, res) {
             notEmpty: true,
             errorMessage: "Password is required"
         },
-        'car_id': {
-            notEmpty: true,
-            errorMessage: "Car reference is required"
-        }
+//        'car_id': {
+//            notEmpty: true,
+//            errorMessage: "Car reference is required"
+//        }
     };
     req.checkBody(schema);
 
@@ -182,6 +182,7 @@ router.post('/user_signup', function (req, res) {
         if (result.isEmpty()) {
             logger.trace("Request is valid. ");
             async.waterfall([
+                /*
                 function (callback) {
                     // Check for valid car reference
                     logger.trace("Check for valid car reference");
@@ -197,7 +198,7 @@ router.post('/user_signup', function (req, res) {
                             callback(null);
                         }
                     });
-                },
+                },*/
                 function (callback) {
                     // Car reference is valid, Check user validity
                     user_helper.find_user_by_email(req.body.email, function (user_resp) {
@@ -254,7 +255,7 @@ router.post('/user_signup', function (req, res) {
                         "email": req.body.email,
                         "phone": req.body.phone,
                         "password": req.body.password,
-                        "car": req.body.car_id
+//                        "car": req.body.car_id
                     };
 
                     if (image_name) {

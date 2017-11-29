@@ -655,7 +655,7 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "car_id",
             "description": "<p>Reference of selected car</p>"
           }
