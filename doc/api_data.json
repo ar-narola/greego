@@ -151,56 +151,56 @@
           {
             "group": "Parameter",
             "type": "Array",
-            "optional": false,
+            "optional": true,
             "field": "drive_type",
             "description": "<p>Array of string can have value from &quot;Sedan&quot;, &quot;SUV&quot; and &quot;Van&quot;</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "transmission_type",
             "description": "<p>Value can be either &quot;Automatic&quot; or &quot;Manual&quot;</p>"
           },
           {
             "group": "Parameter",
             "type": "File",
-            "optional": false,
+            "optional": true,
             "field": "license",
             "description": "<p>Image of license</p>"
           },
           {
             "group": "Parameter",
             "type": "File",
-            "optional": false,
+            "optional": true,
             "field": "birth_certi",
             "description": "<p>Image of Birth certificate or passport</p>"
           },
           {
             "group": "Parameter",
             "type": "File",
-            "optional": false,
+            "optional": true,
             "field": "insurance",
             "description": "<p>Image of insurance</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "bank_routing_no",
             "description": "<p>Bank routing number</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "bank_account_no",
             "description": "<p>Bank account number</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "ssn",
             "description": "<p>Social security number</p>"
           }
