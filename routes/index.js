@@ -470,7 +470,7 @@ router.post('/driver_signup', function (req, res) {
                 logger.trace("Request is valid");
                 req.body.drive_type = JSON.parse(req.body.drive_type);*/
                 async.waterfall([
-                    function (d) {
+                    function (callback) {
                         // Check driver's validity
                         logger.trace("Check driver's validity");
                         driver_helper.find_driver_by_email(req.body.email, function (driver_resp) {
