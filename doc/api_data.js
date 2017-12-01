@@ -143,6 +143,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "residential_status",
+            "description": "<p>Value should be from &quot;Citizen&quot;, &quot;Greencard&quot; or &quot;Visa&quot;</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "File",
             "optional": true,
             "field": "avatar",

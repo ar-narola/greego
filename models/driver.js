@@ -27,6 +27,7 @@ var DriverSchema = new Schema({
     ssn: String,
     current_lat: String,
     current_long: String,
+    residential_status: {type: String,enum:["Citizen","Greencard","Visa"]},
     location_updated_at: Date,
     rate : RateSchema,
     refresh_token: String,

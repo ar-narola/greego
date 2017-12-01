@@ -402,6 +402,7 @@ router.get('/refresh_token', function (req, res) {
  * @apiParam {String} email Email address
  * @apiParam {String} phone Phone number of user
  * @apiParam {String} password Password
+ * @apiParam {String} residential_status Value should be from "Citizen", "Greencard" or "Visa"
  * @apiParam {File} [avatar] Profile image of user
  * @apiParam {Array} [drive_type] Array of string can have value from "Sedan", "SUV" and "Van"
  * @apiParam {String} [transmission_type] Value can be either "Automatic" or "Manual"
@@ -440,6 +441,10 @@ router.post('/driver_signup', function (req, res) {
         'password': {
             notEmpty: true,
             errorMessage: "Password is required"
+        },
+        'residential_status': {
+            notEmpty: true,
+            errorMessage: "Residential status is required"
         },
 //        'drive_type': {
 //            notEmpty: true,
@@ -602,7 +607,8 @@ router.post('/driver_signup', function (req, res) {
                             "last_name": req.body.last_name,
                             "email": req.body.email,
                             "phone": req.body.phone,
-                            "password": req.body.password
+                            "password": req.body.password,
+                            "residential_status":req.body.residential_status
                         };
                         
                         if(req.body.drive_type){
@@ -754,7 +760,6 @@ router.post('/email_availability', function (req, res) {
         }
     });
 });
-
 
 /**
  * @api {post} /send_link_for_forget_password Send link of reset password through mail
