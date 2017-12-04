@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'doc')));
-app.use('/upload', express.static(path.join(__dirname, 'upload')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(expressValidator());
 
 app.use('/', index);
