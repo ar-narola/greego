@@ -20,22 +20,24 @@ var UserSchema = new Schema({
     last_name: String,
     email: String,
     phone: String,
-    emergency_contact : String,
     password: String,
     user_avatar: String,
     refresh_token: String,
-    car : mongoose.Schema.Types.ObjectId,
-    card: [CardSchema],
-    otp: String,
     phone_verified: {type: Boolean, default:false},
+    otp: String,
     is_active: {type: Boolean, default:true},
     is_deleted: {type: Boolean, default:false},
     registration_date: { type: Date, default: Date.now },
     last_login_date: Date,
     password_changed_date: Date,
-    rate : RateSchema,
     current_lat: String,
-    current_long: String
+    current_long: String,
+    emergency_contact : String,
+    car : mongoose.Schema.Types.ObjectId,
+    card: [CardSchema],
+    rate : RateSchema,
+    driver_data : mongoose.Schema.Types.ObjectId,
+    role : {type:String, enum: ["rider", "driver", "both"]}
 }, { versionKey: false });
 
 // Compile model from schema

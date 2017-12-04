@@ -52,6 +52,10 @@ router.post('/user_login', function (req, res) {
         'password': {
             notEmpty: true,
             errorMessage: "Password is required"
+        },
+        'role':{
+            notEmpty:true,
+            errorMessage: "Role is required"
         }
     };
     req.checkBody(schema);
@@ -82,7 +86,7 @@ router.post('/user_login', function (req, res) {
                     if (user.password == req.body.password) { // Valid password
                         // Generate token
                         logger.trace("valid user. Generating token");
-                        var refreshToken = jwt.sign({id: user._id, role: 'user'}, config.REFRESH_TOKEN_SECRET_KEY, {});
+                        var refreshToken = jwt.sign({id: user._id, role: user.role}, config.REFRESH_TOKEN_SECRET_KEY, {});
                         user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken, "last_login_date": Date.now()}, function (update_resp) {
                             if (update_resp.status === 1) {
                                 var userJson = {id: user._id, email: user.email, role: "user"};
@@ -255,6 +259,7 @@ router.post('/user_signup', function (req, res) {
                         "email": req.body.email,
                         "phone": req.body.phone,
                         "password": req.body.password,
+                        "role":"rider",
 //                        "car": req.body.car_id
                     };
 
