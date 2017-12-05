@@ -99,4 +99,30 @@ driver_helper.update_driver_by_id = function(driver_id,update_obj,callback){
     });
 };
 
+/*
+ * add_drive_type_to_driver is used to add given drive type to driver's collection
+ * 
+ * @param   driver_id       String  _id of driver that need to be update
+ * @param   drive_type      Array   Array, value can be "Van", "Sedan" or/and "SUV"
+ * 
+ * @return  status  0 - If any error occur in updating driver, with error
+ *          status  1 - If Driver updated successfully, with appropriate message
+ *          status  2 - If Driver not updated, with appropriate message
+ * 
+ * @developed by "ar"
+ */
+driver_helper.add_drive_type_to_driver = function(driver_id,drive_type,callback){
+    Driver.update({_id:{$eq : driver_id}},{$set : {drive_type:drive_type}},function(err,update_data){
+        if(err){
+            callback({"status":0,"err":err});
+        } else {
+            if(update_data.nModified == 1){
+                callback({"status":1,"message":"Record has been updated"});
+            } else {
+                callback({"status":2,"err":"Record has not updated"});
+            }
+        }
+    });
+}
+
 module.exports = driver_helper;

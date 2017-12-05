@@ -580,4 +580,40 @@ router.get('/get_driver_by_id',function(req,res){
     }
 });
 
+/**
+ * @api {get} /user/get_details Get User details of current logged in user
+ * @apiName Get User details of current logged in user
+ * @apiGroup User
+ * 
+ * @apiHeader {String}  x-access-token User's unique access-key
+ * 
+ * @apiSuccess (Success 200) {JSON} user User details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/get_details',function(req,res){
+    user_helper.find_user_by_id(req.userInfo.id,function(user_data){
+        if(user_data.status === 0){
+            res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in finding user"});
+        } else if(user_data.status === 404){
+            res.status(config.BAD_REQUEST).json({"message":"No user found"});
+        } else {
+            var ret_user = {
+                "_id":user_data.user._id,
+                "first_name":user_data.user.first_name,
+                "last_name":user_data.user.last_name,
+                "email":user_data.user.email,
+                "phone":user_data.user.phone,
+                "role":user_data.user.role,
+                "user_avatar":(user_data.user.user_avatar)?user_data.user.user_avatar:null,
+                "current_lat":user_data.user.current_lat,
+                "current_long":user_data.user.current_long,
+                "cards":user_data.user.card,
+                "avg_rate":(user_data.user.rate && user_data.user.rate.avg_rate)?user_data.user.rate.avg_rate:null
+            }
+
+            res.status(config.OK_STATUS).json(ret_user);
+        }
+    });
+});
+
 module.exports = router;

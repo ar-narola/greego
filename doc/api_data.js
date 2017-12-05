@@ -1725,6 +1725,55 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/user/get_details",
+    "title": "Get User details of current logged in user",
+    "name": "Get_User_details_of_current_logged_in_user",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user",
+            "description": "<p>User details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/index.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "get",
     "url": "/user/get_driver_by_id",
     "title": "Get driver by id",
     "name": "Get_driver_by_id",

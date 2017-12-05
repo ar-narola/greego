@@ -89,7 +89,7 @@ router.post('/user_login', function (req, res) {
                         var refreshToken = jwt.sign({id: user._id, role: user.role}, config.REFRESH_TOKEN_SECRET_KEY, {});
                         user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken, "last_login_date": Date.now()}, function (update_resp) {
                             if (update_resp.status === 1) {
-                                var userJson = {id: user._id, email: user.email, role: "user"};
+                                var userJson = {id: user._id, email: user.email, role: "rider"};
                                 var token = jwt.sign(userJson, config.ACCESS_TOKEN_SECRET_KEY, {
                                     expiresIn: 60 * 60 * 24 // expires in 24 hours
                                 });
@@ -323,39 +323,19 @@ router.get('/refresh_token', function (req, res) {
                         logger.error("Invalid token. Err = ",err.message);
                         callback({"status": config.UNAUTHORIZED, "err": err.message});
                     } else {
-                        logger.trace("Checking role");
-                        if (decoded.role === "user") {
-                            logger.trace("User role. Finding user by id");
-                            user_helper.find_user_by_id(decoded.id, function (user_data) {
-                                if (user_data.status === 1) {
-                                    logger.debug("User found. Executing next instruction");
-                                    callback(null, user_data.user, 'user');
-                                } else if (user_data.status === 404) {
-                                    loggger.info("User not found");
-                                    callback({"status": config.BAD_REQUEST, "err": "User not found"});
-                                } else {
-                                    logger.error("Error occured in finding user by id in refresh token API. Err = ",user_data.err);
-                                    callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_data.err});
-                                }
-                            });
-                        } else if (token_data.role === "driver") {
-                            logger.trace("driver role");
-                            // Refresh token code for driver
-                            /*
-                             driver_helper.find_driver_by_id(decoded.id,function(driver_data){
-                             if(driver_data.status === 1) {
-                             callback(null,driver_data.driver,'driver');
-                             } else if(driver_data.status === 404) {
-                             callback({"status":config.BAD_REQUEST,"err":"Driver not found"});
-                             } else {
-                             callback({"status":config.INTERNAL_SERVER_ERROR,"err":driver_data.err});
-                             }
-                             });
-                             */
-                        } else {
-                            logger.error("Invalid request. Role not specified");
-                            callback({"status": config.UNAUTHORIZED, "message": "You are not authorized to use this"});
-                        }
+                        logger.trace("Finding user by id");
+                        user_helper.find_user_by_id(decoded.id, function (user_data) {
+                            if (user_data.status === 1) {
+                                logger.debug("User found. Executing next instruction");
+                                callback(null, user_data.user, decoded.role);
+                            } else if (user_data.status === 404) {
+                                loggger.info("User not found");
+                                callback({"status": config.BAD_REQUEST, "err": "User not found"});
+                            } else {
+                                logger.error("Error occured in finding user by id in refresh token API. Err = ",user_data.err);
+                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_data.err});
+                            }
+                        });
                     }
                 });
             },
@@ -363,27 +343,24 @@ router.get('/refresh_token', function (req, res) {
                 // Setup JWT token
                 logger.trace("Generating tokrn");
                 var refreshToken = jwt.sign({id: user._id, role: role}, config.REFRESH_TOKEN_SECRET_KEY, {});
-                if (role === "user") {
-                    logger.trace("Uodating user");
-                    user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken}, function (update_resp) {
-                        if (update_resp.status === 1) {
-                            var userJson = {id: user._id, email: user.email, role: "user"};
-                            var token = jwt.sign(userJson, config.ACCESS_TOKEN_SECRET_KEY, {
-                                expiresIn: 60 * 60 * 24 // expires in 24 hours
-                            });
-                            logger.debug("token has generated for user")
-                            callback(null, {"token": token, "refresh_token": refreshToken});
-                        } else if (update_resp.status === 0) {
-                            logger.error("Error has occured in updating user in refresh token API. Err = ",update_resp.err);
-                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
-                        } else {
-                            logger.error("Error has occured in updating user in refresh token API.");
-                            callback({"status": config.OK_STATUS, "err": "Error in updating refresh token"});
-                        }
-                    });
-                } else { // Role is driver
-                    // Update document of driver
-                }
+                
+                logger.trace("Uodating user");
+                user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken}, function (update_resp) {
+                    if (update_resp.status === 1) {
+                        var userJson = {id: user._id, email: user.email, role: "user"};
+                        var token = jwt.sign(userJson, config.ACCESS_TOKEN_SECRET_KEY, {
+                            expiresIn: 60 * 60 * 24 // expires in 24 hours
+                        });
+                        logger.debug("token has generated for user")
+                        callback(null, {"token": token, "refresh_token": refreshToken});
+                    } else if (update_resp.status === 0) {
+                        logger.error("Error has occured in updating user in refresh token API. Err = ",update_resp.err);
+                        callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
+                    } else {
+                        logger.error("Error has occured in updating user in refresh token API.");
+                        callback({"status": config.OK_STATUS, "err": "Error in updating refresh token"});
+                    }
+                });
             }], function (err, resp) {
                 if (err) {
                     res.status(err.status).json({"message": err.err});
@@ -483,15 +460,16 @@ router.post('/driver_signup', function (req, res) {
                     function (callback) {
                         // Check driver's validity
                         logger.trace("Check driver's validity");
-                        driver_helper.find_driver_by_email(req.body.email, function (driver_resp) {
-                            if (driver_resp.status === 0) {
-                                logger.error("Error in finding driver by email in driver_signup API. Err = ",user_resp.err);
-                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": driver_resp.err});
-                            } else if (driver_resp.status === 1) {
-                                logger.error("Error in finding driver by email in driver_signup API. Err = Driver with given email is already exist.")
-                                callback({"status": config.BAD_REQUEST, "err": "Driver with given email is already exist"});
+                        // Car reference is valid, Check user validity
+                        user_helper.find_user_by_email(req.body.email, function (user_resp) {
+                            if (user_resp.status === 0) {
+                                logger.error("Error occured in finding user by email in user signup. Err = ",user_resp.err);
+                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
+                            } else if (user_resp.status === 1) {
+                                logger.info("User with given email is already exist.");
+                                callback({"status": config.BAD_REQUEST, "err": "User with given email is already exist"});
                             } else {
-                                logger.trace("No driver with same email found. Executing next instruction.");
+                                logger.trace("User found. Executing next instruction");
                                 callback(null);
                             }
                         });
@@ -569,7 +547,6 @@ router.post('/driver_signup', function (req, res) {
                                 if(err){
                                     callback(err.resp);
                                 } else {
-                                    console.log(results);
                                     callback(null,results);
                                 }
                             });
@@ -580,8 +557,9 @@ router.post('/driver_signup', function (req, res) {
                     function (image_names,callback) {
                         // Upload driver avatar
                         if (req.files && req.files['avatar']) {
+                            logger.trace("Uploading avatar image");
                             var file = req.files['avatar'];
-                            var dir = "./uploads/driver_avatar";
+                            var dir = "./uploads/user_avatar";
                             var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
                             if (mimetype.indexOf(file.mimetype) != -1) {
@@ -589,11 +567,13 @@ router.post('/driver_signup', function (req, res) {
                                     fs.mkdirSync(dir);
                                 }
                                 extention = path.extname(file.name);
-                                filename = "driver_" + new Date().getTime() + extention;
+                                filename = "user_" + new Date().getTime() + extention;
                                 file.mv(dir + '/' + filename, function (err) {
                                     if (err) {
+                                        logger.trace("There was an issue in uploading image");
                                         callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
                                     } else {
+                                        logger.trace("Avatar image has uploaded for driver");
                                         image_names.avatar = filename;
                                         callback(null, image_names);
                                     }
@@ -607,18 +587,20 @@ router.post('/driver_signup', function (req, res) {
                     },
                     function (image_names, callback) {
                         // Driver Insertion
-                        var driver_obj = {
+                        logger.trace("Inserting driver in db");
+                        var user_obj = {
                             "first_name": req.body.first_name,
                             "last_name": req.body.last_name,
                             "email": req.body.email,
                             "phone": req.body.phone,
                             "password": req.body.password,
+                            "role": "driver"
+                        };
+
+                        var driver_obj = {
                             "residential_status":req.body.residential_status
                         };
-                        
-                        if(req.body.drive_type){
-                            driver_obj.drive_type = req.body.drive_type;
-                        }
+
                         if(req.body.transmission_type){
                             driver_obj.transmission_type = req.body.transmission_type;
                         }
@@ -641,13 +623,33 @@ router.post('/driver_signup', function (req, res) {
                             driver_obj.insurance = image_names.insurance;
                         }
                         if (image_names && image_names.avatar) {
-                            driver_obj.driver_avatar = image_names.avatar;
+                            user_obj.user_avatar = image_names.avatar;
                         }
 
                         driver_helper.insert_driver(driver_obj, function (driver_data) {
                             if (driver_data.status === 0) {
+                                logger.trace("Error occured while inserting driver : err",driver_data);
                                 callback({"status": config.INTERNAL_SERVER_ERROR,"err": "There was an issue in driver registration"});
                             } else {
+                                logger.trace("Driver instance created");
+                                if(req.body.drive_type){
+                                    driver_helper.add_drive_type_to_driver(driver_data.driver._id,req.body.drive_type,function(){
+                                        logger.trace("driver type has now associated with driver");
+                                    });
+                                }
+                                user_obj.driver_id = driver_data.driver._id;
+                                callback(null,user_obj);
+                            }
+                        });
+                    },
+                    function(user_obj,callback){
+                        logger.trace("Creating user instance");
+                        user_helper.insert_user(user_obj, function (user_data) {
+                            if (user_data.status === 0) {
+                                logger.error("There was an issue in driver registration. Err = ",user_data.err);
+                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in driver registration"});
+                            } else {
+                                logger.debug("Driver registered. Executed next instruction");
                                 callback(null);
                             }
                         });

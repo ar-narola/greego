@@ -36,7 +36,7 @@ var UserSchema = new Schema({
     car : mongoose.Schema.Types.ObjectId,
     card: [CardSchema],
     rate : RateSchema,
-    driver_data : mongoose.Schema.Types.ObjectId,
+    driver_id : mongoose.Schema.Types.ObjectId,
     role : {type:String, enum: ["rider", "driver", "both"]}
 }, { versionKey: false });
 
