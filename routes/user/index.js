@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+var fs = require('fs');
+var path = require('path');
+
 var async = require('async');
 var request = require('request');
 var _ = require('underscore');

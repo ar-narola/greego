@@ -702,7 +702,6 @@ router.post('/driver_signup', function (req, res) {
  * @apiHeader {String}  Content-Type application/json
  * 
  * @apiParam {String} email Email address
- * @apiParam {String} role User's role (user/driver)
  * 
  * @apiSuccess (Success 200) {String} message Success message (User available)
  * @apiError (Error 4xx) {String} message Validation or error message. (Any error or user not available)
@@ -715,48 +714,25 @@ router.post('/email_availability', function (req, res) {
             notEmpty: true,
             errorMessage: "Email address is required"
         },
-        'role': {
-            notEmpty: true,
-            errorMessage: "User's role is required"
-        }
     };
     req.checkBody(schema);
 
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
             logger.trace("Request is valid. ");
-            if(req.body.role == "driver"){
-                // Check email availability for driver role
-                driver_helper.find_driver_by_email(req.body.email, function (user_resp) {
-                    if (user_resp.status === 0) {
-                        logger.error("Error occured in finding driver by email. Err = ",user_resp.err);
-                        res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
-                    } else if (user_resp.status === 1) {
-                        logger.info("User with given email is already exist.");
-                        res.status(config.BAD_REQUEST).json({"message":"Driver with given email is already exist"});
-                    } else {
-                        logger.trace("Driver found");
-                        res.status(config.OK_STATUS).json({"message":"Driver available"});
-                    }
-                });
-            } else if(req.body.role == "user"){
-                // Check email availability for user role
-                user_helper.find_user_by_email(req.body.email, function (user_resp) {
-                    if (user_resp.status === 0) {
-                        logger.error("Error occured in finding user by email. Err = ",user_resp.err);
-                        res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
-                    } else if (user_resp.status === 1) {
-                        logger.info("User with given email is already exist.");
-                        res.status(config.BAD_REQUEST).json({"message":"User with given email is already exist"});
-                    } else {
-                        logger.trace("User found");
-                        res.status(config.OK_STATUS).json({"message":"User available"});
-                    }
-                });
-            } else {
-                logger.error("Invalid role found");
-                res.status(config.VALIDATION_FAILURE_STATUS).json({"message":"Invalid role"});
-            }
+            // Check email availability for user role
+            user_helper.find_user_by_email(req.body.email, function (user_resp) {
+                if (user_resp.status === 0) {
+                    logger.error("Error occured in finding user by email. Err = ",user_resp.err);
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
+                } else if (user_resp.status === 1) {
+                    logger.info("User with given email is already exist.");
+                    res.status(config.BAD_REQUEST).json({"message":"User with given email is already exist"});
+                } else {
+                    logger.trace("User found");
+                    res.status(config.OK_STATUS).json({"message":"User available"});
+                }
+            });
         } else {
             logger.error("Validation error ",result);
             var result = {
