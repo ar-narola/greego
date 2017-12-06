@@ -10,6 +10,7 @@ var car_model_helper = require("../helpers/car_model_helper");
 var user_helper = require("../helpers/user_helper");
 var driver_helper = require("../helpers/driver_helper");
 var mail_helper = require("../helpers/mail_helper");
+var twilio_helper = require("../helpers/twilio_helper");
 
 var router = express.Router();
 var logger = config.logger;
@@ -938,5 +939,156 @@ router.get('/car_model_by_brand',function(req,res){
     }
 });
 
+/**
+ * @api {post} /sendotp Send / Re-send OTP
+ * @apiName Send / Re-send OTP
+ * @apiGroup Root
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * 
+ * @apiParam {string} phone Phone number of user
+ * 
+ * @apiSuccess (Success 200) {String} message Success message.
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post('/sendotp', function (req, res) {
+    var schema = {
+        'phone': {
+            notEmpty: true,
+            errorMessage: "Mobile number is required."
+        }
+    };
+    req.checkBody(schema);
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            // Generate random code
+            var code = Math.floor(100000 + Math.random() * 900000);
+
+            async.waterfall([
+                function(callback){
+                    user_helper.find_user_by_phone(req.body.phone,function(user_resp){
+                        if (user_resp.status === 0) {
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
+                        } else if (user_resp.status === 404) {
+                            callback({"status": config.BAD_REQUEST, "err": "User not exist"});
+                        } else {
+                            callback(null, user_resp.user);
+                        }
+                    });
+                },
+                function(user,callback){
+                    twilio_helper.sendSMS(user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
+                        if(sms_data.status === 0){
+                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
+                        } else {
+                            callback(null,user);
+                        }
+                    });
+                },
+                function(user,callback){
+                    user_obj = {
+                        "otp":code,
+                        "phone_verified":false
+                    };
+                    user_helper.update_user_by_id(user._id,user_obj,function(user_data){
+                        if (user_data.status === 0) {
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in saving otp in database"});
+                        } else if (user_data.status === 2) {
+                            callback({"status": config.BAD_REQUEST, "err": "There was an issue in saving otp in database"});
+                        } else {
+                            callback(null,{"message":"OTP has been sent successfully"});
+                        }
+                    })
+                }
+            ],function(err,result){
+                if (err) {
+                    res.status(err.status).json({"message": err.err});
+                } else {
+                    res.status(config.OK_STATUS).json(result);
+                }
+            });
+        } else {
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
+
+/**
+ * @api {post} /verifyotp Verify OTP
+ * @apiName Otp verification
+ * @apiGroup Root
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * 
+ * @apiParam {string} phone Phone number of user
+ * @apiParam {Number} otp Random six digit code
+ * 
+ * @apiSuccess (Success 200) {String} message Success message.
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post('/verifyotp', function (req, res) {
+    var schema = {
+        'phone': {
+            notEmpty: true,
+            errorMessage: "Phone number is required."
+        },
+        'otp': {
+            notEmpty: true,
+            errorMessage: "OTP is required."
+        }
+    };
+    req.checkBody(schema);
+    
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            async.waterfall([
+                function(callback){
+                    user_helper.find_user_by_phone(req.body.phone,function(user_resp){
+                        if (user_resp.status === 0) {
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
+                        } else if (user_resp.status === 404) {
+                            callback({"status": config.BAD_REQUEST, "err": "User not exist"});
+                        } else {
+                            if(user_resp.user.phone_verified === true) {
+                                callback({"status":config.BAD_REQUEST,"err":"Phone number is already verified"});
+                            } else if(user_resp.user.otp != req.body.otp) {
+                                callback({"status":config.BAD_REQUEST,"err":"Invalid otp"});
+                            } else {
+                                callback(null,user_resp.user);
+                            }
+                        }
+                    });
+                },
+                function(user,callback){
+                    user_helper.update_user_by_id(user._id,{"otp":"","phone_verified":true},function(user_data){
+                        if (user_data.status === 0) {
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in updating otp details in database"});
+                        } else if (user_data.status === 2) {
+                            callback({"status": config.BAD_REQUEST, "err": "There was an issue in updating otp details in database"});
+                        } else {
+                            callback(null,{"message":"OTP has been verified successfully"});
+                        }
+                    });
+                }
+            ],function(err,result){
+                if (err) {
+                    res.status(err.status).json({"message": err.err});
+                } else {
+                    res.status(config.OK_STATUS).json(result);
+                }
+            });
+        } else {
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
 
 module.exports = router;

@@ -29,6 +29,7 @@ twilio_helper.sendSMS = function (to, msg, callback) {
         body: msg
     }, function (error, message) {
         if (!error) {
+            console.log("message : ",message);
             callback({"status":1,"message":"Message has been sent"});
         } else {
             callback({"status":0,"err":error});

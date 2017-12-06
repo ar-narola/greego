@@ -52,6 +52,32 @@ user_helper.find_user_by_id = function(user_id,callback){
 };
 
 /*
+ * find_user_by_phone is used to fetch single user by phone number
+ * 
+ * @param   phone   Specify phone number of user
+ * 
+ * @return  status  0 - If any error occur in finding user, with error
+ *          status  1 - If User found, with found user document
+ *          status  404 - If User not found, with appropriate error message
+ * 
+ * @developed by "ar"
+ */
+user_helper.find_user_by_phone = function(phone,callback){
+    User.findOne({ phone: phone }).lean().exec(function (err, user_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(user_data){
+                callback({"status":1,"user":user_data});
+            } else {
+                callback({"status":404,"err":"User not available"});
+            }
+        }
+    });
+};
+
+
+/*
  * insert_user is used to insert user in database
  * 
  * @param   user_object     JSON object consist of all property that need to insert in collection
