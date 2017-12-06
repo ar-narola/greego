@@ -119,7 +119,7 @@ router.put('/update', function (req, res) {
     logger.trace("API - User profile update API called");
     logger.debug("req.body = ",req.body);
     logger.debug("req.files = ",req.files);
-    logger.debug("req.files = ",req.files['avatar']);
+    logger.debug("req.files = ",req.files.avatar);
     
     async.waterfall([
         function (callback) {
@@ -158,7 +158,7 @@ router.put('/update', function (req, res) {
         function (user, callback) {
             // Upload user avatar
             logger.trace("Going to chk file");
-            if (req.files && req.files['avatar']) {
+            if (req.files && req.files.avatar) {
                 logger.trace("Avatar is available");
                 var file = req.files['avatar'];
                 var dir = "./uploads/user_avatar";
