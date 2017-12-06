@@ -231,7 +231,7 @@ router.put('/update', function (req, res) {
         if (err) {
             res.status(err.status).json({"message": err.err});
         } else {
-            res.status(config.OK_STATUS).json({"message": "Registration done successfully"});
+            res.status(config.OK_STATUS).json({"message": "Profile information has been updated successfully"});
         }
     });
 });
