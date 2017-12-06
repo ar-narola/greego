@@ -125,7 +125,7 @@ router.put('/update', function (req, res) {
                         callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                     } else if (user_resp.status === 1) {
                         if (req.userInfo.email == req.body.email) {
-                            callback(null, user_resp.user);
+                            callback(null);
                         } else {
                             callback({"status": config.BAD_REQUEST, "err": "User with given email is already exist"});
                         }
