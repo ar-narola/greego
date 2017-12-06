@@ -67,4 +67,40 @@ router.put('/update', function (req, res) {
     }*/
 });
 
+/**
+ * @api {get} /driver/get_details Get Driver details of current logged in driver
+ * @apiName Get Driver details of current logged in driver
+ * @apiGroup Driver
+ * 
+ * @apiHeader {String}  x-access-token User's unique access-key
+ * 
+ * @apiSuccess (Success 200) {JSON} driver Driver details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/get_details',function(req,res){
+    driver_helper.find_driver_by_id(req.userInfo.driver_id,function(driver_data){
+        if(driver_data.status === 0){
+            res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in finding driver"});
+        } else if(driver_data.status === 404){
+            res.status(config.BAD_REQUEST).json({"message":"No driver found"});
+        } else {
+            var ret_driver = {
+                "_id":driver_data.driver._id,
+                "first_name":driver_data.driver.first_name,
+                "last_name":driver_data.driver.last_name,
+                "email":driver_data.driver.email,
+                "phone":driver_data.driver.phone,
+                "transmission_type":driver_data.driver.transmission_type,
+                "ssn":driver_data.driver.ssn,
+                "driver_avatar":driver_data.driver.driver_avatar,
+                "drive_type":driver_data.driver.drive_type,
+                "current_lat":driver_data.driver.current_lat,
+                "current_long":driver_data.driver.current_long,
+                "avg_rate":driver_data.driver.rate.avg_rate
+            }
+            res.status(config.OK_STATUS).json(ret_driver);
+        }
+    });
+});
+
 module.exports = router;

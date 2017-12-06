@@ -4,6 +4,14 @@ var mongoose = require('mongoose');
 //Define a schema
 var Schema = mongoose.Schema;
 
+var CarSchema = new Schema({
+    brand: String,
+    model: String,
+    color: String,
+    plate_number: String,
+    transmission_type: {type: String, enum: ["Automatic", "Manual"]},
+});
+
 var CardSchema = new Schema({
     card : mongoose.Schema.Types.ObjectId,
     is_default : Boolean
@@ -33,7 +41,7 @@ var UserSchema = new Schema({
     current_lat: String,
     current_long: String,
     emergency_contact : String,
-    car : mongoose.Schema.Types.ObjectId,
+    car : CarSchema,
     card: [CardSchema],
     rate : RateSchema,
     driver_id : mongoose.Schema.Types.ObjectId,

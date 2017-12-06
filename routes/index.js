@@ -89,7 +89,7 @@ router.post('/user_login', function (req, res) {
                         var refreshToken = jwt.sign({id: user._id, role: user.role}, config.REFRESH_TOKEN_SECRET_KEY, {});
                         user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken, "last_login_date": Date.now()}, function (update_resp) {
                             if (update_resp.status === 1) {
-                                var userJson = {id: user._id, email: user.email, role: "rider"};
+                                var userJson = {id: user._id, email: user.email, role: user.role};
                                 var token = jwt.sign(userJson, config.ACCESS_TOKEN_SECRET_KEY, {
                                     expiresIn: 60 * 60 * 24 // expires in 24 hours
                                 });
@@ -144,7 +144,11 @@ router.post('/user_login', function (req, res) {
  * @apiParam {String} phone Phone number of user
  * @apiParam {String} password Password
  * @apiParam {File} [avatar] Profile image of user
- * @apiParam {String} [car_id] Reference of selected car
+ * @apiParam {String} car_brand Car brand name
+ * @apiParam {String} car_model Car model name
+ * @apiParam {String} car_color Car color
+ * @apiParam {String} plate_number Plate number of car
+ * @apiParam {String} transmission_type Transmission type of car
  * 
  * @apiDescription  You need to pass form-data
  * 
@@ -175,10 +179,26 @@ router.post('/user_signup', function (req, res) {
             notEmpty: true,
             errorMessage: "Password is required"
         },
-//        'car_id': {
-//            notEmpty: true,
-//            errorMessage: "Car reference is required"
-//        }
+        'car_brand': {
+            notEmpty: true,
+            errorMessage: "Car brand is required"
+        },
+        'car_model': {
+            notEmpty: true,
+            errorMessage: "Car model is required"
+        },
+        'car_color': {
+            notEmpty: true,
+            errorMessage: "Car color is required"
+        },
+        'plate_number': {
+            notEmpty: true,
+            errorMessage: "Plate number is required"
+        },
+        'transmission_type': {
+            notEmpty: true,
+            errorMessage: "Transmission type is required"
+        }
     };
     req.checkBody(schema);
 
@@ -186,23 +206,6 @@ router.post('/user_signup', function (req, res) {
         if (result.isEmpty()) {
             logger.trace("Request is valid. ");
             async.waterfall([
-                /*
-                function (callback) {
-                    // Check for valid car reference
-                    logger.trace("Check for valid car reference");
-                    car_helper.find_car_by_id(req.body.car_id, function (car_resp) {
-                        if (car_resp.status === 0) {
-                            logger.error("Error occured in finding car by id in user signup. Err = ",car_resp.err);
-                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": car_resp.err});
-                        } else if (car_resp.status === 404) {
-                            logger.info("Car not found in user signup.");
-                            callback({"status": config.BAD_REQUEST, "err": car_resp.err});
-                        } else {
-                            logger.trace("Car found. Executing next instruction");
-                            callback(null);
-                        }
-                    });
-                },*/
                 function (callback) {
                     // Car reference is valid, Check user validity
                     user_helper.find_user_by_email(req.body.email, function (user_resp) {
@@ -260,7 +263,13 @@ router.post('/user_signup', function (req, res) {
                         "phone": req.body.phone,
                         "password": req.body.password,
                         "role":"rider",
-//                        "car": req.body.car_id
+                        "car":{
+                            "brand":req.body.car_brand,
+                            "model":req.body.car_model,
+                            "color":req.body.car_color,
+                            "plate_number":req.body.plate_number,
+                            "transmission_type":req.body.transmission_type
+                        }
                     };
 
                     if (image_name) {
@@ -785,8 +794,7 @@ router.post('/send_link_for_forget_password',function(req,res){
                     
                     var msg = "Hi <b>"+user.first_name+",</b><br/><br/>";
                     msg += "You recently requested to reset your password for your greego account.<br/>";
-                    //msg += "Click on <a href='http://localhost:3000/reset_password/"+user._id+"'>http://localhost:3000/reset_password/"+user._id+"</a> to reset it.<br/><br/>";
-					msg += "Click on <a href=/"+config.SITE_URL+'reset_password/'+user._id+"'>"+config.SITE_URL+'reset_password/'+user._id+"</a> to reset it.<br/><br/>";
+                    msg += "Click on <a href=/"+config.SITE_URL+'reset_password/'+user._id+"'>"+config.SITE_URL+'reset_password/'+user._id+"</a> to reset it.<br/><br/>";
                     msg += "Thanks,<br/>Greego Team<hr/>";
                     msg += "<h5>If you're having trouble clicking the given link, copy and paste URL into your web browser.<br/>";
                     msg += "If you did not request a password reset, please reply to let us know.</h5>"
@@ -929,5 +937,6 @@ router.get('/car_model_by_brand',function(req,res){
         res.status(config.VALIDATION_FAILURE_STATUS).json({"message":"Brand name is required"});
     }
 });
+
 
 module.exports = router;

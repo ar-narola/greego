@@ -6,6 +6,7 @@ module.exports = function (req, res, next) {
         next();
     } else if (req.decoded.role == "driver" && req.baseUrl.match('/driver')) {
         req.driverInfo = req.decoded;
+        req.userInfo = req.decoded;
         next();
     } else if (req.decoded.role == "both") {
         req.userInfo = req.decoded;
