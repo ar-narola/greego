@@ -116,9 +116,14 @@ router.put('/update', function (req, res) {
         }
     });
     */
+    logger.trace("API - User profile update API called");
+    logger.debug("req.body = ",req.body);
+    logger.debug("req.files = ",req.files);
+    
     async.waterfall([
         function (callback) {
             if(req.body.email){
+                logger.trace("Email available, updating email");
                 // Car reference is valid, Check user validity
                 user_helper.find_user_by_email(req.body.email, function (user_resp) {
                     if (user_resp.status === 0) {
@@ -151,12 +156,15 @@ router.put('/update', function (req, res) {
         },
         function (user, callback) {
             // Upload user avatar
+            logger.trace("Going to chk file");
             if (req.files && req.files['avatar']) {
+                logger.trace("Avatar is available");
                 var file = req.files['avatar'];
                 var dir = "./uploads/user_avatar";
                 var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
                 if (mimetype.indexOf(file.mimetype) != -1) {
+                    logger.trace("Uploading image");
                     if (!fs.existsSync(dir)) {
                         fs.mkdirSync(dir);
                     }
@@ -164,19 +172,24 @@ router.put('/update', function (req, res) {
                     filename = "user_" + new Date().getTime() + extention;
                     file.mv(dir + '/' + filename, function (err) {
                         if (err) {
+                            logger.trace("Problem in uploading image");
                             callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
                         } else {
+                            logger.trace("Image uploaded");
                             callback(null, user, filename);
                         }
                     });
                 } else {
+                    logger.trace("Invalid image format");
                     callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
                 }
             } else {
+                logger.trace("Avatar is not available");
                 callback(null, user, null);
             }
         },
         function (user, image_name, callback) {
+            logger.trace("Updating user info");
             // User updation
             var user_obj = {};
 
@@ -219,15 +232,19 @@ router.put('/update', function (req, res) {
 
             user_helper.update_user_by_id(req.userInfo.id, user_obj, function (user_data) {
                 if (user_data.status === 0) {
+                    logger.trace("Interna; error : ",user_data);
                     callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in user registration"});
                 } else if (user_data.status === 2) {
+                    logger.trace("Bad request (User update) : ",user_data);
                     callback({"status": config.BAD_REQUEST, "err": "There was an issue in user registration"});
                 } else {
+                    logger.trace("Profile updated");
                     callback(null);
                 }
             });
         }
     ], function (err, result) {
+        logger.trace("execution finished");
         if (err) {
             res.status(err.status).json({"message": err.err});
         } else {
