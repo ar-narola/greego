@@ -9,10 +9,16 @@ module.exports = {
 	"SITE_URL": "http://clientapp.narola.online/HD/greego/",
     "database": "mongodb://127.0.0.1:27017/greego",
     //"database": "mongodb://greego:greego_2017@52.45.35.157/greego?authSource=greego",
-    // Twilio account
-    "TWILIO_ACCOUNT_SID" : "AC6d02aad8e7113fc6aebd76570d6b5ad4",//"ACd2286c4bd0f56430aaceb3620da03475",
-    "TWILIO_AUTH_TOKEN" : "b50f8eedf3b2454dff62fbd740083984",//"4a916cd762a6da67a7defc1a2cf3918a",
-    "TWILIO_NUMBER" : "+15622100010",
+
+    // Twilio account Test
+    "TWILIO_ACCOUNT_SID" : "ACd2286c4bd0f56430aaceb3620da03475",//"",
+    "TWILIO_AUTH_TOKEN" : "4a916cd762a6da67a7defc1a2cf3918a",//"",
+    "TWILIO_NUMBER" : "+15005550006",
+
+    // Twilio account Production
+//    "TWILIO_ACCOUNT_SID" : "AC6d02aad8e7113fc6aebd76570d6b5ad4",//"ACd2286c4bd0f56430aaceb3620da03475",
+//    "TWILIO_AUTH_TOKEN" : "b50f8eedf3b2454dff62fbd740083984",//"4a916cd762a6da67a7defc1a2cf3918a",
+//    "TWILIO_NUMBER" : "+15622100010",
     
     "ACCESS_TOKEN_SECRET_KEY": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "REFRESH_TOKEN_SECRET_KEY": "ZYXWVUTSRQPONMLKJIHGFEDCBA",
