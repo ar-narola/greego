@@ -119,6 +119,7 @@ router.put('/update', function (req, res) {
     logger.trace("API - User profile update API called");
     logger.debug("req.body = ",req.body);
     logger.debug("req.files = ",req.files);
+    logger.debug("req.files = ",req.files['avatar']);
     
     async.waterfall([
         function (callback) {
