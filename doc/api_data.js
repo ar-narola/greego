@@ -512,6 +512,68 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/user/phone_availability",
+    "title": "Check phone availability for user/driver signup",
+    "name": "Phone_availability",
+    "group": "Root",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "phone",
+            "description": "<p>Phone number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message (User available)</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message. (Any error or user not available)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/index.js",
+    "groupTitle": "Root"
+  },
+  {
+    "type": "post",
     "url": "/phone_availability",
     "title": "Check phone availability for user/driver signup",
     "name": "Phone_availability",

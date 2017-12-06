@@ -789,8 +789,8 @@ router.post('/phone_availability', function (req, res) {
                     logger.info("User with given phone number is already exist.");
                     res.status(config.BAD_REQUEST).json({"message":"User with given phone number is already exist"});
                 } else {
-                    logger.trace("User found");
-                    res.status(config.OK_STATUS).json({"message":"User available"});
+                    logger.trace("Phone number is available");
+                    res.status(config.OK_STATUS).json({"message":"Phone number is available"});
                 }
             });
         } else {

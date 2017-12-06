@@ -76,6 +76,31 @@ user_helper.find_user_by_phone = function(phone,callback){
     });
 };
 
+/*
+ * chk_phone_for_user is used to fetch single user by phone number
+ * 
+ * @param   phone   Specify phone number of user
+ * @param   user_id Specify user id of user
+ * 
+ * @return  status  0 - If any error occur in finding user, with error
+ *          status  1 - If User found, with found user document
+ *          status  404 - If User not found, with appropriate error message
+ * 
+ * @developed by "ar"
+ */
+user_helper.chk_phone_for_user = function(phone,user_id,callback){
+    User.findOne({ phone: phone,_id:{$ne:user_id} }).lean().exec(function (err, user_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(user_data){
+                callback({"status":1,"user":user_data});
+            } else {
+                callback({"status":404,"err":"User not available"});
+            }
+        }
+    });
+};
 
 /*
  * insert_user is used to insert user in database

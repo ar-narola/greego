@@ -471,4 +471,55 @@ router.get('/get_details',function(req,res){
     });
 });
 
+/**
+ * @api {post} /user/phone_availability Check phone availability for user/driver signup
+ * @apiName Phone availability
+ * @apiGroup Root
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * 
+ * @apiParam {String} phone Phone number
+ * 
+ * @apiSuccess (Success 200) {String} message Success message (User available)
+ * @apiError (Error 4xx) {String} message Validation or error message. (Any error or user not available)
+ */
+router.post('/phone_availability', function (req, res) {
+    logger.trace("API - User's Phone availability called");
+    logger.debug("req.body = ",req.body);
+    var schema = {
+        'phone': {
+            notEmpty: true,
+            errorMessage: "Phone number is required"
+        },
+    };
+    req.checkBody(schema);
+
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            logger.trace("Request is valid. ");
+            // Check email availability for user role
+            user_helper.chk_phone_for_user(req.body.phone,req.userInfo.id, function (user_resp) {
+                if (user_resp.status === 0) {
+                    logger.error("Error occured in finding user by phone. Err = ",user_resp.err);
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
+                } else if (user_resp.status === 1) {
+                    logger.info("User with given phone number is already exist.");
+                    res.status(config.BAD_REQUEST).json({"message":"User with given phone number is already exist"});
+                } else {
+                    logger.trace("Phone number is available");
+                    res.status(config.OK_STATUS).json({"message":"Phone number is available"});
+                }
+            });
+        } else {
+            logger.error("Validation error ",result);
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
+
+
 module.exports = router;
