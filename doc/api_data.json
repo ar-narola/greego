@@ -1,6 +1,55 @@
 [
   {
     "type": "get",
+    "url": "/driver/get_details",
+    "title": "Get Driver details of current logged in driver",
+    "name": "Get_Driver_details_of_current_logged_in_driver",
+    "group": "Driver",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "driver",
+            "description": "<p>Driver details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/driver/index.js",
+    "groupTitle": "Driver"
+  },
+  {
+    "type": "get",
     "url": "/driver/notification",
     "title": "Get notification",
     "name": "Get_notification",
@@ -273,13 +322,6 @@
             "optional": false,
             "field": "email",
             "description": "<p>Email address</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "role",
-            "description": "<p>User's role (user/driver)</p>"
           }
         ]
       }
@@ -731,9 +773,37 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
-            "field": "car_id",
-            "description": "<p>Reference of selected car</p>"
+            "optional": false,
+            "field": "car_brand",
+            "description": "<p>Car brand name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "car_model",
+            "description": "<p>Car model name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "car_color",
+            "description": "<p>Car color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "plate_number",
+            "description": "<p>Plate number of car</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "transmission_type",
+            "description": "<p>Transmission type of car</p>"
           }
         ]
       }
