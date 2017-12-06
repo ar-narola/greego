@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Car_model = require("../models/car_model");
 var car_model_helper = {};
 
@@ -64,7 +65,12 @@ car_model_helper.get_car_model_by_brand = function(brand,callback){
             callback({"status":0,"err":err});
         } else {
             if(car_data && car_data.length > 0){
-                callback({"status":1,"car_model":car_data});
+                
+                var cars = _.uniq(car_data,function(car){
+                    return car.model;
+                })
+                
+                callback({"status":1,"car_model":cars});
             } else {
                 callback({"status":404,"err":"Car model not available for given car"});
             }
