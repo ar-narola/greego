@@ -2199,14 +2199,14 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "email",
             "description": "<p>Email address</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "phone",
             "description": "<p>Phone number of user</p>"
           },
@@ -2234,9 +2234,37 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
-            "field": "car_id",
-            "description": "<p>Reference of selected car</p>"
+            "optional": true,
+            "field": "car_brand",
+            "description": "<p>Car brand name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "car_model",
+            "description": "<p>Car model name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "car_color",
+            "description": "<p>Car color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "plate_number",
+            "description": "<p>Plate number of car</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "transmission_type",
+            "description": "<p>Transmission type of car</p>"
           }
         ]
       }

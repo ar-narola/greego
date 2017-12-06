@@ -81,11 +81,11 @@ router.post('/feedback', function (req, res) {
  * @apiParam {String} [password] Password
  * @apiParam {File} [avatar] Profile image of user
  * @apiParam {String} [emergency_contact] Emergency contact number
- * @apiParam {String} car_brand Car brand name
- * @apiParam {String} car_model Car model name
- * @apiParam {String} car_color Car color
- * @apiParam {String} plate_number Plate number of car
- * @apiParam {String} transmission_type Transmission type of car
+ * @apiParam {String} [car_brand] Car brand name
+ * @apiParam {String} [car_model] Car model name
+ * @apiParam {String} [car_color] Car color
+ * @apiParam {String} [plate_number] Plate number of car
+ * @apiParam {String} [transmission_type] Transmission type of car
  * 
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
