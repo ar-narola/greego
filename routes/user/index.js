@@ -168,8 +168,9 @@ router.put('/update', function (req, res) {
                     if (!fs.existsSync(dir)) {
                         fs.mkdirSync(dir);
                     }
-                    extention = path.extname(file.name);
-                    filename = "user_" + new Date().getTime() + extention;
+//                    extension = path.extname(file.name);
+                    extension = ".jpg";
+                    filename = "user_" + new Date().getTime() + extension;
                     file.mv(dir + '/' + filename, function (err) {
                         if (err) {
                             logger.trace("Problem in uploading image");
@@ -242,13 +243,38 @@ router.put('/update', function (req, res) {
                     callback(null);
                 }
             });
-        }
+        },
+        function(callback){
+            // Find user by id
+            user_helper.find_user_by_id(req.userInfo.id, function (user_data) {
+                if (user_data.status === 0) {
+                    callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_data.err});
+                } else if (user_data.status === 404) {
+                    callback({"status": config.BAD_REQUEST, "err": "User not exist"});
+                } else {
+                    var ret_user = {
+                        "_id":user_data.user._id,
+                        "first_name":user_data.user.first_name,
+                        "last_name":user_data.user.last_name,
+                        "email":user_data.user.email,
+                        "phone":user_data.user.phone,
+                        "role":user_data.user.role,
+                        "user_avatar":(user_data.user.user_avatar)?user_data.user.user_avatar:null,
+                        "current_lat":user_data.user.current_lat,
+                        "current_long":user_data.user.current_long,
+                        "cards":user_data.user.card,
+                        "avg_rate":(user_data.user.rate && user_data.user.rate.avg_rate)?user_data.user.rate.avg_rate:null
+                    }
+                    callback(null,ret_user);
+                }
+            });
+        },
     ], function (err, result) {
         logger.trace("execution finished");
         if (err) {
             res.status(err.status).json({"message": err.err});
         } else {
-            res.status(config.OK_STATUS).json({"message": "Profile information has been updated successfully"});
+            res.status(config.OK_STATUS).json({"message": "Profile information has been updated successfully","user":result});
         }
     });
 });
@@ -501,7 +527,7 @@ router.get('/get_details',function(req,res){
 /**
  * @api {post} /user/phone_availability Check phone availability for user/driver signup
  * @apiName Phone availability
- * @apiGroup Root
+ * @apiGroup User
  * 
  * @apiHeader {String}  Content-Type application/json
  * 
@@ -548,5 +574,71 @@ router.post('/phone_availability', function (req, res) {
     });
 });
 
+/**
+ * @api {post} /user/change_password Change password
+ * @apiName Change password
+ * @apiGroup User
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * 
+ * @apiParam {String} old_password Old password of user
+ * @apiParam {String} new_password New password of user
+ * 
+ * @apiSuccess (Success 200) {String} message Success message (User available)
+ * @apiError (Error 4xx) {String} message Validation or error message. (Any error or user not available)
+ */
+router.post('/change_password',function(req,res){
+    logger.trace("API - Change password called");
+    logger.debug("req.body = ",req.body);
+    var schema = {
+        'old_password': {
+            notEmpty: true,
+            errorMessage: "Old password is required"
+        },
+        'new_password': {
+            notEmpty: true,
+            errorMessage: "New password is required"
+        }
+    };
+    req.checkBody(schema);
+
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            logger.trace("Request is valid. ");
+            // Check email availability for user role
+            user_helper.find_user_by_id(req.userInfo.id, function (user_resp) {
+                if (user_resp.status === 0) {
+                    logger.error("Error occured in finding user. Err = ",user_resp.err);
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
+                } else if (user_resp.status === 1) {
+                    if(req.body.old_password == user_resp.user.password){
+                        user_helper.update_user_by_id(req.userInfo.id,{"password":req.body.new_password},function(resp){
+                            if(resp.status === 0){
+                                res.status(config.BAD_REQUEST).json({"message":"Something went wrong while updating password."});
+                            } else if(resp.status === 2){
+                                res.status(config.BAD_REQUEST).json({"message":"Old password and new password can't be same"});
+                            } else {
+                                // Valid request. Password updated
+                                res.status(config.OK_STATUS).json({"message":"Password has been changed"});
+                            }
+                        })
+                    } else {
+                        res.status(config.BAD_REQUEST).json({"message":"Old password is incorrect"});
+                    }
+                } else {
+                    logger.info("User not available (Change password API).");
+                    res.status(config.BAD_REQUEST).json({"message":"User not exist"});
+                }
+            });
+        } else {
+            logger.error("Validation error ",result);
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
 
 module.exports = router;

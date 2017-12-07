@@ -11,6 +11,7 @@ var RateSchema = new Schema({
 });
 
 var DriverSchema = new Schema({
+    residential_status: {type: String,enum:["Citizen","Greencard","Visa"]},
     drive_type: [{type: String, enum: ["Sedan", "SUV", "Van"]}],
     transmission_type: {type: String, enum: ["Automatic", "Manual"]},
     license: String,
@@ -21,14 +22,10 @@ var DriverSchema = new Schema({
     bank_routing_no: String,
     bank_account_no: String,
     ssn: String,
-
     rate : RateSchema,
-
-    residential_status: {type: String,enum:["Citizen","Greencard","Visa"]},
     location_updated_at: Date,
-
-//    current_lat: String,
-//    current_long: String,
+    current_lat: String,
+    current_long: String,
 }, {versionKey: false});
 
 // Compile model from schema

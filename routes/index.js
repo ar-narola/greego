@@ -396,11 +396,14 @@ router.get('/refresh_token', function (req, res) {
  * @apiParam {String} password Password
  * @apiParam {String} residential_status Value should be from "Citizen", "Greencard" or "Visa"
  * @apiParam {File} [avatar] Profile image of user
+ * 
  * @apiParam {Array} [drive_type] Array of string can have value from "Sedan", "SUV" and "Van"
  * @apiParam {String} [transmission_type] Value can be either "Automatic" or "Manual"
  * @apiParam {File} [license] Image of license
  * @apiParam {File} [birth_certi] Image of Birth certificate or passport
- * @apiParam {File} [insurance] Image of insurance
+ * @apiParam {File} [home_insurance] Image of home insurance
+ * @apiParam {File} [auto_insurance] Image of auto insurance
+ * @apiParam {File} [pay_stub] Image of Uber pay stub
  * @apiParam {String} [bank_routing_no] Bank routing number
  * @apiParam {String} [bank_account_no] Bank account number
  * @apiParam {String} [ssn] Social security number
@@ -469,11 +472,11 @@ router.post('/driver_signup', function (req, res) {
                 async.waterfall([
                     function (callback) {
                         // Check driver's validity
-                        logger.trace("Check driver's validity");
+                        logger.trace("Check driver's validity - by email");
                         // Car reference is valid, Check user validity
                         user_helper.find_user_by_email(req.body.email, function (user_resp) {
                             if (user_resp.status === 0) {
-                                logger.error("Error occured in finding user by email in user signup. Err = ",user_resp.err);
+                                logger.error("Error occured in finding user by email in driver signup. Err = ",user_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                             } else if (user_resp.status === 1) {
                                 logger.info("User with given email is already exist.");
@@ -484,10 +487,26 @@ router.post('/driver_signup', function (req, res) {
                             }
                         });
                     },
+                    function (callback) {
+                        // Check driver's validity
+                        logger.trace("Check driver's validity - by phone");
+                        user_helper.find_user_by_phone(req.body.phone, function (user_resp) {
+                            if (user_resp.status === 0) {
+                                logger.error("Error occured in finding user by phone in driver signup. Err = ",user_resp.err);
+                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
+                            } else if (user_resp.status === 1) {
+                                logger.info("User with given phone number is already exist.");
+                                callback({"status": config.BAD_REQUEST, "err": "User with given phone number is already exist"});
+                            } else {
+                                logger.trace("User found. Executing next instruction");
+                                callback(null);
+                            }
+                        });
+                    },
                     function(callback){
-                        if(req.files && req.files['license'] && req.files['birth_certi'] && req.files['insurance']){
-                            async.parallel({
-                                license:function(inner_callback){
+                        async.parallel({
+                            license:function(inner_callback){
+                                if(req.files & req.files['license']){
                                     var file = req.files['license'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -496,7 +515,8 @@ router.post('/driver_signup', function (req, res) {
                                         if (!fs.existsSync(dir)) {
                                             fs.mkdirSync(dir);
                                         }
-                                        var extention = path.extname(file.name);
+                                        //var extention = path.extname(file.name);
+                                        var extention = '.jpg';
                                         var filename = "license_" + new Date().getTime() + extention;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
@@ -508,8 +528,12 @@ router.post('/driver_signup', function (req, res) {
                                     } else {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of license invalid"});
                                     }
-                                },
-                                birth_certi : function(inner_callback){
+                                } else {
+                                    inner_callback(null, null);
+                                }
+                            },
+                            birth_certi : function(inner_callback){
+                                if(req.files & req.files['birth_certi']){
                                     var file = req.files['birth_certi'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -530,9 +554,13 @@ router.post('/driver_signup', function (req, res) {
                                     } else {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of birth certificate is invalid"});
                                     }
-                                },
-                                insurance : function(inner_callback){
-                                    var file = req.files['insurance'];
+                                } else {
+                                    inner_callback(null,null);
+                                }
+                            },
+                            home_insurance : function(inner_callback){
+                                if(req.files & req.files['home_insurance']){
+                                    var file = req.files['home_insurance'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
@@ -541,10 +569,10 @@ router.post('/driver_signup', function (req, res) {
                                             fs.mkdirSync(dir);
                                         }
                                         var extention = path.extname(file.name);
-                                        var filename = "insurance_" + new Date().getTime() + extention;
+                                        var filename = "home_insurance_" + new Date().getTime() + extention;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
-                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of insurance"});
+                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
                                             } else {
                                                 inner_callback(null, filename);
                                             }
@@ -552,49 +580,76 @@ router.post('/driver_signup', function (req, res) {
                                     } else {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of insurance is invalid"});
                                     }
-                                }
-                            },function(err,results){
-                                if(err){
-                                    callback(err.resp);
                                 } else {
-                                    callback(null,results);
+                                    inner_callback(null,null);
                                 }
-                            });
-                        } else {
-                            callback(null,null);
-                        }
-                    },
-                    function (image_names,callback) {
-                        // Upload driver avatar
-                        if (req.files && req.files['avatar']) {
-                            logger.trace("Uploading avatar image");
-                            var file = req.files['avatar'];
-                            var dir = "./uploads/user_avatar";
-                            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+                            },
+                            auto_insurance : function(inner_callback){
+                                if(req.files & req.files['auto_insurance']){
+                                    var file = req.files['auto_insurance'];
+                                    var dir = "./uploads/driver_doc";
+                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-                            if (mimetype.indexOf(file.mimetype) != -1) {
-                                if (!fs.existsSync(dir)) {
-                                    fs.mkdirSync(dir);
-                                }
-                                extention = path.extname(file.name);
-                                filename = "user_" + new Date().getTime() + extention;
-                                file.mv(dir + '/' + filename, function (err) {
-                                    if (err) {
-                                        logger.trace("There was an issue in uploading image");
-                                        callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                                    if (mimetype.indexOf(file.mimetype) !== -1) {
+                                        if (!fs.existsSync(dir)) {
+                                            fs.mkdirSync(dir);
+                                        }
+                                        var extension = '.jpg';
+                                        var filename = "auto_insurance_" + new Date().getTime() + extension;
+                                        file.mv(dir + '/' + filename, function (err) {
+                                            if (err) {
+                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
+                                            } else {
+                                                inner_callback(null, filename);
+                                            }
+                                        });
                                     } else {
-                                        logger.trace("Avatar image has uploaded for driver");
-                                        image_names.avatar = filename;
-                                        callback(null, image_names);
+                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of auto insurance is invalid"});
                                     }
-                                });
-                            } else {
-                                callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+                                } else {
+                                    inner_callback(null,null);
+                                }
+                            },
+                            avatar:function(inner_callback){
+                                // Upload driver avatar
+                                if (req.files && req.files['avatar']) {
+                                    logger.trace("Uploading avatar image");
+                                    var file = req.files['avatar'];
+                                    var dir = "./uploads/user_avatar";
+                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+
+                                    if (mimetype.indexOf(file.mimetype) != -1) {
+                                        if (!fs.existsSync(dir)) {
+                                            fs.mkdirSync(dir);
+                                        }
+//                                        extension = path.extname(file.name);
+                                        var extension = '.jpg';
+                                        filename = "user_" + new Date().getTime() + extension;
+                                        file.mv(dir + '/' + filename, function (err) {
+                                            if (err) {
+                                                logger.trace("There was an issue in uploading image");
+                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading avatar of user"});
+                                            } else {
+                                                logger.trace("Avatar image has uploaded for driver");
+                                                inner_callback(null, filename);
+                                            }
+                                        });
+                                    } else {
+                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of avatar is invalid"});
+                                    }
+                                } else {
+                                    inner_callback(null, null);
+                                }
                             }
-                        } else {
-                            callback(null, image_names);
-                        }
+                        },function(err,results){
+                            if(err){
+                                callback(err.resp);
+                            } else {
+                                callback(null,results);
+                            }
+                        });
                     },
+                    
                     function (image_names, callback) {
                         // Driver Insertion
                         logger.trace("Inserting driver in db");
@@ -623,16 +678,19 @@ router.post('/driver_signup', function (req, res) {
                         if(req.body.ssn){
                             driver_obj.ssn = req.body.ssn;
                         }
-                        if(image_names && image_names.license){
+                        if(image_names && image_names.license && image_names.license != null){
                             driver_obj.license = image_names.license;
                         }
-                        if(image_names && image_names.birth_certi){
+                        if(image_names && image_names.birth_certi && image_names.birth_certi != null){
                             driver_obj.birth_certi = image_names.birth_certi;
                         }
-                        if(image_names && image_names.insurance){
-                            driver_obj.insurance = image_names.insurance;
+                        if(image_names && image_names.home_insurance && image_names.home_insurance != null){
+                            driver_obj.home_insurance = image_names.home_insurance;
                         }
-                        if (image_names && image_names.avatar) {
+                        if(image_names && image_names.auto_insurance && image_names.auto_insurance != null){
+                            driver_obj.auto_insurance = image_names.auto_insurance;
+                        }
+                        if (image_names && image_names.avatar && image_names.avatar != null) {
                             user_obj.user_avatar = image_names.avatar;
                         }
 
