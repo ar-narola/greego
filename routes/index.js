@@ -296,7 +296,8 @@ router.post('/user_signup', function (req, res) {
                     var code = Math.floor(100000 + Math.random() * 900000);
                     twilio_helper.sendSMS(user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
                         if(sms_data.status === 0){
-                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
+//                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
+                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"Please enter phone number with country code."});
                         } else {
                             callback(null,user,code);
                         }
