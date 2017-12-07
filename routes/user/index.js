@@ -119,8 +119,7 @@ router.put('/update', function (req, res) {
     logger.trace("API - User profile update API called");
     logger.debug("req.body = ",req.body);
     logger.debug("req.files = ",req.files);
-    logger.debug("req.files = ",req.files['avatar']);
-    
+
     async.waterfall([
         function (callback) {
             if(req.body.email){
@@ -209,7 +208,7 @@ router.put('/update', function (req, res) {
             if (req.body.password) {
                 user_obj.password = req.body.password;
             }
-            if (image_name) {
+            if (image_name && image_name != null) {
                 user_obj.user_avatar = image_name;
             }
             if (req.body.emergency_contact) {
@@ -233,11 +232,11 @@ router.put('/update', function (req, res) {
 
             user_helper.update_user_by_id(req.userInfo.id, user_obj, function (user_data) {
                 if (user_data.status === 0) {
-                    logger.trace("Interna; error : ",user_data);
+                    logger.trace("Internal error : ",user_data);
                     callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in user registration"});
                 } else if (user_data.status === 2) {
-                    logger.trace("Bad request (User update) : ",user_data);
-                    callback({"status": config.BAD_REQUEST, "err": "There was an issue in user registration"});
+                    logger.trace("No information has been changed : ",user_data);
+                    callback(null);
                 } else {
                     logger.trace("Profile updated");
                     callback(null);
