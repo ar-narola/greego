@@ -293,15 +293,16 @@ router.post('/user_signup', function (req, res) {
                     });
                 },
                 function(user,callback){
+                    var code = Math.floor(100000 + Math.random() * 900000);
                     twilio_helper.sendSMS(user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
                         if(sms_data.status === 0){
                             callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
                         } else {
-                            callback(null,user);
+                            callback(null,user,code);
                         }
                     });
                 },
-                function(user,callback){
+                function(user,code,callback){
                     user_obj = {
                         "otp":code,
                         "phone_verified":false
