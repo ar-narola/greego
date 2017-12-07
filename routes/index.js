@@ -148,6 +148,7 @@ router.post('/user_login', function (req, res) {
  * @apiParam {String} car_brand Car brand name
  * @apiParam {String} car_model Car model name
  * @apiParam {String} car_color Car color
+  * @apiParam {String} [car_year] Car year
  * @apiParam {String} plate_number Plate number of car
  * @apiParam {String} transmission_type Transmission type of car
  * 
@@ -276,6 +277,10 @@ router.post('/user_signup', function (req, res) {
                     if (image_name) {
                         user_obj.user_avatar = image_name;
                     }
+                    
+                    if (req.body.car_year) {
+                        user_obj.car.year = req.body.car_year;
+                    }
 
                     user_helper.insert_user(user_obj, function (user_data) {
                         if (user_data.status === 0) {
@@ -283,9 +288,33 @@ router.post('/user_signup', function (req, res) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in user registration"});
                         } else {
                             logger.debug("User inserted. Executed next instruction");
-                            callback(null);
+                            callback(null,user_data.user);
                         }
                     });
+                },
+                function(user,callback){
+                    twilio_helper.sendSMS(user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
+                        if(sms_data.status === 0){
+                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
+                        } else {
+                            callback(null,user);
+                        }
+                    });
+                },
+                function(user,callback){
+                    user_obj = {
+                        "otp":code,
+                        "phone_verified":false
+                    };
+                    user_helper.update_user_by_id(user._id,user_obj,function(user_data){
+                        if (user_data.status === 0) {
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in saving otp in database"});
+                        } else if (user_data.status === 2) {
+                            callback({"status": config.BAD_REQUEST, "err": "There was an issue in saving otp in database"});
+                        } else {
+                            callback(null,{"message":"OTP has been sent successfully"});
+                        }
+                    })
                 }
             ], function (err, result) {
                 if (err) {
