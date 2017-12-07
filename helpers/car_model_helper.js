@@ -65,7 +65,7 @@ car_model_helper.get_car_model_by_brand = function(brand,callback){
             callback({"status":0,"err":err});
         } else {
             if(car_data && car_data.length > 0){
-                
+
                 var cars = _.uniq(car_data,function(car){
                     return car.model;
                 })
@@ -73,6 +73,34 @@ car_model_helper.get_car_model_by_brand = function(brand,callback){
                 callback({"status":1,"car_model":cars});
             } else {
                 callback({"status":404,"err":"Car model not available for given car"});
+            }
+        }
+    });
+}
+
+/*
+ * get_car_year_by_model is used to fetch all available year for given model from database
+ * 
+ * @return  status  0 - If any error occur in finding car, with error
+ *          status  1 - If car year found, with found car documents
+ *          status  404 - If car year not found, with appropriate error message
+ * 
+ * @developed by "ar"
+ */
+car_model_helper.get_car_year_by_model = function(model,callback){
+    Car_model.find({model:{$eq:model}}).lean().exec(function(err,car_data){
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(car_data && car_data.length > 0){
+
+                var cars = _.uniq(car_data,function(car){
+                    return car.year;
+                });
+
+                callback({"status":1,"car":cars});
+            } else {
+                callback({"status":404,"err":"Car year not available for given model"});
             }
         }
     });

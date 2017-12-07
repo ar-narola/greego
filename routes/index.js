@@ -516,8 +516,8 @@ router.post('/driver_signup', function (req, res) {
                                             fs.mkdirSync(dir);
                                         }
                                         //var extention = path.extname(file.name);
-                                        var extention = '.jpg';
-                                        var filename = "license_" + new Date().getTime() + extention;
+                                        var extension = '.jpg';
+                                        var filename = "license_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading license image"});
@@ -542,8 +542,9 @@ router.post('/driver_signup', function (req, res) {
                                         if (!fs.existsSync(dir)) {
                                             fs.mkdirSync(dir);
                                         }
-                                        var extention = path.extname(file.name);
-                                        var filename = "birth_" + new Date().getTime() + extention;
+//                                        var extention = path.extname(file.name);
+                                        var extension = '.jpg';
+                                        var filename = "birth_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading birth certificate image"});
@@ -568,8 +569,9 @@ router.post('/driver_signup', function (req, res) {
                                         if (!fs.existsSync(dir)) {
                                             fs.mkdirSync(dir);
                                         }
-                                        var extention = path.extname(file.name);
-                                        var filename = "home_insurance_" + new Date().getTime() + extention;
+                                        //var extention = path.extname(file.name);
+                                        var extension = '.jpg';
+                                        var filename = "home_insurance_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
@@ -640,6 +642,33 @@ router.post('/driver_signup', function (req, res) {
                                 } else {
                                     inner_callback(null, null);
                                 }
+                            },
+                            pay_stub:function(inner_callback){
+                                // Upload driver avatar
+                                if (req.files && req.files['pay_stub']) {
+                                    var file = req.files['pay_stub'];
+                                    var dir = "./uploads/driver_doc";
+                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+
+                                    if (mimetype.indexOf(file.mimetype) !== -1) {
+                                        if (!fs.existsSync(dir)) {
+                                            fs.mkdirSync(dir);
+                                        }
+                                        var extension = '.jpg';
+                                        var filename = "pay_stub_" + new Date().getTime() + extension;
+                                        file.mv(dir + '/' + filename, function (err) {
+                                            if (err) {
+                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of pay_stub"});
+                                            } else {
+                                                inner_callback(null, filename);
+                                            }
+                                        });
+                                    } else {
+                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of pay stub is invalid"});
+                                    }
+                                } else {
+                                    inner_callback(null, null);
+                                }
                             }
                         },function(err,results){
                             if(err){
@@ -649,7 +678,6 @@ router.post('/driver_signup', function (req, res) {
                             }
                         });
                     },
-                    
                     function (image_names, callback) {
                         // Driver Insertion
                         logger.trace("Inserting driver in db");
@@ -689,6 +717,9 @@ router.post('/driver_signup', function (req, res) {
                         }
                         if(image_names && image_names.auto_insurance && image_names.auto_insurance != null){
                             driver_obj.auto_insurance = image_names.auto_insurance;
+                        }
+                        if(image_names && image_names.pay_stub && image_names.pay_stub != null){
+                            driver_obj.pay_stub = image_names.pay_stub;
                         }
                         if (image_names && image_names.avatar && image_names.avatar != null) {
                             user_obj.user_avatar = image_names.avatar;
@@ -862,7 +893,6 @@ router.post('/phone_availability', function (req, res) {
     });
 });
 
-
 /**
  * @api {post} /send_link_for_forget_password Send link of reset password through mail
  * @apiName Send link of reset password through mail
@@ -942,7 +972,7 @@ router.post('/send_link_for_forget_password',function(req,res){
  * @apiParam {String} key Key provided with verification link
  * @apiParam {String} password New password for user
  * 
- * @apiHeader {String}  Content-Type application/json    
+ * @apiHeader {String}  Content-Type application/json
  * 
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -1040,7 +1070,33 @@ router.get('/car_model_by_brand',function(req,res){
             } else if(model_data.status === 404) {
                 res.status(config.BAD_REQUEST).json({"message":"No Model found for given brand"});
             } else {
-                res.status(config.OK_STATUS).json({"brands":model_data.car_model});
+                res.status(config.OK_STATUS).json({"models":model_data.car_model});
+            }
+        });
+    } else {
+        res.status(config.VALIDATION_FAILURE_STATUS).json({"message":"Brand name is required"});
+    }
+});
+
+/**
+ * @api {get} /car_year_by_model Get car years based on model
+ * @apiName Get car years based on model
+ * @apiGroup Root
+ * 
+ * @apiParam {String} model Car model
+ * 
+ * @apiSuccess (Success 200) {Array} cars Listing of available car with year
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/car_year_by_model',function(req,res){
+    if(req.query.model) {
+        car_model_helper.get_car_year_by_model(req.query.model,function(car_data){
+            if(car_data.status === 0){
+                res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in fetching car details"});
+            } else if(car_data.status === 404) {
+                res.status(config.BAD_REQUEST).json({"message":"No car found for given model"});
+            } else {
+                res.status(config.OK_STATUS).json({"cars":car_data.car});
             }
         });
     } else {
