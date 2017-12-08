@@ -180,6 +180,13 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "country_code",
+            "description": "<p>Country code of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "phone",
             "description": "<p>Phone number of user</p>"
           },
@@ -530,6 +537,13 @@
             "group": "Parameter",
             "type": "string",
             "optional": false,
+            "field": "country_code",
+            "description": "<p>Country code</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
             "field": "phone",
             "description": "<p>Phone number of user</p>"
           },
@@ -601,6 +615,13 @@
             "optional": false,
             "field": "phone",
             "description": "<p>Phone number</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "country_code",
+            "description": "<p>Country code</p>"
           }
         ]
       }
@@ -790,6 +811,13 @@
     "parameter": {
       "fields": {
         "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "country_code",
+            "description": "<p>Country code</p>"
+          },
           {
             "group": "Parameter",
             "type": "string",
@@ -1004,6 +1032,13 @@
             "optional": false,
             "field": "email",
             "description": "<p>Email address</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "country_code",
+            "description": "<p>country code for phone number</p>"
           },
           {
             "group": "Parameter",

@@ -53,10 +53,6 @@ router.post('/user_login', function (req, res) {
         'password': {
             notEmpty: true,
             errorMessage: "Password is required"
-        },
-        'role':{
-            notEmpty:true,
-            errorMessage: "Role is required"
         }
     };
     req.checkBody(schema);
@@ -142,6 +138,7 @@ router.post('/user_login', function (req, res) {
  * @apiParam {String} first_name First name of user
  * @apiParam {String} last_name Last name of user
  * @apiParam {String} email Email address
+ * @apiParam {String} country_code country code for phone number
  * @apiParam {String} phone Phone number of user
  * @apiParam {String} password Password
  * @apiParam {File} [avatar] Profile image of user
@@ -172,6 +169,10 @@ router.post('/user_signup', function (req, res) {
         'email': {
             notEmpty: true,
             errorMessage: "Email address is required"
+        },
+        'country_code': {
+            notEmpty: true,
+            errorMessage: "Country code for phone is required"
         },
         'phone': {
             notEmpty: true,
@@ -262,6 +263,7 @@ router.post('/user_signup', function (req, res) {
                         "first_name": req.body.first_name,
                         "last_name": req.body.last_name,
                         "email": req.body.email,
+                        "country_code": req.body.country_code,
                         "phone": req.body.phone,
                         "password": req.body.password,
                         "role":"rider",
@@ -294,7 +296,7 @@ router.post('/user_signup', function (req, res) {
                 },
                 function(user,callback){
                     var code = Math.floor(100000 + Math.random() * 900000);
-                    twilio_helper.sendSMS(user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
+                    twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
                         if(sms_data.status === 0){
 //                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
                             callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"Please enter phone number with country code."});
@@ -423,6 +425,7 @@ router.get('/refresh_token', function (req, res) {
  * @apiParam {String} first_name First name of user
  * @apiParam {String} last_name Last name of user
  * @apiParam {String} email Email address
+ * @apiParam {String} country_code Country code of user
  * @apiParam {String} phone Phone number of user
  * @apiParam {String} password Password
  * @apiParam {String} residential_status Value should be from "Citizen", "Greencard" or "Visa"
@@ -459,6 +462,10 @@ router.post('/driver_signup', function (req, res) {
         'email': {
             notEmpty: true,
             errorMessage: "Email address is required"
+        },
+        'country_code': {
+            notEmpty: true,
+            errorMessage: "Country code is required"
         },
         'phone': {
             notEmpty: true,
@@ -521,7 +528,7 @@ router.post('/driver_signup', function (req, res) {
                     function (callback) {
                         // Check driver's validity
                         logger.trace("Check driver's validity - by phone");
-                        user_helper.find_user_by_phone(req.body.phone, function (user_resp) {
+                        user_helper.find_user_by_phone(req.body.country_code,req.body.country_code,req.body.phone, function (user_resp) {
                             if (user_resp.status === 0) {
                                 logger.error("Error occured in finding user by phone in driver signup. Err = ",user_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
@@ -740,6 +747,7 @@ router.post('/driver_signup', function (req, res) {
                             "first_name": req.body.first_name,
                             "last_name": req.body.last_name,
                             "email": req.body.email,
+                            "country_code": req.body.country_code,
                             "phone": req.body.phone,
                             "password": req.body.password,
                             "role": "driver"
@@ -906,6 +914,7 @@ router.post('/email_availability', function (req, res) {
  * @apiHeader {String}  Content-Type application/json
  * 
  * @apiParam {String} phone Phone number
+ * @apiParam {String} country_code Country code
  * 
  * @apiSuccess (Success 200) {String} message Success message (User available)
  * @apiError (Error 4xx) {String} message Validation or error message. (Any error or user not available)
@@ -914,6 +923,10 @@ router.post('/phone_availability', function (req, res) {
     logger.trace("API - Phone availability called");
     logger.debug("req.body = ",req.body);
     var schema = {
+        'country_code': {
+            notEmpty: true,
+            errorMessage: "Country code is required"
+        },
         'phone': {
             notEmpty: true,
             errorMessage: "Phone number is required"
@@ -925,7 +938,7 @@ router.post('/phone_availability', function (req, res) {
         if (result.isEmpty()) {
             logger.trace("Request is valid. ");
             // Check email availability for user role
-            user_helper.find_user_by_phone(req.body.phone, function (user_resp) {
+            user_helper.find_user_by_phone(req.body.country_code,req.body.phone, function (user_resp) {
                 if (user_resp.status === 0) {
                     logger.error("Error occured in finding user by phone. Err = ",user_resp.err);
                     res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
@@ -1166,6 +1179,7 @@ router.get('/car_year_by_model',function(req,res){
  * 
  * @apiHeader {String}  Content-Type application/json
  * 
+ * @apiParam {string} country_code Country code
  * @apiParam {string} phone Phone number of user
  * 
  * @apiSuccess (Success 200) {String} message Success message.
@@ -1173,6 +1187,10 @@ router.get('/car_year_by_model',function(req,res){
  */
 router.post('/sendotp', function (req, res) {
     var schema = {
+        'country_code': {
+            notEmpty: true,
+            errorMessage: "Country code is required."
+        },
         'phone': {
             notEmpty: true,
             errorMessage: "Mobile number is required."
@@ -1186,7 +1204,7 @@ router.post('/sendotp', function (req, res) {
 
             async.waterfall([
                 function(callback){
-                    user_helper.find_user_by_phone(req.body.phone,function(user_resp){
+                    user_helper.find_user_by_phone(req.body.country_code,req.body.phone,function(user_resp){
                         if (user_resp.status === 0) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 404) {
@@ -1197,7 +1215,7 @@ router.post('/sendotp', function (req, res) {
                     });
                 },
                 function(user,callback){
-                    twilio_helper.sendSMS(user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
+                    twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
                         if(sms_data.status === 0){
                             callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
                         } else {
@@ -1244,6 +1262,7 @@ router.post('/sendotp', function (req, res) {
  * 
  * @apiHeader {String}  Content-Type application/json
  * 
+ * @apiParam {string} country_code Country code
  * @apiParam {string} phone Phone number of user
  * @apiParam {Number} otp Random six digit code
  * 
@@ -1252,6 +1271,10 @@ router.post('/sendotp', function (req, res) {
  */
 router.post('/verifyotp', function (req, res) {
     var schema = {
+        'country_code': {
+            notEmpty: true,
+            errorMessage: "Country code is required."
+        },
         'phone': {
             notEmpty: true,
             errorMessage: "Phone number is required."
@@ -1267,7 +1290,7 @@ router.post('/verifyotp', function (req, res) {
         if (result.isEmpty()) {
             async.waterfall([
                 function(callback){
-                    user_helper.find_user_by_phone(req.body.phone,function(user_resp){
+                    user_helper.find_user_by_phone(req.body.country_code,req.body.phone,function(user_resp){
                         if (user_resp.status === 0) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 404) {

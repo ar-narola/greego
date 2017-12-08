@@ -78,27 +78,45 @@ router.put('/update', function (req, res) {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get('/get_details',function(req,res){
-    driver_helper.find_driver_by_id(req.userInfo._id,function(driver_data){
+    driver_helper.find_driver_by_id(req.userInfo.id,function(driver_data){
         if(driver_data.status === 0){
             res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in finding driver"});
         } else if(driver_data.status === 404){
             res.status(config.BAD_REQUEST).json({"message":"No driver found"});
         } else {
-            var ret_driver = {
-                "_id":driver_data.driver._id,
-                "first_name":driver_data.driver.first_name,
-                "last_name":driver_data.driver.last_name,
-                "email":driver_data.driver.email,
-                "phone":driver_data.driver.phone,
-                "transmission_type":driver_data.driver.transmission_type,
-                "ssn":driver_data.driver.ssn,
-                "driver_avatar":driver_data.driver.driver_avatar,
-                "drive_type":driver_data.driver.drive_type,
-                "current_lat":driver_data.driver.current_lat,
-                "current_long":driver_data.driver.current_long,
-                "avg_rate":driver_data.driver.rate.avg_rate
-            }
-            res.status(config.OK_STATUS).json(ret_driver);
+//            var ret_driver = {
+//                "_id":driver_data.driver._id,
+//                "first_name":driver_data.driver.first_name,
+//                "last_name":driver_data.driver.last_name,
+//                "email":driver_data.driver.email,
+//                "phone":driver_data.driver.phone,
+//                "transmission_type":driver_data.driver.transmission_type,
+//                "ssn":driver_data.driver.ssn,
+//                "driver_avatar":driver_data.driver.driver_avatar,
+//                "drive_type":driver_data.driver.drive_type,
+//                "current_lat":driver_data.driver.current_lat,
+//                "current_long":driver_data.driver.current_long,
+//                "avg_rate":driver_data.driver.rate.avg_rate
+//            }
+//            
+//            var ret_driver = {
+//                "_id":user_data.user._id,
+//                "first_name":user_data.user.first_name,
+//                "last_name":user_data.user.last_name,
+//                "email":user_data.user.email,
+//                "phone":user_data.user.phone,
+//                "role":user_data.user.role,
+//                "phone_verified":user_data.user.phone_verified,
+//                "emergency_contact":user_data.user.emergency_contact,
+//                "user_avatar":(user_data.user.user_avatar)?user_data.user.user_avatar:null,
+//                "current_lat":user_data.user.current_lat,
+//                "current_long":user_data.user.current_long,
+//                "cards":user_data.user.card,
+//                "car":user_data.user.car,
+//                "avg_rate":(user_data.user.rate && user_data.user.rate.avg_rate)?user_data.user.rate.avg_rate:null
+//            }
+            
+            res.status(config.OK_STATUS).json(driver_data);
         }
     });
 });

@@ -1,4 +1,5 @@
 var Driver = require("../models/driver");
+var User = require("../models/user");
 var driver_helper = {};
 
 /*
@@ -38,11 +39,11 @@ driver_helper.find_driver_by_email = function(email,callback){
  * @developed by "ar"
  */
 driver_helper.find_driver_by_id = function(user_id,callback){
-    
     User.findOne({_id:user_id}).populate('drivers').lean().exec(function (err, driver_data) {
         if (err) {
             callback({"status":0,"err":err});
         } else {
+            
             if(driver_data){
                 callback({"status":1,"driver":driver_data});
             } else {

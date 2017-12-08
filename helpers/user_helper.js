@@ -62,8 +62,8 @@ user_helper.find_user_by_id = function(user_id,callback){
  * 
  * @developed by "ar"
  */
-user_helper.find_user_by_phone = function(phone,callback){
-    User.findOne({ phone: phone }).lean().exec(function (err, user_data) {
+user_helper.find_user_by_phone = function(country_code,phone,callback){
+    User.findOne({ phone: phone, country_code: country_code }).lean().exec(function (err, user_data) {
         if (err) {
             callback({"status":0,"err":err});
         } else {
