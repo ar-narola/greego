@@ -37,8 +37,9 @@ driver_helper.find_driver_by_email = function(email,callback){
  * 
  * @developed by "ar"
  */
-driver_helper.find_driver_by_id = function(driver_id,callback){
-    Driver.findOne({ _id: driver_id }).lean().exec(function (err, driver_data) {
+driver_helper.find_driver_by_id = function(user_id,callback){
+    
+    User.findOne({_id:user_id}).populate('drivers').lean().exec(function (err, driver_data) {
         if (err) {
             callback({"status":0,"err":err});
         } else {

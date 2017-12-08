@@ -512,10 +512,13 @@ router.get('/get_details',function(req,res){
                 "email":user_data.user.email,
                 "phone":user_data.user.phone,
                 "role":user_data.user.role,
+                "phone_verified":user_data.user.phone_verified,
+                "emergency_contact":user_data.user.emergency_contact,
                 "user_avatar":(user_data.user.user_avatar)?user_data.user.user_avatar:null,
                 "current_lat":user_data.user.current_lat,
                 "current_long":user_data.user.current_long,
                 "cards":user_data.user.card,
+                "car":user_data.user.car,
                 "avg_rate":(user_data.user.rate && user_data.user.rate.avg_rate)?user_data.user.rate.avg_rate:null
             }
 

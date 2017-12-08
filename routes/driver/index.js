@@ -72,13 +72,13 @@ router.put('/update', function (req, res) {
  * @apiName Get Driver details of current logged in driver
  * @apiGroup Driver
  * 
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  x-access-token Driver's unique access-key
  * 
  * @apiSuccess (Success 200) {JSON} driver Driver details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get('/get_details',function(req,res){
-    driver_helper.find_driver_by_id(req.userInfo.driver_id,function(driver_data){
+    driver_helper.find_driver_by_id(req.userInfo._id,function(driver_data){
         if(driver_data.status === 0){
             res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in finding driver"});
         } else if(driver_data.status === 404){

@@ -13,7 +13,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "x-access-token",
-            "description": "<p>User's unique access-key</p>"
+            "description": "<p>Driver's unique access-key</p>"
           }
         ]
       }
@@ -434,6 +434,55 @@ define({ "api": [
             "optional": false,
             "field": "models",
             "description": "<p>Listing of available car models</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/index.js",
+    "groupTitle": "Root"
+  },
+  {
+    "type": "get",
+    "url": "/car_year_by_model",
+    "title": "Get car years based on model",
+    "name": "Get_car_years_based_on_model",
+    "group": "Root",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "model",
+            "description": "<p>Car model</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "cars",
+            "description": "<p>Listing of available car with year</p>"
           }
         ]
       }
@@ -997,6 +1046,13 @@ define({ "api": [
             "optional": false,
             "field": "car_color",
             "description": "<p>Car color</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "car_year",
+            "description": "<p>Car year</p>"
           },
           {
             "group": "Parameter",

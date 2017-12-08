@@ -537,7 +537,8 @@ router.post('/driver_signup', function (req, res) {
                     function(callback){
                         async.parallel({
                             license:function(inner_callback){
-                                if(req.files & req.files['license']){
+                                if(req.files && req.files['license']){
+                                    logger.trace("Uploading license image");
                                     var file = req.files['license'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -551,20 +552,25 @@ router.post('/driver_signup', function (req, res) {
                                         var filename = "license_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
+                                                logger.trace("There was an issue in uploading license image");
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading license image"});
                                             } else {
+                                                logger.trace("license image has uploaded for driver");
                                                 inner_callback(null, filename);
                                             }
                                         });
                                     } else {
+                                        logger.trace("license is not available");
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of license invalid"});
                                     }
                                 } else {
+                                    logger.trace("license is not available");
                                     inner_callback(null, null);
                                 }
                             },
                             birth_certi : function(inner_callback){
-                                if(req.files & req.files['birth_certi']){
+                                if(req.files && req.files['birth_certi']){
+                                    logger.trace("Uploading birth_certi image");
                                     var file = req.files['birth_certi'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -578,8 +584,10 @@ router.post('/driver_signup', function (req, res) {
                                         var filename = "birth_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
+                                                logger.trace("There was an issue in uploading birth_certi image");
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading birth certificate image"});
                                             } else {
+                                                logger.trace("birth_certi image has uploaded for driver");
                                                 inner_callback(null, filename);
                                             }
                                         });
@@ -587,11 +595,13 @@ router.post('/driver_signup', function (req, res) {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of birth certificate is invalid"});
                                     }
                                 } else {
+                                    logger.trace("birth certi is not available");
                                     inner_callback(null,null);
                                 }
                             },
                             home_insurance : function(inner_callback){
-                                if(req.files & req.files['home_insurance']){
+                                if(req.files && req.files['home_insurance']){
+                                    logger.trace("Uploading home_insurance image");
                                     var file = req.files['home_insurance'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -605,8 +615,10 @@ router.post('/driver_signup', function (req, res) {
                                         var filename = "home_insurance_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
+                                                logger.trace("There was an issue in uploading home_insurance image");
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
                                             } else {
+                                                logger.trace("home_insurance image has uploaded for driver");
                                                 inner_callback(null, filename);
                                             }
                                         });
@@ -614,11 +626,13 @@ router.post('/driver_signup', function (req, res) {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of insurance is invalid"});
                                     }
                                 } else {
+                                    logger.trace("home insurance is not available");
                                     inner_callback(null,null);
                                 }
                             },
                             auto_insurance : function(inner_callback){
-                                if(req.files & req.files['auto_insurance']){
+                                if(req.files && req.files['auto_insurance']){
+                                    logger.trace("Uploading auto_insurance image");
                                     var file = req.files['auto_insurance'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -631,8 +645,10 @@ router.post('/driver_signup', function (req, res) {
                                         var filename = "auto_insurance_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
+                                                logger.trace("There was an issue in uploading auto_insurance image");
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
                                             } else {
+                                                logger.trace("auto_insurance image has uploaded for driver");
                                                 inner_callback(null, filename);
                                             }
                                         });
@@ -640,6 +656,7 @@ router.post('/driver_signup', function (req, res) {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of auto insurance is invalid"});
                                     }
                                 } else {
+                                    logger.trace("auto insurance is not available");
                                     inner_callback(null,null);
                                 }
                             },
@@ -671,12 +688,14 @@ router.post('/driver_signup', function (req, res) {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of avatar is invalid"});
                                     }
                                 } else {
+                                    logger.trace("avatar is not available");
                                     inner_callback(null, null);
                                 }
                             },
                             pay_stub:function(inner_callback){
                                 // Upload driver avatar
                                 if (req.files && req.files['pay_stub']) {
+                                    logger.trace("Uploading pay_stub image");
                                     var file = req.files['pay_stub'];
                                     var dir = "./uploads/driver_doc";
                                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -689,8 +708,10 @@ router.post('/driver_signup', function (req, res) {
                                         var filename = "pay_stub_" + new Date().getTime() + extension;
                                         file.mv(dir + '/' + filename, function (err) {
                                             if (err) {
+                                                logger.trace("There was an issue in uploading pay_stub image");
                                                 inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of pay_stub"});
                                             } else {
+                                                logger.trace("Pay_stub image has uploaded for driver");
                                                 inner_callback(null, filename);
                                             }
                                         });
@@ -698,13 +719,16 @@ router.post('/driver_signup', function (req, res) {
                                         inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of pay stub is invalid"});
                                     }
                                 } else {
+                                    logger.trace("pay_stub is not available");
                                     inner_callback(null, null);
                                 }
                             }
                         },function(err,results){
                             if(err){
+                                logger.trace("Error in image uploading : ",err);
                                 callback(err.resp);
                             } else {
+                                logger.trace("Executing next instruction : ",results);
                                 callback(null,results);
                             }
                         });
