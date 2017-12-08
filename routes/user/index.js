@@ -535,6 +535,7 @@ router.get('/get_details',function(req,res){
  * 
  * @apiHeader {String}  Content-Type application/json
  * 
+ * @apiParam {String} country_code Country code
  * @apiParam {String} phone Phone number
  * 
  * @apiSuccess (Success 200) {String} message Success message (User available)
@@ -544,6 +545,10 @@ router.post('/phone_availability', function (req, res) {
     logger.trace("API - User's Phone availability called");
     logger.debug("req.body = ",req.body);
     var schema = {
+        'country_code': {
+            notEmpty: true,
+            errorMessage: "Country code is required"
+        },
         'phone': {
             notEmpty: true,
             errorMessage: "Phone number is required"
@@ -555,7 +560,7 @@ router.post('/phone_availability', function (req, res) {
         if (result.isEmpty()) {
             logger.trace("Request is valid. ");
             // Check email availability for user role
-            user_helper.chk_phone_for_user(req.body.phone,req.userInfo.id, function (user_resp) {
+            user_helper.chk_phone_for_user(req.body.country_code,req.body.phone,req.userInfo.id, function (user_resp) {
                 if (user_resp.status === 0) {
                     logger.error("Error occured in finding user by phone. Err = ",user_resp.err);
                     res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
