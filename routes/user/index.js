@@ -510,6 +510,7 @@ router.get('/get_details',function(req,res){
                 "first_name":user_data.user.first_name,
                 "last_name":user_data.user.last_name,
                 "email":user_data.user.email,
+                "country_code":user_data.user.country_code,
                 "phone":user_data.user.phone,
                 "role":user_data.user.role,
                 "phone_verified":user_data.user.phone_verified,
