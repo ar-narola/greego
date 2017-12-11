@@ -196,7 +196,7 @@ router.put('/update', function (req, res) {
                 car:{}
             };
 
-            if(req.body.phone != user.phone){
+            if(req.body.first_name && req.body.phone != user.phone){
                 user_obj.phone_verified = false;
                 user_obj.otp = "";
                 user_obj.phone = req.body.phone;
