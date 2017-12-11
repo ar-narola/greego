@@ -295,30 +295,13 @@ router.post('/user_signup', function (req, res) {
                     });
                 },
                 function(user,callback){
-                    var code = Math.floor(100000 + Math.random() * 900000);
-                    twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
-                        if(sms_data.status === 0){
-//                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
-                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"Please enter phone number with country code."});
+                    sendOTPtoUser(user,function(data){
+                        if(data.status == config.OK_STATUS){
+                            callback(null,data.result);
                         } else {
-                            callback(null,user,code);
+                            callback(data);
                         }
                     });
-                },
-                function(user,code,callback){
-                    user_obj = {
-                        "otp":code,
-                        "phone_verified":false
-                    };
-                    user_helper.update_user_by_id(user._id,user_obj,function(user_data){
-                        if (user_data.status === 0) {
-                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in saving otp in database"});
-                        } else if (user_data.status === 2) {
-                            callback({"status": config.BAD_REQUEST, "err": "There was an issue in saving otp in database"});
-                        } else {
-                            callback(null,{"message":"OTP has been sent successfully"});
-                        }
-                    })
                 }
             ], function (err, result) {
                 if (err) {
@@ -812,7 +795,16 @@ router.post('/driver_signup', function (req, res) {
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in driver registration"});
                             } else {
                                 logger.debug("Driver registered. Executed next instruction");
-                                callback(null);
+                                callback(null,user_data.user);
+                            }
+                        });
+                    },
+                    function(user,callback){
+                        sendOTPtoUser(user,function(data){
+                            if(data.status == config.OK_STATUS){
+                                callback(null,data.result);
+                            } else {
+                                callback(data);
                             }
                         });
                     }
@@ -1199,9 +1191,6 @@ router.post('/sendotp', function (req, res) {
     req.checkBody(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            // Generate random code
-            var code = Math.floor(100000 + Math.random() * 900000);
-
             async.waterfall([
                 function(callback){
                     user_helper.find_user_by_phone(req.body.country_code,req.body.phone,function(user_resp){
@@ -1215,28 +1204,13 @@ router.post('/sendotp', function (req, res) {
                     });
                 },
                 function(user,callback){
-                    twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
-                        if(sms_data.status === 0){
-                            callback({"status":config.VALIDATION_FAILURE_STATUS,"err":sms_data.err});
+                    sendOTPtoUser(user,function(data){
+                        if(data.status == config.OK_STATUS){
+                            callback(null,data.result);
                         } else {
-                            callback(null,user);
+                            callback(data);
                         }
                     });
-                },
-                function(user,callback){
-                    user_obj = {
-                        "otp":code,
-                        "phone_verified":false
-                    };
-                    user_helper.update_user_by_id(user._id,user_obj,function(user_data){
-                        if (user_data.status === 0) {
-                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in saving otp in database"});
-                        } else if (user_data.status === 2) {
-                            callback({"status": config.BAD_REQUEST, "err": "There was an issue in saving otp in database"});
-                        } else {
-                            callback(null,{"message":"OTP has been sent successfully"});
-                        }
-                    })
                 }
             ],function(err,result){
                 if (err) {
@@ -1333,5 +1307,43 @@ router.post('/verifyotp', function (req, res) {
         }
     });
 });
+
+function sendOTPtoUser(user,callback){
+    // Generate random code
+    var code = Math.floor(100000 + Math.random() * 900000);
+    
+    async.waterfall([
+        function(inner_callback){
+            twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
+                if(sms_data.status === 0){
+                    callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"Please enter phone number with country code."});
+                } else {
+                    inner_callback(null);
+                }
+            });
+        },
+        function(inner_callback){
+            user_obj = {
+                "otp":code,
+                "phone_verified":false
+            };
+            user_helper.update_user_by_id(user._id,user_obj,function(user_data){
+                if (user_data.status === 0) {
+                    inner_callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in saving otp in database"});
+                } else if (user_data.status === 2) {
+                    inner_callback({"status": config.BAD_REQUEST, "err": "There was an issue in saving otp in database"});
+                } else {
+                    inner_callback(null,{"message":"OTP has been sent successfully"});
+                }
+            })
+        }
+    ],function(err,result){
+        if (err) {
+            callback(err);
+        } else {
+            callback({"status":config.OK_STATUS,"result":result});
+        }
+    });
+}
 
 module.exports = router;
