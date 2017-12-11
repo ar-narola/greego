@@ -514,10 +514,10 @@ router.get('/get_details',function(req,res){
                 "phone":user_data.user.phone,
                 "role":user_data.user.role,
                 "phone_verified":user_data.user.phone_verified,
-                "emergency_contact":user_data.user.emergency_contact,
+                "emergency_contact":(user_data.user.emergency_contact)?user_data.user.emergency_contact:null,
                 "user_avatar":(user_data.user.user_avatar)?user_data.user.user_avatar:null,
-                "current_lat":user_data.user.current_lat,
-                "current_long":user_data.user.current_long,
+                "current_lat":(user_data.user.current_lat)?user_data.user.current_lat:null,
+                "current_long":(user_data.user.current_long)?user_data.user.current_long:null,
                 "cards":user_data.user.card,
                 "car":user_data.user.car,
                 "avg_rate":(user_data.user.rate && user_data.user.rate.avg_rate)?user_data.user.rate.avg_rate:null

@@ -2297,6 +2297,13 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "country_code",
+            "description": "<p>Country code</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "phone",
             "description": "<p>Phone number</p>"
           }

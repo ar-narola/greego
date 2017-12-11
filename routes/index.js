@@ -528,7 +528,7 @@ router.post('/driver_signup', function (req, res) {
                     function (callback) {
                         // Check driver's validity
                         logger.trace("Check driver's validity - by phone");
-                        user_helper.find_user_by_phone(req.body.country_code,req.body.country_code,req.body.phone, function (user_resp) {
+                        user_helper.find_user_by_phone(req.body.country_code,req.body.phone, function (user_resp) {
                             if (user_resp.status === 0) {
                                 logger.error("Error occured in finding user by phone in driver signup. Err = ",user_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
