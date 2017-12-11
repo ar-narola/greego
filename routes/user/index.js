@@ -192,7 +192,9 @@ router.put('/update', function (req, res) {
         function (user, image_name, callback) {
             logger.trace("Updating user info");
             // User updation
-            var user_obj = {};
+            var user_obj = {
+                car:{}
+            };
 
             if(req.body.phone != user.phone){
                 user_obj.phone_verified = false;
