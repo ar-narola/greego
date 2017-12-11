@@ -192,9 +192,12 @@ router.put('/update', function (req, res) {
         function (user, image_name, callback) {
             logger.trace("Updating user info");
             // User updation
-            var user_obj = {
-                car:{}
-            };
+            var user_obj = {};
+            if(user.car){
+                user_obj.car = user.car;
+            } else {
+                user_obj.car = {};
+            }
 
             if(req.body.first_name && req.body.phone != user.phone){
                 user_obj.phone_verified = false;
@@ -217,6 +220,7 @@ router.put('/update', function (req, res) {
             if (req.body.emergency_contact) {
                 user_obj.emergency_contact = req.body.emergency_contact;
             }
+            
             if (req.body.car_brand) {
                 user_obj.car.brand = req.body.car_brand;
             }
