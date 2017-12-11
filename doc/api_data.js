@@ -49,6 +49,175 @@ define({ "api": [
     "groupTitle": "Driver"
   },
   {
+    "type": "put",
+    "url": "/driver/update",
+    "title": "Update driver profile",
+    "name": "Update_driver_profile",
+    "group": "Driver",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "first_name",
+            "description": "<p>First name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "last_name",
+            "description": "<p>Last name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "country_code",
+            "description": "<p>Country code</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "phone",
+            "description": "<p>Phone number of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "residential_status",
+            "description": "<p>Value should be from &quot;Citizen&quot;, &quot;Greencard&quot; or &quot;Visa&quot;</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "avatar",
+            "description": "<p>Profile image of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": true,
+            "field": "drive_type",
+            "description": "<p>Array of string can have value from &quot;Sedan&quot;, &quot;SUV&quot; and &quot;Van&quot;</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "transmission_type",
+            "description": "<p>Value can be either &quot;Automatic&quot; or &quot;Manual&quot;</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "license",
+            "description": "<p>Image of license</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "birth_certi",
+            "description": "<p>Image of Birth certificate or passport</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "home_insurance",
+            "description": "<p>Image of home insurance</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "auto_insurance",
+            "description": "<p>Image of auto insurance</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "pay_stub",
+            "description": "<p>Image of Uber pay stub</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "bank_routing_no",
+            "description": "<p>Bank routing number</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "bank_account_no",
+            "description": "<p>Bank account number</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "ssn",
+            "description": "<p>Social security number</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>You need to pass form-data</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>1</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>0</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/driver/index.js",
+    "groupTitle": "Driver"
+  },
+  {
     "type": "get",
     "url": "/driver/notification",
     "title": "Get notification",
@@ -2381,8 +2550,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": true,
-            "field": "email",
-            "description": "<p>Email address</p>"
+            "field": "country_code",
+            "description": "<p>Country code</p>"
           },
           {
             "group": "Parameter",
@@ -2390,13 +2559,6 @@ define({ "api": [
             "optional": true,
             "field": "phone",
             "description": "<p>Phone number of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "password",
-            "description": "<p>Password</p>"
           },
           {
             "group": "Parameter",

@@ -76,9 +76,10 @@ router.post('/feedback', function (req, res) {
  * 
  * @apiParam {String} [first_name] First name of user
  * @apiParam {String} [last_name] Last name of user
- * @apiParam {String} [email] Email address
+ * @1apiParam {String} [email] Email address
+ * @apiParam {String} [country_code] Country code
  * @apiParam {String} [phone] Phone number of user
- * @apiParam {String} [password] Password
+ * @1apiParam {String} [password] Password
  * @apiParam {File} [avatar] Profile image of user
  * @apiParam {String} [emergency_contact] Emergency contact number
  * @apiParam {String} [car_brand] Car brand name
@@ -199,7 +200,8 @@ router.put('/update', function (req, res) {
                 user_obj.car = {};
             }
 
-            if(req.body.first_name && req.body.phone != user.phone){
+            if(req.body.phone && req.body.phone != user.phone){
+                user_obj.country_code = req.body.country_code;
                 user_obj.phone_verified = false;
                 user_obj.otp = "";
                 user_obj.phone = req.body.phone;
@@ -211,9 +213,9 @@ router.put('/update', function (req, res) {
             if (req.body.last_name) {
                 user_obj.last_name = req.body.last_name;
             }
-            if (req.body.password) {
-                user_obj.password = req.body.password;
-            }
+//            if (req.body.password) {
+//                user_obj.password = req.body.password;
+//            }
             if (image_name && image_name != null) {
                 user_obj.user_avatar = image_name;
             }
