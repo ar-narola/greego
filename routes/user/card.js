@@ -1,10 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var async = require('async');
+var CardType = require('credit-card-type');
 
 var config = require('../../config');
 var card_helper = require("../../helpers/card_helper");
 var user_helper = require("../../helpers/user_helper");
+
+
 
 /**
  * @api {post} /user/card/add Add card for user
@@ -48,11 +51,24 @@ router.post('/add',function(req,res){
             
             async.waterfall([
                 function(callback){
+                    var card_type = CardType(req.body.card_no);
+                    if(card_type && card_type[0]){
+                        callback(null,card_type[0]);
+                    } else {
+                        callback(null,null);
+                    }
+                },
+                function(card_type,callback){
                     var card_obj = {
                         "card_number":req.body.card_no,
                         "month":req.body.month,
                         "year":req.body.year
                     };
+                    
+                    if(card_type && card_type != null){
+                        card_obj.card_type = card_type;
+                    }
+
                     card_helper.insert_card(card_obj,function(card_data){
                         if(card_data.status === 0){
                             callback({"status":config.INTERNAL_SERVER_ERROR,"resp":{"message":card_data.err}})

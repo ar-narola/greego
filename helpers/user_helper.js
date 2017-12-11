@@ -38,7 +38,9 @@ user_helper.find_user_by_email = function(email,callback){
  * @developed by "ar"
  */
 user_helper.find_user_by_id = function(user_id,callback){
-    User.findOne({ _id: user_id }).lean().exec(function (err, user_data) {
+    User.findOne({ _id: user_id })
+            .populate({path:'card.card','model':'cards'})
+            .lean().exec(function (err, user_data) {
         if (err) {
             callback({"status":0,"err":err});
         } else {

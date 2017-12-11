@@ -9,6 +9,7 @@
     "async": "^2.5.0",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
+    "credit-card-type": "^6.1.0",
     "debug": "~2.6.3",
     "ejs": "~2.5.6",
     "express": "~4.15.2",
