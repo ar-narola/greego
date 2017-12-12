@@ -7,8 +7,6 @@ var config = require('../../config');
 var card_helper = require("../../helpers/card_helper");
 var user_helper = require("../../helpers/user_helper");
 
-
-
 /**
  * @api {post} /user/card/add Add card for user
  * @apiName Add card for user
@@ -67,6 +65,15 @@ router.post('/add',function(req,res){
                     
                     if(card_type && card_type != null){
                         card_obj.card_type = card_type;
+                    } else {
+                        card_obj.card_type = {
+                            "niceType" : "Unknown",
+                            "type" : "unknown",
+                            "code" : {
+                                "name": "CVV",
+                                "size":3
+                            }
+                        };
                     }
 
                     card_helper.insert_card(card_obj,function(card_data){
