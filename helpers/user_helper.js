@@ -1,5 +1,6 @@
 var User = require("../models/user");
 var user_helper = {};
+var async = require('async');
 
 /*
  * find_user_by_email is used to fetch single user by email addres
@@ -238,5 +239,53 @@ user_helper.find_car_by_user_id = function(user_id,callback){
         }
     });
 };
+
+user_helper.update_user_card = function(user_id,card_id,is_default,callback){
+    User.update({_id:{$eq: user_id},"card.card":{$eq:card_id}},{$set:{"card.$.is_default":is_default}},function(err,update_data){
+        if(err){
+            callback({"status":0,"message":"Card fail to update"});
+        }
+        callback({"status":1,"message":"Card updated"});
+    });
+};
+
+user_helper.set_card_as_default_for_user = function(user_id,card_id,callback){
+    console.log("Finding user data");
+    console.log("user_id = ",user_id);
+    console.log("card_id = ",card_id);
+    
+    user_helper.find_user_by_id(user_id,function(data){
+        if(data.status === 1){
+            console.log("Found user data");
+            // User found
+            async.eachSeries(data.user.card,function(card,loop_callback){
+                console.log("looping for card : ",card);
+                if(card.card && card.card._id && card.card._id == card_id && card.is_default == false){
+                    console.log("Found default card. going to set as true for it");
+                    user_helper.update_user_card(user_id,card_id,true,function(resp){
+                        console.log("Found default card. going to set as true for it : resp = ",resp);
+                        loop_callback();
+                    });
+                } else {
+                    if(card.card && card.card._id && card.is_default == true && card.card._id != card_id){
+                        console.log("is default is true. Going to make it false for card = ",card.card);
+                        user_helper.update_user_card(user_id,card.card._id,false,function(resp){
+                            console.log("resp = ",resp);
+                            loop_callback();
+                        });
+                    } else {
+                        console.log("Skip as it already false. Card_id = ",card.card);
+                        loop_callback();
+                    }
+                }
+            },function(err){
+                callback({"status":1,"message":"Card has been set as default"});
+            });
+        } else {
+            callback({"status":0,"message":"Card has failed to update"});
+        }
+    });
+};
+
 
 module.exports = user_helper;

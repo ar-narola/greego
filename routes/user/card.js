@@ -46,7 +46,7 @@ router.post('/add',function(req,res){
     req.checkBody(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            
+
             async.waterfall([
                 function(callback){
                     var card_type = CardType(req.body.card_no);
@@ -107,6 +107,36 @@ router.post('/add',function(req,res){
             };
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
+    });
+});
+
+/**
+ * @api {put} /user/card/set_default Set given card as default for user
+ * @apiName Set given card as default for user
+ * @apiGroup User-card
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token User's unique access-key
+ * 
+ * @apiParam {String} card_id Credit card id
+ * 
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put('/set_default',function(req,res){
+    var schema = {
+        "card_id":{
+            notEmpty: true,
+            errorMessage: "Card number is required"
+        }
+    };
+
+    req.checkBody(schema);
+    req.getValidationResult().then(function (result){
+        user_helper.set_card_as_default_for_user(req.userInfo.id,req.body.card_id,function(resp){
+            console.log("response = ",res);
+            res.status(config.OK_STATUS).json({"message":resp});
+        });
     });
 });
 
