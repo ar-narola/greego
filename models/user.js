@@ -15,7 +15,7 @@ var CarSchema = new Schema({
 
 var CardSchema = new Schema({
     card : mongoose.Schema.Types.ObjectId,
-    is_default : Boolean
+    is_default : {type: Boolean, default:false}
 });
 
 var RateSchema = new Schema({

@@ -152,12 +152,42 @@ user_helper.update_user_by_id = function(user_id,update_obj,callback){
     });
 };
 
+
+user_helper.chk_for_default_card = function(user_id,callback){
+    User.findOne({ _id: user_id, "card.is_default": true }).exec(function(err,user_data){
+        if(err){
+            callback({"status":0,"err":"Error occured in finding user with default card"});
+        } else {
+            if(user_data){
+                callback({"status":1,"message":"User's default card is available"});
+            } else {
+                callback({"status":404,"message":"User's default card is not available"});
+            }
+        }
+    });
+};
+
+user_helper.set_first_card_as_default = function(user_id,callback){
+    user_helper.find_user_by_id(user_id,function(data){
+        if(data.status === 1 && data.user && data.user.card && data.user.card[0]){
+            user_helper.set_card_as_default_for_user(user_id,data.user.card[0].card._id,function(resp){
+                if(resp.status == 0){
+                    callback({"status":0,"err":"Card has failed to update"});
+                } else {
+                    callback({"status":1,"message":"First card has been set as default"});
+                }
+            });
+        } else {
+            callback({"status":0,"err":"User's card not found"});
+        }
+    });
+};
+
 /*
  * add_card_to_user is used to add given card to user's collection - Not working properly
  * 
  * @param   user_id         String  _id of user that need to be update
  * @param   card_id         String  _id of card
- * @param   is_default      Boolean Specify card is default card of user or not
  * 
  * @return  status  0 - If any error occur in updating user, with error
  *          status  1 - If User updated successfully, with appropriate message
@@ -165,25 +195,40 @@ user_helper.update_user_by_id = function(user_id,update_obj,callback){
  * 
  * @developed by "ar"
  */
-user_helper.add_card_to_user = function(user_id,card_id,is_default,callback){
-    User.update({_id:{$eq : user_id}},{$push : {card:{card:card_id,is_default:is_default}}},function(err,update_data){
-        if(err){
-            callback({"status":0,"err":err});
-        } else {
-            if(update_data.nModified == 1){
-                if(is_default == 1){
-                    User.update({_id:{$eq: user_id},"card.is_default":{$eq:true},"card.card":{$ne:card_id}},{$set:{"card.$.is_default":false}},function(err,update_data){
-                        if(err){
-                            console.log("error in unseting other card : ",err);
-                        }
-                        callback({"status":1,"message":"Record has been updated"});
-                    });
+user_helper.add_card_to_user = function(user_id,card_id,callback){
+    async.waterfall([
+        function(inner_callback){
+            User.update({_id:{$eq : user_id}},{$push : {card:{card:card_id}}},function(err,update_data){
+                if(err){
+                    inner_callback({"status":0,"err":err});
                 } else {
-                    callback({"status":1,"message":"Record has been updated"});
+                    if(update_data.nModified == 1){
+                        inner_callback(null);
+                    } else {
+                        inner_callback({"status":2,"err":"Record has not updated"});
+                    }
                 }
-            } else {
-                callback({"status":2,"err":"Record has not updated"});
-            }
+            });
+        },
+        function(inner_callback){
+            user_helper.chk_for_default_card(user_id,function(resp){
+                if(resp.status == 404){
+                    inner_callback(null);
+                } else {
+                    inner_callback({"status":1,"message":"Card has been added"});
+                }
+            });
+        },
+        function(inner_callback){
+            user_helper.set_first_card_as_default(user_id,function(resp){
+                inner_callback({"status":1,"message":"Card has been added"});
+            });
+        }
+    ],function(err,resp){
+        if(err){
+            callback(err);
+        } else {
+            callback(resp);
         }
     });
 }
@@ -201,16 +246,41 @@ user_helper.add_card_to_user = function(user_id,card_id,is_default,callback){
  * @developed by "ar"
  */
 user_helper.delete_card_from_user = function(user_id,card_id,callback){
-    User.update({_id:{$eq : user_id}},{$pull : {card:{card:{$eq : card_id}}}},function(err,update_data){
+    
+    
+    async.waterfall([
+        function(inner_callback){
+            User.update({_id:{$eq : user_id}},{$pull : {card:{card:{$eq : card_id}}}},function(err,update_data){
+                if(err){
+                    inner_callback({"status":0,"err":err});
+                } else {
+                    if(update_data.nModified == 1){
+                        inner_callback(null);
+                    } else {
+                        inner_callback({"status":2,"err":"Record has not updated"});
+                    }
+                }
+            });
+        },
+        function(inner_callback){
+            user_helper.chk_for_default_card(user_id,function(resp){
+                if(resp.status == 404){
+                    inner_callback(null);
+                } else {
+                    inner_callback({"status":1,"message":"Card has been deleted"});
+                }
+            });
+        },
+        function(inner_callback){
+            user_helper.set_first_card_as_default(user_id,function(resp){
+                inner_callback({"status":1,"message":"Card has been deleted"});
+            });
+        }
+    ],function(err,resp){
         if(err){
-            callback({"status":0,"err":err});
+            callback(err);
         } else {
-            console.log("update_data = ",update_data);
-            if(update_data.nModified == 1){
-                callback({"status":1,"message":"Record has been updated"});
-            } else {
-                callback({"status":2,"err":"Record has not updated"});
-            }
+            callback(resp);
         }
     });
 }
@@ -260,14 +330,14 @@ user_helper.set_card_as_default_for_user = function(user_id,card_id,callback){
             // User found
             async.eachSeries(data.user.card,function(card,loop_callback){
                 console.log("looping for card : ",card);
-                if(card.card && card.card._id && card.card._id == card_id && card.is_default == false){
+                if(card.card && card.card._id && JSON.stringify(card.card._id) === JSON.stringify(card_id) && card.is_default === false){
                     console.log("Found default card. going to set as true for it");
                     user_helper.update_user_card(user_id,card_id,true,function(resp){
                         console.log("Found default card. going to set as true for it : resp = ",resp);
                         loop_callback();
                     });
                 } else {
-                    if(card.card && card.card._id && card.is_default == true && card.card._id != card_id){
+                    if(card.card && card.card._id && card.is_default === true && card.card._id !== card_id){
                         console.log("is default is true. Going to make it false for card = ",card.card);
                         user_helper.update_user_card(user_id,card.card._id,false,function(resp){
                             console.log("resp = ",resp);
@@ -286,6 +356,5 @@ user_helper.set_card_as_default_for_user = function(user_id,card_id,callback){
         }
     });
 };
-
 
 module.exports = user_helper;

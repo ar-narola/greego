@@ -18,7 +18,6 @@ var user_helper = require("../../helpers/user_helper");
  * @apiParam {String} card_no Credit card number
  * @apiParam {Number} month Expire month of credit card
  * @apiParam {Number} year Expire year of credit card
- * @apiParam {Boolean} is_default Specify card is default card of user
  * 
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -36,10 +35,6 @@ router.post('/add',function(req,res){
         "year":{
             notEmpty: true,
             errorMessage: "Year is required"
-        },
-        "is_default":{
-            notEmpty: true,
-            errorMessage: "is_default is required"
         }
     };
 
@@ -85,7 +80,7 @@ router.post('/add',function(req,res){
                     });
                 },
                 function(card,callback){
-                    user_helper.add_card_to_user(req.userInfo.id,card._id,req.body.is_default,function(update_data){
+                    user_helper.add_card_to_user(req.userInfo.id,card._id,function(update_data){
                         if(update_data.status === 1){
                             callback(null,{"message":"card has been added"});
                         } else {
@@ -172,7 +167,11 @@ router.delete('/delete',function(req,res){
                     res.status(config.OK_STATUS).json({"message":"Card has been deleted"});
                 }
             });
-            /*async.waterfall([
+            /*
+            async.waterfall([
+                function(callback){
+                    
+                },
                 function(callback){
                     
                 }
@@ -182,7 +181,7 @@ router.delete('/delete',function(req,res){
                 } else {
                     res.status(config.OK_STATUS).json(result);
                 }
-            });*/
+            });     */       
         } else {
             var result = {
                 message: "Validation Error",
