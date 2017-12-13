@@ -22,10 +22,7 @@ var DriverSchema = new Schema({
     bank_routing_no: String,
     bank_account_no: String,
     ssn: String,
-    rate : RateSchema,
-    location_updated_at: Date,
-    current_lat: String,
-    current_long: String,
+    rate : RateSchema
 }, {versionKey: false});
 
 // Compile model from schema

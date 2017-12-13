@@ -6,6 +6,7 @@ var config = require('../config');
 var logger = config.logger;
 
 var driver_helper = require('./../helpers/driver_helper');
+var user_helper = require('./../helpers/user_helper');
 var trip_helper = require('./../helpers/trip_helper');
 var notification_helper = require('./../helpers/notification_helper');
 
@@ -83,7 +84,7 @@ module.exports = function (io) {
 
         /**
          * @api {Socket} logout To logout
-         * @apiName logout  
+         * @apiName logout
          * @apiGroup Socket
          * 
          * @apiDescription User/Driver can emit logout event to logout their self.
@@ -229,7 +230,7 @@ module.exports = function (io) {
 
             var driver = find_driver_by_socket(socket);
 
-            driver_helper.update_driver_by_id(driver.data._id, update_obj, function (update_data) {
+            user_helper.update_user_by_id(driver.data._id, update_obj, function (update_data) {
                 // Location updated
                 if (update_data.status === 0) {
                     console.log("Error has been occured in updating driver location");

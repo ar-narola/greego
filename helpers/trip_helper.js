@@ -86,10 +86,10 @@ trip_helper.accept_trip_request = function(trip_id,driver_id,callback){
                     if(err){
                         console.log("Error in find = ",err);
                     }
-                    
+
                     async.eachSeries(records[0].sent_request,function(record,loop_callback){
                         Trip.update({_id:{$eq:trip_id},"sent_request.status" : {$eq:"not-answered"}},{$set:{"sent_request.$.status":"aborted"}},{multi:true},function(err,result){
-                            if(err){
+                            if(err) {
                                 console.log("Error = ",err);
                             } else {
                                 console.log("Result = ",result);

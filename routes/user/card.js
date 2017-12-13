@@ -129,8 +129,11 @@ router.put('/set_default',function(req,res){
     req.checkBody(schema);
     req.getValidationResult().then(function (result){
         user_helper.set_card_as_default_for_user(req.userInfo.id,req.body.card_id,function(resp){
-            console.log("response = ",res);
-            res.status(config.OK_STATUS).json({"message":resp});
+            if(resp.status == 1){
+                res.status(config.OK_STATUS).json({"message":resp.message});
+            } else {
+                res.status(config.BAD_REQUEST).json({"message":resp.message});
+            }
         });
     });
 });
@@ -167,21 +170,6 @@ router.delete('/delete',function(req,res){
                     res.status(config.OK_STATUS).json({"message":"Card has been deleted"});
                 }
             });
-            /*
-            async.waterfall([
-                function(callback){
-                    
-                },
-                function(callback){
-                    
-                }
-            ],function(err,result){
-                if(err){
-                    res.status(err.status).json(err.resp);
-                } else {
-                    res.status(config.OK_STATUS).json(result);
-                }
-            });     */       
         } else {
             var result = {
                 message: "Validation Error",

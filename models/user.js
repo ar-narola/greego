@@ -42,6 +42,7 @@ var UserSchema = new Schema({
     password_changed_date: Date,
     current_lat: String,
     current_long: String,
+    location_updated_at: Date,
     emergency_contact : String,
     car : CarSchema,
     card: [CardSchema],
