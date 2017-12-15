@@ -643,32 +643,51 @@ module.exports = function (io) {
             var user = find_user_by_socket(socket);
             async.waterfall([
                 function (callback) {
-                    var driver_to_be_notify = [];
-                    async.eachSeries(drivers, function (driver, loop_callback) {
-
-                        distance.get({
-                            origin: data.pickup_location.latitude + ',' + data.pickup_location.longitude,
-                            destination: driver.data.current_lat + ',' + driver.data.current_long
-                        }, function (err, data) {
-                            if (err) {
-                                console.log("\ncan't get distance between user and driver location = ", err);
-                            } else {
-                                if (data.distanceValue <= 1609.344 * 10) // Distance is within 10 mile ??
-                                {
-                                    // Driver is available with in 10 mile of user's location, send him/her request
-                                    driver_to_be_notify.push(driver);
+                    async.parallel({
+                        driver_to_be_notify : function(inner_callback){
+                            var driver_to_be_notify = [];
+                            async.eachSeries(drivers, function (driver, loop_callback) {
+                                distance.get({
+                                    origin: data.pickup_location.latitude + ',' + data.pickup_location.longitude,
+                                    destination: driver.data.current_lat + ',' + driver.data.current_long
+                                }, function (err, data) {
+                                    if (err) {
+                                        console.log("\ncan't get distance between user and driver location = ", err);
+                                    } else {
+                                        if (data.distanceValue <= 1609.344 * 10) // Distance is within 10 mile ??
+                                        {
+                                            // Driver is available with in 10 mile of user's location, send him/her request
+                                            driver_to_be_notify.push(driver);
+                                        } else {
+                                            console.log("Driver skipped : ", driver.data);
+                                            console.log("Location data = ", data);
+                                        }
+                                    }
+                                    loop_callback();
+                                });
+                            }, function (err) {
+                                inner_callback(null, driver_to_be_notify);
+                            });
+                        },
+                        userinfo : function(inner_callback){
+                            user_helper.find_user_by_id(user.data._id,function(user_data){
+                                if(user_data.status === 1){
+                                    inner_callback(null,user_data.user);
                                 } else {
-                                    console.log("Driver skipped : ", driver.data);
-                                    console.log("Location data = ", data);
+                                    inner_callback({"status":config.BAD_REQUEST,"message":"User not found"});
                                 }
-                            }
-                            loop_callback();
-                        });
-                    }, function (err) {
-                        callback(null, driver_to_be_notify);
+                            });
+                        }
+                    },function(err,result){
+                        if(err){
+                            callback({"status":err.status});
+                        } else {
+                            callback(null,result);
+                        }
                     });
                 },
-                function (driver_to_be_notify, callback) {
+                function (result, callback) {
+                    var driver_to_be_notify = result.driver_to_be_notify;
                     ins_obj = {
                         "pickup": {
                             "location_name": data.pickup_location.placename,
@@ -680,6 +699,7 @@ module.exports = function (io) {
                             "location_lat": data.destination_location.latitude,
                             "location_long": data.destination_location.longitude
                         },
+                        car : result.userinfo.car,
                         "fare": data.fare,
                         "user_id": user.data._id,
                         "status": "driver-requested",

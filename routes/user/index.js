@@ -463,7 +463,7 @@ router.post('/calculate_fare',function(req,res){
  * 
  * @apiParam {String} driver_id Id of driver
  * 
- * @apiSuccess (Success 200) {String} car List of car.
+ * @apiSuccess (Success 200) {String} driver Driver object.
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get('/get_driver_by_id',function(req,res){
@@ -475,20 +475,34 @@ router.get('/get_driver_by_id',function(req,res){
                 res.status(config.BAD_REQUEST).json({"message":"No driver found"});
             } else {
                 var ret_driver = {
-                    "_id":driver_data.driver._id,
-                    "first_name":driver_data.driver.first_name,
-                    "last_name":driver_data.driver.last_name,
-                    "email":driver_data.driver.email,
-                    "phone":driver_data.driver.phone,
-                    "transmission_type":driver_data.driver.transmission_type,
-                    "ssn":driver_data.driver.ssn,
-                    "driver_avatar":driver_data.driver.driver_avatar,
-                    "drive_type":driver_data.driver.drive_type,
-                    "current_lat":driver_data.driver.current_lat,
-                    "current_long":driver_data.driver.current_long,
-                    "avg_rate":driver_data.driver.rate.avg_rate
-                }
-                res.status(config.OK_STATUS).json(ret_driver);
+                "_id":driver_data.driver._id,
+                "first_name":driver_data.driver.first_name,
+                "last_name":driver_data.driver.last_name,
+                "email":driver_data.driver.email,
+                "country_code":driver_data.driver.country_code,
+                "phone":driver_data.driver.phone,
+                "role":driver_data.driver.role,
+//                "phone_verified":driver_data.driver.phone_verified,
+                "residential_status":driver_data.driver.residential_status,
+                "user_avatar":(driver_data.driver.user_avatar)?driver_data.driver.user_avatar:null,
+                "emergency_contact":(driver_data.driver.emergency_contact)?driver_data.driver.emergency_contact:null,
+
+                "drive_type":(driver_data.driver.driver_id.drive_type)?driver_data.driver.driver_id.drive_type:null,
+                "transmission_type":(driver_data.driver.driver_id.transmission_type)?driver_data.driver.driver_id.transmission_type:null,
+                "license":(driver_data.driver.driver_id.license)?driver_data.driver.driver_id.license:null,
+                "birth_certi":(driver_data.driver.driver_id.birth_certi)?driver_data.driver.driver_id.birth_certi:null,
+                "home_insurance":(driver_data.driver.driver_id.home_insurance)?driver_data.driver.driver_id.home_insurance:null,
+                "auto_insurance":(driver_data.driver.driver_id.auto_insurance)?driver_data.driver.driver_id.auto_insurance:null,
+//                "pay_stub":(driver_data.driver.driver_id.pay_stub)?driver_data.driver.driver_id.pay_stub:null,
+//                "ssn":(driver_data.driver.driver_id.ssn)?driver_data.driver.driver_id.ssn:null,
+//                "bank_routing_no":(driver_data.driver.driver_id.bank_routing_no)?driver_data.driver.driver_id.bank_routing_no:null,
+//                "bank_account_no":(driver_data.driver.driver_id.bank_account_no)?driver_data.driver.driver_id.bank_account_no:null,
+
+                "current_lat":(driver_data.driver.current_lat)?driver_data.driver.current_lat:null,
+                "current_long":(driver_data.driver.current_long)?driver_data.driver.current_long:null,
+                "avg_rate":(driver_data.driver.driver_id.rate && driver_data.driver.driver_id.rate.avg_rate)?driver_data.driver.driver_id.rate.avg_rate:null
+            }
+                res.status(config.OK_STATUS).json({"driver":ret_driver});
             }
         });
     } else {

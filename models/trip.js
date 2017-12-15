@@ -31,7 +31,14 @@ var TripSchema = new Schema({
     user_id: mongoose.Schema.Types.ObjectId,
     driver_id: mongoose.Schema.Types.ObjectId,
     sent_request : [SentRequestSchema],
-    car_id: mongoose.Schema.Types.ObjectId,
+    car: {
+        brand: String,
+        model: String,
+        color: String,
+        year: String,
+        plate_number: String,
+        transmission_type: {type: String, enum: ["Automatic", "Manual"]},
+    },
     status: {type:String, enum:["driver-requested","request-accepted","driver-reached","in-progress","completed"]},
     rate_to_user: { type: Number, min:1, max : 5}, // Driver will rate to user
     rate_to_driver : { type: Number, min:1, max : 5}, // User will rate to driver

@@ -11,6 +11,7 @@ var config = require('../../config');
 
 var driver_helper = require("../../helpers/driver_helper");
 var user_helper = require("../../helpers/user_helper");
+var trip_helper = require("../../helpers/trip_helper");
 
 var logger = config.logger;
 
@@ -478,6 +479,85 @@ router.put('/update', function (req, res) {
             res.status(err.status).json({"message": err.err});
         } else {
             res.status(config.OK_STATUS).json({"message": "Profile information has been updated successfully","user":result});
+        }
+    });
+});
+
+/**
+ * @api {get} /driver/statistics Get earning statistics of driver
+ * @apiName Get earning statistics of driver
+ * @apiGroup Driver
+ * 
+ * @apiHeader {String}  x-access-token Driver's unique access-key
+ * 
+ * @apiSuccess (Success 200) {JSON} driver Driver details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/statistics',function(req,res){
+    async.waterfall([
+        function(callback){
+            trip_helper.get_all_trips_for_driver(req.userInfo.id,function(trip_data){
+                if(trip_data.status == 0){
+                    // error in finding trips
+                    callback({"status":config.INTERNAL_SERVER_ERROR,"message":"Error has occured while finding trips"});
+                } else if(trip_data.status == 404) {
+                    // No trips available
+                    callback({"status":config.BAD_REQUEST,"message":""});
+                } else {
+                    // Valid trips
+                    callback(null,trip_data.trip);
+                }
+            });
+        },
+        function(trips,callback){
+            async.parallel({
+                completed_trips : function(inner_callback){
+                    var completed_trips = _.filter(trips,function(trip){
+                        if(trip.status == "completed" && JSON.stringify(req.userInfo.id) === JSON.stringify(trip.driver_id)){
+                            return trip;
+                        }
+                    });
+                    inner_callback(null,completed_trips);
+                },
+                rejected_trips : function(inner_callback){
+                    var rejected_trips = _.filter(trips,function(trip){
+                        var rejected = _.filter(trip.sent_request,function(sent_req){
+                            if(sent_req.status == "rejected" && JSON.stringify(req.userInfo.id) === JSON.stringify(sent_req.driver_id)){
+                                return true;
+                            }
+                        });
+                        if(rejected[0]){
+                            return trip;
+                        }
+                    });
+                    inner_callback(null,rejected_trips);
+                }
+            },function(err,result){
+                if(err){
+                    callback({"status":config.INTERNAL_SERVER_ERROR,"message":err});
+                } else {
+                    var total_earnings = _.reduce(result.completed_trips,function(memo,trip_obj){
+                        return memo + (trip_obj.fare * 1);
+                    },0);
+                    
+                    var acceptance_rate = (100 * result.completed_trips.length) / (result.completed_trips.length + result.rejected_trips.length);
+                    
+                    result = {
+                        "total_earnings":total_earnings,
+                        "total_completed_trips":result.completed_trips.length,
+                        "total_rejected_trips":result.rejected_trips.length,
+                        "acceptance_rate" : acceptance_rate,
+                        "completed_trips":result.completed_trips,
+                    };
+                    callback(null,result);
+                }
+            });
+        }
+    ],function(err,result){
+        if(err){
+            res.status(err.status).json({"message":err.message});
+        } else {
+            res.status(config.OK_STATUS).json({"trip":result});
         }
     });
 });

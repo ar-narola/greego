@@ -9,7 +9,7 @@ var PaymentSchema = new Schema({
     card_id: mongoose.Schema.Types.ObjectId,
     trip_fare: Number,
     paid_amount: Number,
-    date_time: Date
+    date_time: { type: Date, default: Date.now }
 }, {versionKey: false});
 
 // Compile model from schema

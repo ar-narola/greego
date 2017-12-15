@@ -5,6 +5,7 @@ var async = require('async');
 
 var config = require('../../config');
 var trip_helper = require("../../helpers/trip_helper");
+var payment_helper = require("../../helpers/payment_helper");
 var driver_helper = require("../../helpers/driver_helper");
 
 /**
@@ -118,6 +119,84 @@ router.post('/rate_driver',function(req,res){
                     res.status(err.status).json({"message":err.message});
                 } else {
                     res.status(config.OK_STATUS).json({"message":"Rate has been given to driver"});
+                }
+            });
+        } else {
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
+
+/**
+ * @api {post} /user/trip/payment To make payment for trip
+ * @apiName To make payment for trip
+ * @apiGroup User-trip
+ * 
+ * @apiHeader {String}  x-access-token User's unique access-key
+ * 
+ * @apiParam {String} trip_id Trip id for which user has paid
+ * @apiParam {String} card_id Card id form which user has paid
+ * @apiParam {Number} amount_paid amount has been paid by user
+ * 
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post('/payment',function(req,res){
+    var schema = {
+        "trip_id":{
+            notEmpty: true,
+            errorMessage: "Trip id is required"
+        },
+        "card_id":{
+            notEmpty: true,
+            errorMessage: "Card id is required"
+        },
+        "amount_paid":{
+            notEmpty: true,
+            errorMessage: "Paid amount is required"
+        }
+    };
+
+    req.checkBody(schema);
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            async.waterfall([
+                function(callback){
+                    trip_helper.find_trip_by_id(req.body.trip_id, function (trip_data) {
+                        if (trip_data.status === 0) {
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding trip info"});
+                        } else if (trip_data.status === 404) {
+                            callback({"status": config.BAD_REQUEST, "message": "Invalid trip id"});
+                        } else {
+                            callback(null, trip_data.trip);
+                        }
+                    });
+                },
+                function(trip,callback){
+                    var payment_obj = {
+                        "trip_id":trip._id,
+                        "card_id":req.body.card_id,
+                        "trip_fare":trip.fare,
+                        "paid_amount":req.body.amount_paid
+                    };
+
+                    payment_helper.insert_payment(payment_obj,function(payment_data){
+                        if(payment_data.status === 0){
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding trip info"});
+                        } else {
+                            callback(null,payment_data);
+                        }
+                    });
+                }
+            ],function(err,result){
+                if(err){
+                    res.status(err.status).json({"message":err.message});
+                } else {
+                    res.status(config.OK_STATUS).json({"message":"Payment has been done"});
                 }
             });
         } else {
