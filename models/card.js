@@ -14,6 +14,8 @@ var CardTypeSchema = new Schema({
 
 var CardSchema = new Schema({
     card_number: String,
+    first_name: String,
+    last_name: String,
     month: { type: Number, min: 1, max: 12 },
     year: { type: Number, min: 2017, max: 9999 },
     cvv: { type: Number, min:100, max : 999},

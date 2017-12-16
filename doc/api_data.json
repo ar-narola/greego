@@ -49,6 +49,55 @@
     "groupTitle": "Driver"
   },
   {
+    "type": "get",
+    "url": "/driver/statistics",
+    "title": "Get earning statistics of driver",
+    "name": "Get_earning_statistics_of_driver",
+    "group": "Driver",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Driver's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "driver",
+            "description": "<p>Driver details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/driver/index.js",
+    "groupTitle": "Driver"
+  },
+  {
     "type": "put",
     "url": "/driver/update",
     "title": "Update driver profile",
@@ -1261,7 +1310,7 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "plate_number",
             "description": "<p>Plate number of car</p>"
           },
@@ -2417,8 +2466,8 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "car",
-            "description": "<p>List of car.</p>"
+            "field": "driver",
+            "description": "<p>Driver object.</p>"
           }
         ]
       }
@@ -2740,6 +2789,20 @@
             "optional": false,
             "field": "year",
             "description": "<p>Expire year of credit card</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "first_name",
+            "description": "<p>First name of card owner</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "last_name",
+            "description": "<p>Last name of card owner</p>"
           }
         ]
       }
@@ -3038,6 +3101,82 @@
             "optional": false,
             "field": "rate_point",
             "description": "<p>Rating point that user has given to driver</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/trip.js",
+    "groupTitle": "User_trip"
+  },
+  {
+    "type": "post",
+    "url": "/user/trip/payment",
+    "title": "To make payment for trip",
+    "name": "To_make_payment_for_trip",
+    "group": "User_trip",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "trip_id",
+            "description": "<p>Trip id for which user has paid</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "card_id",
+            "description": "<p>Card id form which user has paid</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "amount_paid",
+            "description": "<p>amount has been paid by user</p>"
           }
         ]
       }

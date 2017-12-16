@@ -18,6 +18,8 @@ var user_helper = require("../../helpers/user_helper");
  * @apiParam {String} card_no Credit card number
  * @apiParam {Number} month Expire month of credit card
  * @apiParam {Number} year Expire year of credit card
+ * @apiParam {String} first_name First name of card owner
+ * @apiParam {String} last_name Last name of card owner
  * 
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -35,6 +37,14 @@ router.post('/add',function(req,res){
         "year":{
             notEmpty: true,
             errorMessage: "Year is required"
+        },
+        "first_name":{
+            notEmpty: true,
+            errorMessage: "First name is required"
+        },
+        "last_name":{
+            notEmpty: true,
+            errorMessage: "Last name is required"
         }
     };
 
@@ -55,7 +65,9 @@ router.post('/add',function(req,res){
                     var card_obj = {
                         "card_number":req.body.card_no,
                         "month":req.body.month,
-                        "year":req.body.year
+                        "year":req.body.year,
+                        "first_name":req.body.first_name,
+                        "last_name":req.body.last_name
                     };
                     
                     if(card_type && card_type != null){

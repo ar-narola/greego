@@ -146,7 +146,7 @@ router.post('/user_login', function (req, res) {
  * @apiParam {String} car_model Car model name
  * @apiParam {String} car_color Car color
   * @apiParam {String} [car_year] Car year
- * @apiParam {String} plate_number Plate number of car
+ * @apiParam {String} [plate_number] Plate number of car
  * @apiParam {String} transmission_type Transmission type of car
  * 
  * @apiDescription  You need to pass form-data
@@ -193,10 +193,6 @@ router.post('/user_signup', function (req, res) {
         'car_color': {
             notEmpty: true,
             errorMessage: "Car color is required"
-        },
-        'plate_number': {
-            notEmpty: true,
-            errorMessage: "Plate number is required"
         },
         'transmission_type': {
             notEmpty: true,
@@ -271,7 +267,6 @@ router.post('/user_signup', function (req, res) {
                             "brand":req.body.car_brand,
                             "model":req.body.car_model,
                             "color":req.body.car_color,
-                            "plate_number":req.body.plate_number,
                             "transmission_type":req.body.transmission_type
                         }
                     };
@@ -282,6 +277,9 @@ router.post('/user_signup', function (req, res) {
                     
                     if (req.body.car_year) {
                         user_obj.car.year = req.body.car_year;
+                    }
+                    if (req.body.plate_number) {
+                        user_obj.car.plate_number = req.body.plate_number;
                     }
 
                     user_helper.insert_user(user_obj, function (user_data) {
