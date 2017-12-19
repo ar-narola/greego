@@ -7,6 +7,7 @@ var config = require('../../config');
 var trip_helper = require("../../helpers/trip_helper");
 var payment_helper = require("../../helpers/payment_helper");
 var driver_helper = require("../../helpers/driver_helper");
+var user_helper = require("../../helpers/user_helper");
 
 /**
  * @api {get} /user/trip/history Get users past trip
@@ -85,7 +86,18 @@ router.post('/rate_driver',function(req,res){
                     });
                 },
                 function(trip,callback){
-                    driver_helper.find_driver_by_id(trip.driver_id,function(driver_data){
+                    user_helper.find_user_by_id(trip.driver_id,function(driver_data){
+                        if(driver_data.status === 0){
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding driver info"});
+                        } else if(driver_data.status === 404){
+                            callback({"status": config.BAD_REQUEST, "message": "Driver not found"});
+                        } else {
+                            callback(null,driver_data.user.driver_id);
+                        }
+                    });
+                },
+                function(driver_id,callback){
+                    driver_helper.find_driver_by_id(driver_id,function(driver_data){
                         if(driver_data.status === 0){
                             callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding driver info"});
                         } else if(driver_data.status === 404){
