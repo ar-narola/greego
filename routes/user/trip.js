@@ -86,17 +86,19 @@ router.post('/rate_driver',function(req,res){
                     });
                 },
                 function(trip,callback){
+                    console.log("user id : ",trip.driver_id);
                     user_helper.find_user_by_id(trip.driver_id,function(driver_data){
                         if(driver_data.status === 0){
-                            callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding driver info"});
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding user info"});
                         } else if(driver_data.status === 404){
-                            callback({"status": config.BAD_REQUEST, "message": "Driver not found"});
+                            callback({"status": config.BAD_REQUEST, "message": "User not found"});
                         } else {
                             callback(null,driver_data.user.driver_id);
                         }
                     });
                 },
                 function(driver_id,callback){
+                    console.log("driver id : ",driver_id);
                     driver_helper.find_driver_by_id(driver_id,function(driver_data){
                         if(driver_data.status === 0){
                             callback({"status": config.INTERNAL_SERVER_ERROR, "message": "Error occured in finding driver info"});
