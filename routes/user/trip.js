@@ -100,9 +100,9 @@ router.post('/rate_driver',function(req,res){
                     if(driver.driver_id.rate && driver.driver_id.rate.total_rate_point){
                         update_obj = {
                             "rate":{
-                                "total_rate_point":driver.driver_id.rate.total_rate_point + req.body.rate_point,
-                                "total_rate":driver.driver_id.rate.total_rate + 1,
-                                "avg_rate": ((driver.driver_id.rate.total_rate_point + req.body.rate_point) / (driver.driver_id.rate.total_rate + 1))
+                                "total_rate_point":(driver.driver_id.rate.total_rate_point * 1) + (req.body.rate_point * 1),
+                                "total_rate":(driver.driver_id.rate.total_rate * 1) + 1,
+                                "avg_rate": ((driver.driver_id.rate.total_rate_point * 1 + req.body.rate_point * 1) / (driver.driver_id.rate.total_rate * 1 + 1))
                             }
                         }
                     } else {
