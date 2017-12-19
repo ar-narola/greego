@@ -96,13 +96,25 @@ router.post('/rate_driver',function(req,res){
                     });
                 },
                 function(driver,callback){
-                    update_obj = {
-                        "rate":{
-                            "total_rate_point":driver.rate.total_rate_point + req.body.rate_point,
-                            "total_rate":driver.rate.total_rate + 1,
-                            "avg_rate": ((driver.rate.total_rate_point + req.body.rate_point) / (driver.rate.total_rate + 1))
+                    
+                    if(driver.rate && driver.rate.total_rate_point){
+                        update_obj = {
+                            "rate":{
+                                "total_rate_point":driver.rate.total_rate_point + req.body.rate_point,
+                                "total_rate":driver.rate.total_rate + 1,
+                                "avg_rate": ((driver.rate.total_rate_point + req.body.rate_point) / (driver.rate.total_rate + 1))
+                            }
+                        }
+                    } else {
+                        update_obj = {
+                            "rate":{
+                                "total_rate_point":req.body.rate_point,
+                                "total_rate":1,
+                                "avg_rate": req.body.rate_point
+                            }
                         }
                     }
+                    
                     driver_helper.update_driver_by_id(driver._id,update_obj,function(resp_data){
                         if(resp_data.status === 0){
                             console.log("error = ",resp_data.err);
