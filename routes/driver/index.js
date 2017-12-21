@@ -41,7 +41,7 @@ router.get('/get_details',function(req,res){
                 "phone":driver_data.driver.phone,
                 "role":driver_data.driver.role,
                 "phone_verified":driver_data.driver.phone_verified,
-                "residential_status":driver_data.driver.residential_status,
+                "residential_status":driver_data.driver.driver_id.residential_status,
                 "user_avatar":(driver_data.driver.user_avatar)?driver_data.driver.user_avatar:null,
                 "emergency_contact":(driver_data.driver.emergency_contact)?driver_data.driver.emergency_contact:null,
 
