@@ -4,7 +4,7 @@ module.exports = function (req, res, next) {
     if (req.decoded.role == "rider" && req.baseUrl.match('/user')) {
         req.userInfo = req.decoded;
         next();
-    } else if (req.decoded.role == "driver" && req.baseUrl.match('/driver')) {
+    } else if (req.decoded.role == "driver" && (req.baseUrl.match('/driver') || req.originalUrl.match('/user/change_password'))) {
         req.driverInfo = req.decoded;
         req.userInfo = req.decoded;
         next();
