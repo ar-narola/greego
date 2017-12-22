@@ -354,7 +354,7 @@ router.put('/update', function (req, res) {
                 user_obj.last_name = req.body.last_name;
             }
             if (req.body.residential_status) {
-                user_obj.residential_status = req.body.residential_status;
+                driver_obj.residential_status = req.body.residential_status;
             }
             
             if (req.body.drive_type) {
