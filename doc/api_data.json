@@ -366,6 +366,75 @@
   },
   {
     "type": "post",
+    "url": "/driver/trip/rate_user",
+    "title": "Rate user",
+    "name": "Rate_user",
+    "group": "Driver_trip",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Driver's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "trip_id",
+            "description": "<p>Trip id for which driver is giving rate</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "rate_point",
+            "description": "<p>Rating point that driver has given to user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/driver/trip.js",
+    "groupTitle": "Driver_trip"
+  },
+  {
+    "type": "post",
     "url": "/driver_signup",
     "title": "Driver Signup",
     "name": "Driver_Signup",
