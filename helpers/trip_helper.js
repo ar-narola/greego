@@ -173,7 +173,29 @@ trip_helper.get_trips_by_driver_id = function (driver_id, callback) {
             callback({"status": 0, "err": err});
         } else {
             if (trip_data.length > 0) {
-                callback({"status": 1, "trip": trip_data});
+                async.eachSeries(trip_data,function(trip,loop_callback){
+                    var user = trip.user_id;
+                    if(user){
+                        delete trip.user_id;
+                        trip.user = {
+                            "_id" : user._id,
+                            "first_name" : user.first_name,
+                            "last_name" : user.last_name,
+                            "email":user.email,
+                            "country_code":user.country_code,
+                            "phone":user.phone,
+                            "user_avatar":user.user_avatar,
+                            "avg_rate":(user.rate && user.rate.avg_rate)?user.rate.avg_rate:null
+                        }
+                        loop_callback();
+                    } else {
+                        trip.user = null;
+                        loop_callback();
+                    }
+//                    console.log("driver = ",driver);
+                },function(err){
+                    callback({"status": 1, "trip": trip_data});
+                });
             } else {
                 callback({"status": 404, "err": "No trip found"});
             }
