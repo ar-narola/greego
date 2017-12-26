@@ -166,7 +166,9 @@ trip_helper.get_trips_by_user_id = function (user_id, callback) {
  * 
  */
 trip_helper.get_trips_by_driver_id = function (driver_id, callback) {
-    Trip.find({"driver_id": {$eq: driver_id}}).lean().exec(function (err, trip_data) {
+    Trip.find({"driver_id": {$eq: driver_id}})
+            .populate({path: 'user_id', 'model': 'users'})
+            .lean().exec(function (err, trip_data) {
         if (err) {
             callback({"status": 0, "err": err});
         } else {
