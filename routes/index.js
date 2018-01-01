@@ -1306,6 +1306,173 @@ router.post('/verifyotp', function (req, res) {
     });
 });
 
+/**
+ * @api {post} /calculate_fare Calculate fare
+ * @apiName Calculate fare
+ * @apiGroup Root
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * 
+ * @apiParam {String} pick_lat Pickup latitude
+ * @apiParam {String} pick_long Pickup longitude
+ * @apiParam {String} dest_lat Destination latitude
+ * @apiParam {String} dest_long Destination longitude
+ * 
+ * @apiSuccess (Success 200) {String} message Success message.
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post('/calculate_fare',function(req,res){
+    var schema = {
+        'pick_lat': {
+            notEmpty: true,
+            errorMessage: "Pickup latitude is required."
+        },
+        'pick_long': {
+            notEmpty: true,
+            errorMessage: "Pickup longitude is required."
+        },
+        'dest_lat': {
+            notEmpty: true,
+            errorMessage: "Destination latitude is required."
+        },
+        'dest_long': {
+            notEmpty: true,
+            errorMessage: "Destination longitude is required."
+        }
+    };
+    req.checkBody(schema);
+    
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            async.waterfall([
+                function(callback){
+                    request({
+                        uri: 'http://maps.googleapis.com/maps/api/geocode/json',
+                        qs: {
+                            latlng: req.body.pick_lat + ',' + req.body.pick_long,
+                            sensor: false
+                        }
+                    }, function (error, response, body) {
+                        if (!error && response.statusCode == 200) {
+                            body = JSON.parse(body);
+                            var obj = {};
+                            _.filter(body.results[0].address_components, function (comp) {
+                                if (_.indexOf(comp.types, "locality") > -1) {
+                                    obj.City = comp.long_name;
+                                } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
+                                    obj.State = comp.short_name;
+                                } else if (_.indexOf(comp.types, "postal_code") > -1) {
+                                    obj.ZIP = comp.short_name;
+                                }
+                            });
+                            callback(null, obj);
+                        } else {
+                            callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                        }
+                    });
+                },
+                function(pickup_obj,callback){
+                    request({
+                        uri: 'http://maps.googleapis.com/maps/api/geocode/json',
+                        qs: {
+                            latlng: req.body.dest_lat + ',' + req.body.dest_long,
+                            sensor: false
+                        }
+                    }, function (error, response, body) {
+                        if (!error && response.statusCode == 200) {
+                            body = JSON.parse(body);
+                            var obj = {};
+                            _.filter(body.results[0].address_components, function (comp) {
+                                if (_.indexOf(comp.types, "locality") > -1) {
+                                    obj.City = comp.long_name;
+                                } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
+                                    obj.State = comp.short_name;
+                                } else if (_.indexOf(comp.types, "postal_code") > -1) {
+                                    obj.ZIP = comp.short_name;
+                                }
+                            });
+                            callback(null,pickup_obj,obj);
+                        } else {
+                            callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                        }
+                    });
+                },
+                function(pickup_obj,dest_obj,callback){
+                    if((_.indexOf(["NY","NJ"],pickup_obj.State) > -1) && (_.indexOf(["NY","NJ"],dest_obj.State) > -1)){
+                        distance.get({
+                            origin: req.body.pick_lat+','+req.body.pick_long,
+                            destination: req.body.dest_lat+','+req.body.dest_long,
+                            mode: 'driving',
+                            units: 'imperial'
+                        },function(err, data) {
+                            if (err) {
+                                callback({"status":config.INTERNAL_SERVER_ERROR,"messgae":err});
+                            } else {
+                                console.log("distance info = ",data);
+                                callback(null,pickup_obj,dest_obj,data)
+                            }
+                        });
+                    } else {
+                        // We are not providing service in given area
+                        callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                    }
+                },
+                function(pickup_obj,dest_obj,distance_data,callback){
+                    if(pickup_obj.State == dest_obj.State){
+                        var state = "";
+                        if(pickup_obj.State == "NY"){
+                            state = "NYC";
+                        } else if(pickup_obj.State == "NJ"){
+                            state = "New Jersey";
+                        } else {
+                            callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                        }
+                        fare_helper.find_fare_by_state(state,function(fare_info){
+                            if(fare_info.status === 0){
+                                callback({"status":config.INTERNAL_SERVER_ERROR,"message":"There is an issue in fetching fare details"});
+                            } else if(fare_info.status === 404 || !fare_info.fare){
+                                callback({"status":config.BAD_REQUEST,"message":"No fare data available for given state"});
+                            } else {
+                                // Fare calculation
+                                var base = fare_info.fare.base * 1;
+                                var per_min = fare_info.fare.per_min * 1;
+                                var per_mile = fare_info.fare.per_mile * 1;
+                                var service_fee = fare_info.fare.service_fee * 1;
+                                var minimum_charge = fare_info.fare.minimum_charge * 1;
+                                
+                                var duration_min = ((distance_data.durationValue * 1) / 60);
+                                var per_meter = per_mile/1609.34;
+                                var final_fare = base + (duration_min * per_min) + (per_meter * distance_data.distanceValue) + service_fee;
+                                
+                                if(final_fare < minimum_charge){
+                                    final_fare = minimum_charge;
+                                }
+                                callback(null,{"message":"Fare has been calculate","fare":final_fare});
+                            }
+                        });
+                    } else {
+                        // Interstate strip
+                        callback({"status":config.OK_STATUS,"message":"Fare calculation of interstate trip is under development"});
+                    }
+                }
+            ],function(err,result){
+                if (err) {
+                    res.status(err.status).json({"message": err.err});
+                } else {
+                    res.status(config.OK_STATUS).json(result);
+                }
+            });
+        } else {
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
+
+
 function sendOTPtoUser(user,callback){
     // Generate random code
     var code = Math.floor(100000 + Math.random() * 900000);
