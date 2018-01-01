@@ -4,6 +4,10 @@ var fs = require('fs');
 var path = require('path');
 var jwt = require('jsonwebtoken');
 
+var request = require('request');
+var _ = require('underscore');
+var distance = require('google-distance');
+
 var config = require("../config");
 var car_helper = require("../helpers/car_helper");
 var car_model_helper = require("../helpers/car_model_helper");
@@ -11,6 +15,7 @@ var user_helper = require("../helpers/user_helper");
 var driver_helper = require("../helpers/driver_helper");
 var mail_helper = require("../helpers/mail_helper");
 var twilio_helper = require("../helpers/twilio_helper");
+var fare_helper = require("../helpers/fare_helper");
 
 var router = express.Router();
 var logger = config.logger;
@@ -1356,6 +1361,7 @@ router.post('/calculate_fare',function(req,res){
                         if (!error && response.statusCode == 200) {
                             body = JSON.parse(body);
                             var obj = {};
+                            
                             _.filter(body.results[0].address_components, function (comp) {
                                 if (_.indexOf(comp.types, "locality") > -1) {
                                     obj.City = comp.long_name;
