@@ -1358,7 +1358,7 @@ router.post('/calculate_fare',function(req,res){
                             sensor: false
                         }
                     }, function (error, response, body) {
-                        if (!error && response.statusCode == 200) {
+                        if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
                             body = JSON.parse(body);
                             var obj = {};
                             
@@ -1373,7 +1373,7 @@ router.post('/calculate_fare',function(req,res){
                             });
                             callback(null, obj);
                         } else {
-                            callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                         }
                     });
                 },
@@ -1385,7 +1385,7 @@ router.post('/calculate_fare',function(req,res){
                             sensor: false
                         }
                     }, function (error, response, body) {
-                        if (!error && response.statusCode == 200) {
+                        if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
                             body = JSON.parse(body);
                             var obj = {};
                             _.filter(body.results[0].address_components, function (comp) {
@@ -1399,7 +1399,7 @@ router.post('/calculate_fare',function(req,res){
                             });
                             callback(null,pickup_obj,obj);
                         } else {
-                            callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                         }
                     });
                 },
@@ -1420,7 +1420,7 @@ router.post('/calculate_fare',function(req,res){
                         });
                     } else {
                         // We are not providing service in given area
-                        callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                        callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                     }
                 },
                 function(pickup_obj,dest_obj,distance_data,callback){
@@ -1431,13 +1431,13 @@ router.post('/calculate_fare',function(req,res){
                         } else if(pickup_obj.State == "NJ"){
                             state = "New Jersey";
                         } else {
-                            callback({"status": config.BAD_REQUEST,"message": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                         }
                         fare_helper.find_fare_by_state(state,function(fare_info){
                             if(fare_info.status === 0){
-                                callback({"status":config.INTERNAL_SERVER_ERROR,"message":"There is an issue in fetching fare details"});
+                                callback({"status":config.INTERNAL_SERVER_ERROR,"err":"There is an issue in fetching fare details"});
                             } else if(fare_info.status === 404 || !fare_info.fare){
-                                callback({"status":config.BAD_REQUEST,"message":"No fare data available for given state"});
+                                callback({"status":config.BAD_REQUEST,"err":"No fare data available for given state"});
                             } else {
                                 // Fare calculation
                                 var base = fare_info.fare.base * 1;
