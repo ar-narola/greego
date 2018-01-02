@@ -1327,6 +1327,8 @@ router.post('/verifyotp', function (req, res) {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post('/calculate_fare',function(req,res){
+    logger.trace("API - Calculate fare called");
+    logger.debug("req.body = ",req.body);
     var schema = {
         'pick_lat': {
             notEmpty: true,
@@ -1349,8 +1351,10 @@ router.post('/calculate_fare',function(req,res){
     
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
+            logger.trace("Valid request");
             async.waterfall([
                 function(callback){
+                    logger.trace("Checking pickup location");
                     request({
                         uri: 'http://maps.googleapis.com/maps/api/geocode/json',
                         qs: {
@@ -1358,19 +1362,29 @@ router.post('/calculate_fare',function(req,res){
                             sensor: false
                         }
                     }, function (error, response, body) {
+                        logger.trace("Pickup location checking.");
+                        body = JSON.parse(body);
                         if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
-                            body = JSON.parse(body);
+                            
                             var obj = {};
                             
                             _.filter(body.results[0].address_components, function (comp) {
+                                
+                                logger.trace("comp = ",comp);
+                                
                                 if (_.indexOf(comp.types, "locality") > -1) {
+                                    logger.trace("locality for pickup location : ",comp.long_name);
                                     obj.City = comp.long_name;
                                 } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
+                                    logger.trace("administrative_area_level_1 for pickup location : ",comp.short_name);
                                     obj.State = comp.short_name;
                                 } else if (_.indexOf(comp.types, "postal_code") > -1) {
+                                    logger.trace("postal_code for pickup location : ",comp.short_name);
                                     obj.ZIP = comp.short_name;
                                 }
                             });
+                            logger.trace("Source = ",obj);
+                            
                             callback(null, obj);
                         } else {
                             callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
@@ -1378,6 +1392,7 @@ router.post('/calculate_fare',function(req,res){
                     });
                 },
                 function(pickup_obj,callback){
+                    logger.trace("Checking destination location");
                     request({
                         uri: 'http://maps.googleapis.com/maps/api/geocode/json',
                         qs: {
@@ -1385,10 +1400,13 @@ router.post('/calculate_fare',function(req,res){
                             sensor: false
                         }
                     }, function (error, response, body) {
+                        logger.trace("Pickup location checking.");
+                        body = JSON.parse(body);
                         if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
-                            body = JSON.parse(body);
+                            
                             var obj = {};
                             _.filter(body.results[0].address_components, function (comp) {
+                                logger.trace("comp = ",comp);
                                 if (_.indexOf(comp.types, "locality") > -1) {
                                     obj.City = comp.long_name;
                                 } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
@@ -1397,6 +1415,7 @@ router.post('/calculate_fare',function(req,res){
                                     obj.ZIP = comp.short_name;
                                 }
                             });
+                            logger.trace("Destination = ",obj);
                             callback(null,pickup_obj,obj);
                         } else {
                             callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
@@ -1405,6 +1424,7 @@ router.post('/calculate_fare',function(req,res){
                 },
                 function(pickup_obj,dest_obj,callback){
                     if((_.indexOf(["NY","NJ"],pickup_obj.State) > -1) && (_.indexOf(["NY","NJ"],dest_obj.State) > -1)){
+                        logger.trace("state is from NY and NJ");
                         distance.get({
                             origin: req.body.pick_lat+','+req.body.pick_long,
                             destination: req.body.dest_lat+','+req.body.dest_long,
@@ -1412,13 +1432,14 @@ router.post('/calculate_fare',function(req,res){
                             units: 'imperial'
                         },function(err, data) {
                             if (err) {
-                                callback({"status":config.INTERNAL_SERVER_ERROR,"messgae":err});
+                                callback({"status":config.INTERNAL_SERVER_ERROR,"err":err});
                             } else {
                                 console.log("distance info = ",data);
                                 callback(null,pickup_obj,dest_obj,data)
                             }
                         });
                     } else {
+                        logger.trace("State is not from NY and NJ");
                         // We are not providing service in given area
                         callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                     }
@@ -1458,7 +1479,7 @@ router.post('/calculate_fare',function(req,res){
                         });
                     } else {
                         // Interstate strip
-                        callback({"status":config.OK_STATUS,"message":"Fare calculation of interstate trip is under development"});
+                        callback({"status":config.OK_STATUS,"err":"Fare calculation of interstate trip is under development"});
                     }
                 }
             ],function(err,result){
@@ -1469,6 +1490,7 @@ router.post('/calculate_fare',function(req,res){
                 }
             });
         } else {
+            logger.trace("Invalid request");
             var result = {
                 message: "Validation Error",
                 error: result.array()
