@@ -107,27 +107,34 @@ module.exports = function (io) {
                 _.each(drivers, function (driver) {
                     driver.socket.emit('user_logout', {"data": data});
                 });
+                
+                users = _.filter(users,function(user){
+                    return user.socket === socket;
+                });
+                
                 socket_callback({"status": 1, "message": "User has logged out"});
             } else if (data.role === "driver") {
                 _.each(users, function (user) {
                     user.socket.emit('driver_logout', {"data": data});
                 });
+                
+                drivers = _.filter(drivers,function(driver){
+                    return driver.socket === socket;
+                });
+                
                 socket_callback({"status": 1, "message": "Driver has logged out"});
             }
         });
 
         socket.on('disconnect', function () {
             console.log("User/Driver has disconnect");
-            /*
-             if(data.role === "user"){
-             _.each(drivers,function(driver){
-             driver.socket.emit('user_logout',{"data":data});
-             });
-             } else if(data.role === "driver"){
-             _.each(users,function(user){
-             user.socket.emit('driver_logout',{"data":data});
-             });
-             }*/
+            
+            users = _.filter(users,function(user){
+                return user.socket === socket;
+            });
+            drivers = _.filter(drivers,function(driver){
+                return driver.socket === socket;
+            });
         });
 
         /**
