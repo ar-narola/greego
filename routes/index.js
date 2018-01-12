@@ -1356,14 +1356,23 @@ router.post('/calculate_fare',function(req,res){
                 function(callback){
                     logger.trace("Checking pickup location");
                     request({
-                        uri: 'http://maps.googleapis.com/maps/api/geocode/json',
+                        uri: 'https://maps.googleapis.com/maps/api/geocode/json',
                         qs: {
                             latlng: req.body.pick_lat + ',' + req.body.pick_long,
+                            key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
                             sensor: false
                         }
                     }, function (error, response, body) {
                         logger.trace("Pickup location checking.");
+                        
                         body = JSON.parse(body);
+                        
+                        logger.trace("error = ",error);
+                        logger.trace("response.status = ",response.statusCode);
+                        
+                        logger.trace("body.results = ",body.results);
+                        logger.trace("body = ",body);
+                        
                         if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
                             
                             var obj = {};
@@ -1387,21 +1396,29 @@ router.post('/calculate_fare',function(req,res){
                             
                             callback(null, obj);
                         } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon1."});
                         }
                     });
                 },
                 function(pickup_obj,callback){
                     logger.trace("Checking destination location");
                     request({
-                        uri: 'http://maps.googleapis.com/maps/api/geocode/json',
+                        uri: 'https://maps.googleapis.com/maps/api/geocode/json',
                         qs: {
                             latlng: req.body.dest_lat + ',' + req.body.dest_long,
+                            key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
                             sensor: false
                         }
                     }, function (error, response, body) {
                         logger.trace("Pickup location checking.");
+                        
                         body = JSON.parse(body);
+                        
+                        logger.trace("error = ",error);
+                        logger.trace("response.status = ",response.statusCode);
+                        logger.trace("body.results = ",body.results);
+                        logger.trace("body = ",body);
+                        
                         if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
                             
                             var obj = {};
@@ -1418,7 +1435,7 @@ router.post('/calculate_fare',function(req,res){
                             logger.trace("Destination = ",obj);
                             callback(null,pickup_obj,obj);
                         } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon2."});
                         }
                     });
                 },
@@ -1441,7 +1458,7 @@ router.post('/calculate_fare',function(req,res){
                     } else {
                         logger.trace("State is not from NY and NJ");
                         // We are not providing service in given area
-                        callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                        callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon3."});
                     }
                 },
                 function(pickup_obj,dest_obj,distance_data,callback){
@@ -1452,7 +1469,7 @@ router.post('/calculate_fare',function(req,res){
                         } else if(pickup_obj.State == "NJ"){
                             state = "New Jersey";
                         } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon4."});
                         }
                         fare_helper.find_fare_by_state(state,function(fare_info){
                             if(fare_info.status === 0){
