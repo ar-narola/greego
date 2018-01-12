@@ -1396,7 +1396,7 @@ router.post('/calculate_fare',function(req,res){
                             
                             callback(null, obj);
                         } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon1."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                         }
                     });
                 },
@@ -1435,7 +1435,7 @@ router.post('/calculate_fare',function(req,res){
                             logger.trace("Destination = ",obj);
                             callback(null,pickup_obj,obj);
                         } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon2."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                         }
                     });
                 },
@@ -1458,7 +1458,7 @@ router.post('/calculate_fare',function(req,res){
                     } else {
                         logger.trace("State is not from NY and NJ");
                         // We are not providing service in given area
-                        callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon3."});
+                        callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                     }
                 },
                 function(pickup_obj,dest_obj,distance_data,callback){
@@ -1469,7 +1469,7 @@ router.post('/calculate_fare',function(req,res){
                         } else if(pickup_obj.State == "NJ"){
                             state = "New Jersey";
                         } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon4."});
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                         }
                         fare_helper.find_fare_by_state(state,function(fare_info){
                             if(fare_info.status === 0){
@@ -1491,12 +1491,13 @@ router.post('/calculate_fare',function(req,res){
                                 if(final_fare < minimum_charge){
                                     final_fare = minimum_charge;
                                 }
+                                logger.trace('fare = ',final_fare);
                                 callback(null,{"message":"Fare has been calculate","fare":final_fare});
                             }
                         });
                     } else {
                         // Interstate strip
-                        callback({"status":config.OK_STATUS,"err":"Fare calculation of interstate trip is under development"});
+                        callback({"status":config.BAD_REQUEST,"err":"Fare calculation of interstate trip is under development"});
                     }
                 }
             ],function(err,result){
