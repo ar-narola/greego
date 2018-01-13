@@ -29,9 +29,11 @@ twilio_helper.sendSMS = function (to, msg, callback) {
         body: msg
     }, function (error, message) {
         if (!error) {
+            logger.trace("Message sent - Twilio message = ",message);
             console.log("message : ",message);
             callback({"status":1,"message":"Message has been sent"});
         } else {
+            logger.trace("Message error - Twilio message = ",error);
             callback({"status":0,"err":error});
         }
     });

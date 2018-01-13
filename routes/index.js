@@ -803,7 +803,9 @@ router.post('/driver_signup', function (req, res) {
                         });
                     },
                     function(user,callback){
+                        logger.trace("Going to send OTP");
                         sendOTPtoUser(user,function(data){
+                            logger.debug("OTP response = ",data);
                             if(data.status == config.OK_STATUS){
                                 callback(null,data.result);
                             } else {
@@ -1521,19 +1523,25 @@ router.post('/calculate_fare',function(req,res){
 
 function sendOTPtoUser(user,callback){
     // Generate random code
+    logger.trace("In sendOTPtoUser");
     var code = Math.floor(100000 + Math.random() * 900000);
     
+    logger.trace("OTP code generated = ",code);
     async.waterfall([
         function(inner_callback){
+            logger.trace("Calling twilio helper");
             twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
                 if(sms_data.status === 0){
-                    callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"Please enter phone number with country code."});
+                    logger.trace("Error in sending message : ",sms_data);
+                    callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"please enter valid phone number of USA."});
                 } else {
+                    logger.trace("message sent : ",sms_data);
                     inner_callback(null);
                 }
             });
         },
         function(inner_callback){
+            logger.trace("Updating OTP in DB");
             user_obj = {
                 "otp":code,
                 "phone_verified":false
