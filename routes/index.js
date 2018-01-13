@@ -447,7 +447,8 @@ router.post('/driver_signup', function (req, res) {
         },
         'email': {
             notEmpty: true,
-            errorMessage: "Email address is required"
+            errorMessage: "Email address is required",
+            isEmail: {errorMessage:"Please enter valid email address"}
         },
         'country_code': {
             notEmpty: true,
