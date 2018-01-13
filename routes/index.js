@@ -456,7 +456,9 @@ router.post('/driver_signup', function (req, res) {
         },
         'phone': {
             notEmpty: true,
-            errorMessage: "Phone number is required"
+            errorMessage: "Phone number is required",
+            isNumeric:{errorMessage: "Phone number must contain digits only"},
+//            isLength:{min : 10, max : 10, errorMessage: "Phone number must contain 10 digits"}
         },
         'password': {
             notEmpty: true,
@@ -466,26 +468,29 @@ router.post('/driver_signup', function (req, res) {
             notEmpty: true,
             errorMessage: "Residential status is required"
         },
-//        'drive_type': {
-//            notEmpty: true,
-//            errorMessage: "Driver type is required"
-//        },
-//        'transmission_type': {
-//            notEmpty: true,
-//            errorMessage: "Transmission type is required"
-//        },
-//        'bank_routing_no': {
-//            notEmpty: true,
-//            errorMessage: "Bank routing number is required"
-//        },
-//        'bank_account_no': {
-//            notEmpty: true,
-//            errorMessage: "Bank account number is required"
-//        },
-//        'ssn': {
+        'drive_type': {
+            notEmpty: true,
+            errorMessage: "Driver type is required"
+        },
+        'transmission_type': {
+            notEmpty: true,
+            errorMessage: "Transmission type is required"
+        },
+        'bank_routing_no': {
+            notEmpty: true,
+            isNumeric:{errorMessage: "Bank routing number must contain digits only"},
+            errorMessage: "Bank routing number is required"
+        },
+        'bank_account_no': {
+            notEmpty: true,
+            isNumeric:{errorMessage: "Bank account number must contain digits only"},
+            errorMessage: "Bank account number is required"
+        },
+        'ssn': {
 //            notEmpty: true,
 //            errorMessage: "Social security number is required"
-//        }
+            isNumeric:{errorMessage: "SSN must contain digits only"},
+        }
     };
     req.checkBody(schema);
 
