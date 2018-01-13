@@ -3,6 +3,7 @@ var config = require('../config');
 var VoiceResponse = twilio.twiml.VoiceResponse;
 var twilio_helper = {};
 var client = new twilio(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN);
+var logger = config.logger;
 
 /*
  * sendSMS is used to send sms to specified number
