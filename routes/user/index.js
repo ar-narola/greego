@@ -190,6 +190,22 @@ router.put('/update', function (req, res) {
                 callback(null, user, null);
             }
         },
+        function(user, image_name,callback){
+            if(req.body.phone && req.body.phone != user.phone){
+//                user_obj.country_code = req.body.country_code;
+                user.phone = req.body.phone;
+                user_helper.sendOTPtoUser(user,function(data){
+                    logger.debug("OTP response = ",data);
+                    if(data.status == config.OK_STATUS){
+                        callback(null,user,image_name);
+                    } else {
+                        callback(data);
+                    }
+                });
+            } else {
+                callback(null,user,image_name);
+            }
+        },
         function (user, image_name, callback) {
             logger.trace("Updating user info");
             // User updation
@@ -198,13 +214,6 @@ router.put('/update', function (req, res) {
                 user_obj.car = user.car;
             } else {
                 user_obj.car = {};
-            }
-
-            if(req.body.phone && req.body.phone != user.phone){
-                user_obj.country_code = req.body.country_code;
-                user_obj.phone_verified = false;
-                user_obj.otp = "";
-                user_obj.phone = req.body.phone;
             }
 
             if (req.body.first_name) {
@@ -216,6 +225,10 @@ router.put('/update', function (req, res) {
 //            if (req.body.password) {
 //                user_obj.password = req.body.password;
 //            }
+
+            if (req.body.phone) {
+                user_obj.phone = req.body.phone;
+            }
             if (image_name && image_name != null) {
                 user_obj.user_avatar = image_name;
             }
@@ -266,6 +279,7 @@ router.put('/update', function (req, res) {
                         "last_name":user_data.user.last_name,
                         "email":user_data.user.email,
                         "phone":user_data.user.phone,
+                        "phone_verified":user_data.user.phone_verified,
                         "role":user_data.user.role,
                         "user_avatar":(user_data.user.user_avatar)?user_data.user.user_avatar:null,
                         "current_lat":user_data.user.current_lat,

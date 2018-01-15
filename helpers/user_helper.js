@@ -2,6 +2,11 @@ var User = require("../models/user");
 var user_helper = {};
 var async = require('async');
 
+var config = require("../config");
+var logger = config.logger;
+
+var twilio_helper = require("../helpers/twilio_helper");
+
 /*
  * find_user_by_email is used to fetch single user by email addres
  * 
@@ -356,5 +361,49 @@ user_helper.set_card_as_default_for_user = function(user_id,card_id,callback){
         }
     });
 };
+
+user_helper.sendOTPtoUser = function (user,callback){
+    // Generate random code
+    logger.trace("In sendOTPtoUser");
+    var code = Math.floor(100000 + Math.random() * 900000);
+    
+    logger.trace("OTP code generated = ",code);
+    async.waterfall([
+        function(inner_callback){
+            logger.trace("Calling twilio helper");
+            twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
+                if(sms_data.status === 0){
+                    logger.trace("Error in sending message : ",sms_data);
+                    callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"please enter valid phone number of USA."});
+                } else {
+                    logger.trace("message sent : ",sms_data);
+                    inner_callback(null);
+                }
+            });
+        },
+        function(inner_callback){
+            logger.trace("Updating OTP in DB");
+            user_obj = {
+                "otp":code,
+                "phone_verified":false
+            };
+            user_helper.update_user_by_id(user._id,user_obj,function(user_data){
+                if (user_data.status === 0) {
+                    inner_callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in saving otp in database"});
+                } else if (user_data.status === 2) {
+                    inner_callback({"status": config.BAD_REQUEST, "err": "There was an issue in saving otp in database"});
+                } else {
+                    inner_callback(null,{"message":"OTP has been sent successfully"});
+                }
+            })
+        }
+    ],function(err,result){
+        if (err) {
+            callback(err);
+        } else {
+            callback({"status":config.OK_STATUS,"result":result});
+        }
+    });
+}
 
 module.exports = user_helper;
