@@ -334,16 +334,29 @@ router.put('/update', function (req, res) {
                 }
             });
         },
+        function(user, image_name,callback){
+            if(req.body.phone && req.body.phone != user.phone){
+//                user_obj.country_code = req.body.country_code;
+                user.phone = req.body.phone;
+                user_helper.sendOTPtoUser(user,function(data){
+                    logger.debug("OTP response = ",data);
+                    if(data.status == config.OK_STATUS){
+                        callback(null,user,image_name);
+                    } else {
+                        callback(data);
+                    }
+                });
+            } else {
+                callback(null,user,image_name);
+            }
+        },
         function (user, image_names, callback) {
             logger.trace("Updating driver info");
             // User updation
             var user_obj = {};
             var driver_obj = {};
 
-            if(req.body.phone && req.body.phone != user.phone){
-                user_obj.country_code = req.body.country_code;
-                user_obj.phone_verified = false;
-                user_obj.otp = "";
+            if (req.body.phone) {
                 user_obj.phone = req.body.phone;
             }
 
