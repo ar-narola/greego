@@ -53,7 +53,7 @@ router.post('/user_login', function (req, res) {
         'email': {
             notEmpty: true,
             errorMessage: "Email is required",
-            isEmail: true
+            isEmail: {errorMessage: "Please enter valid email address"}
         },
         'password': {
             notEmpty: true,
@@ -173,7 +173,8 @@ router.post('/user_signup', function (req, res) {
         },
         'email': {
             notEmpty: true,
-            errorMessage: "Email address is required"
+            errorMessage: "Email address is required",
+            isEmail: {errorMessage: "Please enter valid email address"}
         },
         'country_code': {
             notEmpty: true,
@@ -181,7 +182,8 @@ router.post('/user_signup', function (req, res) {
         },
         'phone': {
             notEmpty: true,
-            errorMessage: "Phone number is required"
+            errorMessage: "Phone number is required",
+            isNumeric:{errorMessage: "Phone number must contain digits only"},
         },
         'password': {
             notEmpty: true,
@@ -417,16 +419,16 @@ router.get('/refresh_token', function (req, res) {
  * @apiParam {String} residential_status Value should be from "Citizen", "Greencard" or "Visa"
  * @apiParam {File} [avatar] Profile image of user
  * 
- * @apiParam {Array} [drive_type] Array of string can have value from "Sedan", "SUV" and "Van"
- * @apiParam {String} [transmission_type] Value can be either "Automatic" or "Manual"
+ * @apiParam {Array} drive_type Array of string can have value from "Sedan", "SUV" and "Van"
+ * @apiParam {String} transmission_type Value can be either "Automatic" or "Manual"
  * @apiParam {File} [license] Image of license
  * @apiParam {File} [birth_certi] Image of Birth certificate or passport
  * @apiParam {File} [home_insurance] Image of home insurance
  * @apiParam {File} [auto_insurance] Image of auto insurance
  * @apiParam {File} [pay_stub] Image of Uber pay stub
- * @apiParam {String} [bank_routing_no] Bank routing number
- * @apiParam {String} [bank_account_no] Bank account number
- * @apiParam {String} [ssn] Social security number
+ * @apiParam {String} bank_routing_no Bank routing number
+ * @apiParam {String} bank_account_no Bank account number
+ * @apiParam {String} ssn Social security number
  * 
  * @apiDescription You need to pass form-data
  * 
@@ -487,8 +489,8 @@ router.post('/driver_signup', function (req, res) {
             errorMessage: "Bank account number is required"
         },
         'ssn': {
-//            notEmpty: true,
-//            errorMessage: "Social security number is required"
+            notEmpty: true,
+            errorMessage: "Social security number is required",
             isNumeric:{errorMessage: "SSN must contain digits only"},
         }
     };
@@ -877,7 +879,8 @@ router.post('/email_availability', function (req, res) {
     var schema = {
         'email': {
             notEmpty: true,
-            errorMessage: "Email address is required"
+            errorMessage: "Email address is required",
+            isEmail: {errorMessage: "Please enter valid email address"}
         },
     };
     req.checkBody(schema);
@@ -932,7 +935,8 @@ router.post('/phone_availability', function (req, res) {
         },
         'phone': {
             notEmpty: true,
-            errorMessage: "Phone number is required"
+            errorMessage: "Phone number is required",
+            isNumeric:{errorMessage: "Phone number must contain digits only"},
         },
     };
     req.checkBody(schema);
@@ -981,7 +985,7 @@ router.post('/send_link_for_forget_password',function(req,res){
         'email': {
             notEmpty: true,
             errorMessage: "Email is required",
-            isEmail: true
+            isEmail: {errorMessage: "Please enter valid email address"}
         }
     };
     req.checkBody(schema);
@@ -1196,7 +1200,8 @@ router.post('/sendotp', function (req, res) {
         },
         'phone': {
             notEmpty: true,
-            errorMessage: "Mobile number is required."
+            errorMessage: "Mobile number is required.",
+            isNumeric:{errorMessage: "Phone number must contain digits only"}
         }
     };
     req.checkBody(schema);
@@ -1262,7 +1267,8 @@ router.post('/verifyotp', function (req, res) {
         },
         'phone': {
             notEmpty: true,
-            errorMessage: "Phone number is required."
+            errorMessage: "Phone number is required.",
+            isNumeric:{errorMessage: "Phone number must contain digits only"},
         },
         'otp': {
             notEmpty: true,

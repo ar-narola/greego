@@ -584,14 +584,14 @@
           {
             "group": "Parameter",
             "type": "Array",
-            "optional": true,
+            "optional": false,
             "field": "drive_type",
             "description": "<p>Array of string can have value from &quot;Sedan&quot;, &quot;SUV&quot; and &quot;Van&quot;</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "transmission_type",
             "description": "<p>Value can be either &quot;Automatic&quot; or &quot;Manual&quot;</p>"
           },
@@ -633,21 +633,21 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "bank_routing_no",
             "description": "<p>Bank routing number</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "bank_account_no",
             "description": "<p>Bank account number</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "ssn",
             "description": "<p>Social security number</p>"
           }
