@@ -327,7 +327,7 @@ router.put('/update', function (req, res) {
             },function(err,results){
                 if(err){
                     logger.trace("Error in image uploading : ",err);
-                    callback(err.resp);
+                    callback(err);
                 } else {
                     logger.trace("Executing next instruction : ",results);
                     callback(null,user,results);
