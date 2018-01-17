@@ -150,7 +150,7 @@ router.post('/user_login', function (req, res) {
  * @apiParam {String} car_brand Car brand name
  * @apiParam {String} car_model Car model name
  * @apiParam {String} car_color Car color
-  * @apiParam {String} [car_year] Car year
+ * @apiParam {String} [car_year] Car year
  * @apiParam {String} [plate_number] Plate number of car
  * @apiParam {String} transmission_type Transmission type of car
  * 
@@ -310,7 +310,11 @@ router.post('/user_signup', function (req, res) {
                 }
             ], function (err, result) {
                 if (err) {
-                    res.status(err.status).json({"message": err.err});
+                    if(err.status == config.VALIDATION_FAILURE_STATUS){
+                        res.status(err.status).json({"message": err.err,"error":err.error});
+                    } else {
+                        res.status(err.status).json({"message": err.err});
+                    }
                 } else {
                     logger.info("Registration done");
                     res.status(config.OK_STATUS).json({"message": "Registration done successfully"});
@@ -823,7 +827,11 @@ router.post('/driver_signup', function (req, res) {
                     }
                 ], function (err, result) {
                     if (err) {
-                        res.status(err.status).json({"message": err.err});
+                        if(err.status == config.VALIDATION_FAILURE_STATUS){
+                            res.status(err.status).json({"message": err.err,"error":err.error});
+                        } else {
+                            res.status(err.status).json({"message": err.err});
+                        }
                     } else {
                         res.status(config.OK_STATUS).json({"message": "Registration done successfully"});
                     }
@@ -1230,7 +1238,11 @@ router.post('/sendotp', function (req, res) {
                 }
             ],function(err,result){
                 if (err) {
-                    res.status(err.status).json({"message": err.err});
+                    if(err.status == config.VALIDATION_FAILURE_STATUS){
+                        res.status(err.status).json({"message": err.err,"error":err.error});
+                    } else {
+                        res.status(err.status).json({"message": err.err});
+                    }
                 } else {
                     res.status(config.OK_STATUS).json(result);
                 }

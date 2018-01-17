@@ -1,6 +1,7 @@
 var User = require("../models/user");
 var user_helper = {};
 var async = require('async');
+var _ = require('underscore');
 
 var config = require("../config");
 var logger = config.logger;
@@ -83,6 +84,27 @@ user_helper.find_user_by_phone = function(country_code,phone,callback){
         }
     });
 };
+
+user_helper.is_card_exists_for_user = function(user_id,card_no,callback){
+    User.findOne({ _id: user_id})
+            .populate({path:'card.card','model':'cards'})
+            .lean().exec(function (err, user_data) {
+        if (err) {
+            logger.trace("Error in finding user with given card no : ",err);
+            callback({"status":0,"err":err});
+        } else {
+            if(user_data){
+                logger.trace("Checking card of user : ",user_data);
+                var card = _.where(user_data, { card:[{card_number:card_no}] });
+                callback({"status":1,"card":card});
+            } else {
+                logger.trace("User not found : user_id = ",user_id," card_no = ",card_no);
+                callback({"status":404,"err":"User not available"});
+            }
+        }
+    });
+};
+
 
 /*
  * chk_phone_for_user is used to fetch single user by phone number
@@ -374,7 +396,7 @@ user_helper.sendOTPtoUser = function (user,callback){
             twilio_helper.sendSMS(user.country_code+user.phone, 'Use ' + code + ' as Greego account security code',function(sms_data){
                 if(sms_data.status === 0){
                     logger.trace("Error in sending message : ",sms_data);
-                    callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"please enter valid phone number of USA."});
+                    callback({"status":config.VALIDATION_FAILURE_STATUS,"err":"Validation error.","error":[{"msg":"please enter valid phone number of USA."}]});
                 } else {
                     logger.trace("message sent : ",sms_data);
                     inner_callback(null);
