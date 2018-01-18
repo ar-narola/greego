@@ -24,6 +24,8 @@ var category_helper = require('../../helpers/help_category_helper');
  * @apiParam {String} [content] Additional description for category
  * @apiParam {File} [icon] Icon image of user
  * 
+* @apiDescription  You need to pass form-data
+ * 
  * @apiSuccess (Success 200) {JSON} driver Driver details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
