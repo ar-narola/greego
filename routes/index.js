@@ -1121,7 +1121,7 @@ router.post('/send_link_for_forget_password',function(req,res){
                     
 					var site_link = config.SITE_URL+'reset_password/'+user._id;
 					if(user.role == "admin"){
-						site_link = config.SITE_URL+'/admin/reset_password/'+user._id;
+						site_link = config.SITE_URL+'admin/reset_password/'+user._id;
 					}
 					
                     var msg = "Hi <b>"+user.first_name+",</b><br/><br/>";
