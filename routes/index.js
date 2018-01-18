@@ -1119,9 +1119,14 @@ router.post('/send_link_for_forget_password',function(req,res){
                 },
                 function (user, callback) {
                     
+					var site_link = "/"+config.SITE_URL+'reset_password/'+user._id;
+					if(user.role == "admin"){
+						site_link = "/"+config.SITE_URL+'/admin/reset_password/'+user._id;
+					}
+					
                     var msg = "Hi <b>"+user.first_name+",</b><br/><br/>";
                     msg += "You recently requested to reset your password for your greego account.<br/>";
-                    msg += "Click on <a href=/"+config.SITE_URL+'reset_password/'+user._id+"'>"+config.SITE_URL+'reset_password/'+user._id+"</a> to reset it.<br/><br/>";
+                    msg += "Click on <a href="+site_link+">"+config.SITE_URL+'reset_password/'+user._id+"</a> to reset it.<br/><br/>";
                     msg += "Thanks,<br/>Greego Team<hr/>";
                     msg += "<h5>If you're having trouble clicking the given link, copy and paste URL into your web browser.<br/>";
                     msg += "If you did not request a password reset, please reply to let us know.</h5>"
