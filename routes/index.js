@@ -136,6 +136,110 @@ router.post('/user_login', function (req, res) {
 });
 
 /**
+ * @api {post} /admin_login Admin Login
+ * @apiName Admin Login
+ * @apiGroup Root
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * 
+ * @apiParam {String} email Email
+ * @apiParam {String} password Password
+ * 
+ * @apiSuccess (Success 200) {JSON} admin Admin object.
+ * @apiSuccess (Success 200) {String} token Unique token which needs to be passed in subsequent requests.
+ * @apiSuccess (Success 200) {String} refresh_token Unique token which needs to be passed to generate next access token.
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post('/admin_login', function (req, res) {
+    logger.trace("API - User login called");
+    logger.debug("req.body = ",req.body);
+    var schema = {
+        'email': {
+            notEmpty: true,
+            errorMessage: "Email is required",
+            isEmail: {errorMessage: "Please enter valid email address"}
+        },
+        'password': {
+            notEmpty: true,
+            errorMessage: "Password is required"
+        }
+    };
+    req.checkBody(schema);
+
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            logger.trace("Valid request");
+            async.waterfall([
+                function (callback) {
+                    // Checking for user availability
+                    logger.trace("Checking for user availability");
+                    user_helper.find_user_by_email(req.body.email, function (user_resp) {
+                        if (user_resp.status === 0) {
+                            logger.error("Error in finding user by email in user_login API. Err = ",user_resp.err);
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
+                        } else if (user_resp.status === 1) {
+                            logger.trace("User found. Executing next instruction");
+                            callback(null, user_resp.user);
+                        } else {
+                            logger.info("Account doesn't exist.");
+                            callback({"status": config.BAD_REQUEST, "err": "Account doesn't exist."});
+                        }
+                    });
+                },
+                function (user, callback) {
+                    // Authentication of user
+                    logger.trace("Authenticating user");
+                    if (user.password == req.body.password && user.role == "admin") { // Valid password and user is admin
+                        // Generate token
+                        logger.trace("valid user. Generating token");
+                        var refreshToken = jwt.sign({id: user._id, role: user.role}, config.REFRESH_TOKEN_SECRET_KEY, {});
+                        user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken, "last_login_date": Date.now()}, function (update_resp) {
+                            if (update_resp.status === 1) {
+                                var userJson = {id: user._id, email: user.email, role: user.role};
+                                var token = jwt.sign(userJson, config.ACCESS_TOKEN_SECRET_KEY, {
+                                    expiresIn: 60 * 60 * 24 // expires in 24 hours
+                                });
+
+                                delete user.password;
+                                delete user.refresh_token;
+                                delete user.is_active;
+                                delete user.is_deleted;
+                                delete user.last_login_date;
+
+                                logger.trace("Token generated. Executing next instruction");
+                                callback(null, {"user": user, "token": token, "refresh_token": refreshToken});
+                            } else if (update_resp.status === 0) {
+                                logger.error("Error in updating user in user_login API. Err = ",update_resp.err);
+                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
+                            } else {
+                                logger.info("Token has generated. but user has not updated.");
+                                callback({"status": config.OK_STATUS, "err": update_resp.message});
+                            }
+                        });
+                    } else { // Invalid password
+                        logger.info("Invalid password of user");
+                        callback({"status": config.BAD_REQUEST, "err": "Invalid email or password."});
+                    }
+                }
+            ], function (err, resp) {
+                if (err) {
+                    res.status(err.status).json({"message": err.err});
+                } else {
+                    res.status(config.OK_STATUS).json(resp);
+                }
+            });
+        } else {
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            logger.error("Validation Error = ",result);
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
+
+/**
  * @api {post} /user_signup User Signup
  * @apiName User Signup
  * @apiGroup Root

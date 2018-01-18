@@ -10,7 +10,7 @@ var CarSchema = new Schema({
     color: String,
     year: String,
     plate_number: String,
-    transmission_type: {type: String, enum: ["Automatic", "Manual"]},
+    transmission_type: [{type: String, enum: ["Automatic", "Manual"]}],
 });
 
 var CardSchema = new Schema({

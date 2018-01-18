@@ -28,15 +28,18 @@ router.post('/add',function(req,res){
     var schema = {
         "card_no":{
             notEmpty: true,
-            errorMessage: "Card number is required"
+            errorMessage: "Card number is required",
+            isNumeric:{errorMessage: "Card number must contain digits only"},
         },
         "month":{
             notEmpty: true,
-            errorMessage: "Month is required"
+            errorMessage: "Month is required",
+            isNumeric:{errorMessage: "Card month must be numeric only"},
         },
         "year":{
             notEmpty: true,
-            errorMessage: "Year is required"
+            errorMessage: "Year is required",
+            isNumeric:{errorMessage: "Card year must be numeric only"},
         },
         "first_name":{
             notEmpty: true,
@@ -51,8 +54,12 @@ router.post('/add',function(req,res){
     req.checkBody(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-
             async.waterfall([
+                function(callback){
+                    user_helper.is_card_exists_for_user(req.userInfo.id,req.body.card_no,function(user_data){
+                        console.log("resp = ",user_data.card);
+                    });
+                },
                 function(callback){
                     var card_type = CardType(req.body.card_no);
                     if(card_type && card_type[0]){

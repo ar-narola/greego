@@ -14,6 +14,7 @@ var db = require('./models/db');
 var index = require('./routes/index');
 var driver = require('./routes/driver');
 var user = require('./routes/user');
+var admin = require('./routes/admin');
 
 var app = express();
 app.use(fileUpload());
@@ -35,6 +36,7 @@ app.use(expressValidator());
 app.use('/', index);
 app.use('/user', user);
 app.use('/driver', driver);
+app.use('/admin', admin);
 
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {

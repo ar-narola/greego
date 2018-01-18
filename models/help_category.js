@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 var HelpCategory = new Schema({
     name: String,
     image: String,
-    conntent: String,
+    content: String,
     parent_id: mongoose.Schema.Types.ObjectId
 }, {versionKey: false});
 
