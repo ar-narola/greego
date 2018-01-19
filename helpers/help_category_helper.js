@@ -26,3 +26,5 @@ category_helper.insert_category = function(category_object,callback){
         }
     });
 };
+
+module.exports = category_helper;

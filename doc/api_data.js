@@ -52,6 +52,7 @@ define({ "api": [
         ]
       }
     },
+    "description": "<p>You need to pass form-data</p>",
     "success": {
       "fields": {
         "Success 200": [
