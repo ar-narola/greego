@@ -81,7 +81,7 @@ router.post('/create',function(req, res){
                             file.mv(dir + '/' + filename, function (err) {
                                 if (err) {
                                     logger.error("There was an issue in uploading image",err);
-                                    callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading category icon","error":err});
+                                    callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading category icon"});
                                 } else {
                                     logger.trace("Category icon has been uploaded. Image name = ",filename);
                                     callback(null, filename);
@@ -232,6 +232,46 @@ router.post('/update',function(req, res){
                     }
                 } else {
                     res.status(config.OK_STATUS).json({"message": "Profile information has been updated successfully","user":result});
+                }
+            });
+        } else {
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+});
+
+/**
+ * @api {delete} /category Delete category
+ * @apiName Delete category
+ * @apiGroup Admin
+ * 
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * 
+ * @apiParam {String} id Category Id
+ * 
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.delete('/',function(req, res){
+    var schema = {
+        "id":{
+            notEmpty: true,
+            errorMessage: "Category id is required"
+        }
+    };
+
+    req.checkQuery(schema);
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            category_helper.delete_category_by_id(req.query.id,obj,function(resp){
+                if(resp.status == 0){
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"error":resp.err});
+                } else {
+                    res.status(config.OK_STATUS).json({"message":"Category has been deleted successfully"});
                 }
             });
         } else {
