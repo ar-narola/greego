@@ -408,7 +408,9 @@ router.post('/user_signup', function (req, res) {
                         if(data.status == config.OK_STATUS){
                             callback(null,data.result);
                         } else {
-                            callback(data);
+                            user_helper.delete_user_by_id(user._id,function(){
+                                callback(data);
+                            });
                         }
                     });
                 }
