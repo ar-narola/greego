@@ -13,6 +13,6 @@ var HelpCategory = new Schema({
 }, {versionKey: false});
 
 // Compile model from schema
-var Card = mongoose.model('help_categories', HelpCategory, 'help_categories');
+var Category = mongoose.model('help_categories', HelpCategory, 'help_categories');
 
-module.exports = Card;
+module.exports = Category;

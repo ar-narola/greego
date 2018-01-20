@@ -91,6 +91,96 @@
     "groupTitle": "Admin"
   },
   {
+    "type": "post",
+    "url": "/faq",
+    "title": "Create faq",
+    "name": "Create_faq",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "question",
+            "description": "<p>FAQ question</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "answer",
+            "description": "<p>FAQ answer</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "category_id",
+            "description": "<p>Category of FAQ</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "is_active",
+            "description": "<p>Activation status for faq</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "faq",
+            "description": "<p>FAQ details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/faq.js",
+    "groupTitle": "Admin"
+  },
+  {
     "type": "delete",
     "url": "/category",
     "title": "Delete category",
@@ -153,10 +243,10 @@
     "groupTitle": "Admin"
   },
   {
-    "type": "post",
-    "url": "/category",
-    "title": "Get all category",
-    "name": "Get_all_category",
+    "type": "delete",
+    "url": "/faq",
+    "title": "Delete faq",
+    "name": "Delete_faq",
     "group": "Admin",
     "header": {
       "fields": {
@@ -178,34 +268,61 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "name",
-            "description": "<p>Name of category</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "parent_id",
-            "description": "<p>Parent category Id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "content",
-            "description": "<p>Additional description for category</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "File",
-            "optional": true,
-            "field": "icon",
-            "description": "<p>Icon image of user</p>"
+            "field": "id",
+            "description": "<p>FAQ Id</p>"
           }
         ]
       }
     },
-    "description": "<p>You need to pass form-data</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/faq.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
+    "url": "/category",
+    "title": "Get all category",
+    "name": "Get_all_category",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
     "success": {
       "fields": {
         "Success 200": [
@@ -213,8 +330,8 @@
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "driver",
-            "description": "<p>Driver details</p>"
+            "field": "categories",
+            "description": "<p>Category details</p>"
           }
         ]
       }
@@ -234,6 +351,55 @@
     },
     "version": "0.0.0",
     "filename": "routes/admin/category.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
+    "url": "/faq",
+    "title": "Get all faqs",
+    "name": "Get_all_faqs",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "faqs",
+            "description": "<p>FAQ details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/faq.js",
     "groupTitle": "Admin"
   },
   {
@@ -325,6 +491,103 @@
     },
     "version": "0.0.0",
     "filename": "routes/admin/category.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "put",
+    "url": "/faq",
+    "title": "Update faq",
+    "name": "Update_faq",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>FAQ Id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "question",
+            "description": "<p>FAQ question</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "answer",
+            "description": "<p>FAQ answer</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "category_id",
+            "description": "<p>Category of FAQ</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "is_active",
+            "description": "<p>Activation status for faq</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "driver",
+            "description": "<p>Driver details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/faq.js",
     "groupTitle": "Admin"
   },
   {

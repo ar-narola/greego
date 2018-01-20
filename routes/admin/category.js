@@ -19,7 +19,7 @@ var category_helper = require('../../helpers/help_category_helper');
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
- * @apiSuccess (Success 200) {JSON} category Category details
+ * @apiSuccess (Success 200) {JSON} categories Category details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get('/',function(req,res){
@@ -80,7 +80,7 @@ router.post('/create',function(req, res){
                             filename = "category_" + new Date().getTime() + extention;
                             file.mv(dir + '/' + filename, function (err) {
                                 if (err) {
-                                    logger.error("There was an issue in uploading image",err);
+                                    logger.error("There was an issue in uploading image. ",err);
                                     callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading category icon"});
                                 } else {
                                     logger.trace("Category icon has been uploaded. Image name = ",filename);
@@ -273,7 +273,7 @@ router.delete('/',function(req, res){
     req.checkQuery(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            category_helper.delete_category_by_id(req.query.id,obj,function(resp){
+            category_helper.delete_category_by_id(req.query.id,function(resp){
                 if(resp.status == 0){
                     res.status(config.INTERNAL_SERVER_ERROR).json({"error":resp.err});
                 } else {
