@@ -313,15 +313,23 @@ router.get('/details',function(req,res){
 
     req.checkQuery(schema);
     req.getValidationResult().then(function (result) {
-        category_helper.find_category_by_id(req.query.category_id,function(category_data){
-            if(category_data.status == 1){
-                res.status(config.OK_STATUS).json({"category":category_data.category});
-            } else if(category_data.status == 0) {
-                res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
-            } else {
-                res.status(config.BAD_REQUEST).json({"error":category_data.err});
-            }
-        });
+        if (result.isEmpty()) {
+            category_helper.find_category_by_id(req.query.category_id,function(category_data){
+                if(category_data.status == 1){
+                    res.status(config.OK_STATUS).json({"category":category_data.category});
+                } else if(category_data.status == 0) {
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
+                } else {
+                    res.status(config.BAD_REQUEST).json({"error":category_data.err});
+                }
+            });
+        } else {
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
     });
 });
 

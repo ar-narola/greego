@@ -107,4 +107,31 @@ faq_helper.get_faq_by_category = function(cat_id,callback){
         });
 }
 
+/*
+ * find_faq_by_id is used to fetch single faq by faq_id
+ * 
+ * @param   faq_id   Specify faq_id of faq
+ * 
+ * @return  status  0 - If any error occur in finding faq, with error
+ *          status  1 - If Faq found, with found faq document
+ *          status  404 - If Faq not found, with appropriate error message
+ * 
+ * @developed by "ar"
+ */
+faq_helper.find_faq_by_id = function(faq_id,callback){
+    FAQ.findOne({ _id: faq_id })
+            .populate({path:'category_id','model':'help_categories'})
+            .lean().exec(function (err, faq_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(faq_data){
+                callback({"status":1,"faq":faq_data});
+            } else {
+                callback({"status":404,"err":"Faq not available"});
+            }
+        }
+    });
+};
+
 module.exports = faq_helper;
