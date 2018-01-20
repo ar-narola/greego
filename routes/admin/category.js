@@ -80,7 +80,7 @@ router.post('/create',function(req, res){
                             filename = "category_" + new Date().getTime() + extention;
                             file.mv(dir + '/' + filename, function (err) {
                                 if (err) {
-                                    logger.error("There was an issue in uploading image. ",err);
+                                    logger.error("There was an issue in uploading image",err);
                                     callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading category icon"});
                                 } else {
                                     logger.trace("Category icon has been uploaded. Image name = ",filename);
