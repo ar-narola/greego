@@ -1486,162 +1486,167 @@ router.post('/calculate_fare',function(req,res){
     
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            logger.trace("Valid request");
-            async.waterfall([
-                function(callback){
-                    logger.trace("Checking pickup location");
-                    request({
-                        uri: 'https://maps.googleapis.com/maps/api/geocode/json',
-                        qs: {
-                            latlng: req.body.pick_lat + ',' + req.body.pick_long,
-                            key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
-                            sensor: false
-                        }
-                    }, function (error, response, body) {
-                        logger.trace("Pickup location checking.");
-                        
-                        body = JSON.parse(body);
-                        
-                        logger.trace("error = ",error);
-                        logger.trace("response.status = ",response.statusCode);
-                        
-                        logger.trace("body.results = ",body.results);
-                        logger.trace("body = ",body);
-                        
-                        if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
+            if((req.body.pick_lat == req.body.dest_lat) && (req.body.pick_long == req.body.dest_long)){
+                res.status(config.BAD_REQUEST).json({"message":"Pickup and destination localtion can't be same"});
+            } else {
+                logger.trace("Valid request");
+                async.waterfall([
+                    function(callback){
+                        logger.trace("Checking pickup location");
+                        request({
+                            uri: 'https://maps.googleapis.com/maps/api/geocode/json',
+                            qs: {
+                                latlng: req.body.pick_lat + ',' + req.body.pick_long,
+                                key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
+                                sensor: false
+                            }
+                        }, function (error, response, body) {
+                            logger.trace("Pickup location checking.");
                             
-                            var obj = {};
+                            body = JSON.parse(body);
                             
-                            _.filter(body.results[0].address_components, function (comp) {
+                            logger.trace("error = ",error);
+                            logger.trace("response.status = ",response.statusCode);
+                            
+                            logger.trace("body.results = ",body.results);
+                            logger.trace("body = ",body);
+                            
+                            if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
                                 
-                                logger.trace("comp = ",comp);
+                                var obj = {};
                                 
-                                if (_.indexOf(comp.types, "locality") > -1) {
-                                    logger.trace("locality for pickup location : ",comp.long_name);
-                                    obj.City = comp.long_name;
-                                } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
-                                    logger.trace("administrative_area_level_1 for pickup location : ",comp.short_name);
-                                    obj.State = comp.short_name;
-                                } else if (_.indexOf(comp.types, "postal_code") > -1) {
-                                    logger.trace("postal_code for pickup location : ",comp.short_name);
-                                    obj.ZIP = comp.short_name;
-                                }
-                            });
-                            logger.trace("Source = ",obj);
-                            
-                            callback(null, obj);
-                        } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
-                        }
-                    });
-                },
-                function(pickup_obj,callback){
-                    logger.trace("Checking destination location");
-                    request({
-                        uri: 'https://maps.googleapis.com/maps/api/geocode/json',
-                        qs: {
-                            latlng: req.body.dest_lat + ',' + req.body.dest_long,
-                            key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
-                            sensor: false
-                        }
-                    }, function (error, response, body) {
-                        logger.trace("Pickup location checking.");
-                        
-                        body = JSON.parse(body);
-                        
-                        logger.trace("error = ",error);
-                        logger.trace("response.status = ",response.statusCode);
-                        logger.trace("body.results = ",body.results);
-                        logger.trace("body = ",body);
-                        
-                        if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
-                            
-                            var obj = {};
-                            _.filter(body.results[0].address_components, function (comp) {
-                                logger.trace("comp = ",comp);
-                                if (_.indexOf(comp.types, "locality") > -1) {
-                                    obj.City = comp.long_name;
-                                } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
-                                    obj.State = comp.short_name;
-                                } else if (_.indexOf(comp.types, "postal_code") > -1) {
-                                    obj.ZIP = comp.short_name;
-                                }
-                            });
-                            logger.trace("Destination = ",obj);
-                            callback(null,pickup_obj,obj);
-                        } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
-                        }
-                    });
-                },
-                function(pickup_obj,dest_obj,callback){
-                    if((_.indexOf(["NY","NJ"],pickup_obj.State) > -1) && (_.indexOf(["NY","NJ"],dest_obj.State) > -1)){
-                        logger.trace("state is from NY and NJ");
-                        distance.get({
-                            origin: req.body.pick_lat+','+req.body.pick_long,
-                            destination: req.body.dest_lat+','+req.body.dest_long,
-                            mode: 'driving',
-                            units: 'imperial'
-                        },function(err, data) {
-                            if (err) {
-                                callback({"status":config.INTERNAL_SERVER_ERROR,"err":err});
+                                _.filter(body.results[0].address_components, function (comp) {
+                                    
+                                    logger.trace("comp = ",comp);
+                                    
+                                    if (_.indexOf(comp.types, "locality") > -1) {
+                                        logger.trace("locality for pickup location : ",comp.long_name);
+                                        obj.City = comp.long_name;
+                                    } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
+                                        logger.trace("administrative_area_level_1 for pickup location : ",comp.short_name);
+                                        obj.State = comp.short_name;
+                                    } else if (_.indexOf(comp.types, "postal_code") > -1) {
+                                        logger.trace("postal_code for pickup location : ",comp.short_name);
+                                        obj.ZIP = comp.short_name;
+                                    }
+                                });
+                                logger.trace("Source = ",obj);
+                                
+                                callback(null, obj);
                             } else {
-                                console.log("distance info = ",data);
-                                callback(null,pickup_obj,dest_obj,data)
+                                callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                             }
                         });
-                    } else {
-                        logger.trace("State is not from NY and NJ");
-                        // We are not providing service in given area
-                        callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
-                    }
-                },
-                function(pickup_obj,dest_obj,distance_data,callback){
-                    if(pickup_obj.State == dest_obj.State){
-                        var state = "";
-                        if(pickup_obj.State == "NY"){
-                            state = "NYC";
-                        } else if(pickup_obj.State == "NJ"){
-                            state = "New Jersey";
-                        } else {
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
-                        }
-                        fare_helper.find_fare_by_state(state,function(fare_info){
-                            if(fare_info.status === 0){
-                                callback({"status":config.INTERNAL_SERVER_ERROR,"err":"There is an issue in fetching fare details"});
-                            } else if(fare_info.status === 404 || !fare_info.fare){
-                                callback({"status":config.BAD_REQUEST,"err":"No fare data available for given state"});
+                    },
+                    function(pickup_obj,callback){
+                        logger.trace("Checking destination location");
+                        request({
+                            uri: 'https://maps.googleapis.com/maps/api/geocode/json',
+                            qs: {
+                                latlng: req.body.dest_lat + ',' + req.body.dest_long,
+                                key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
+                                sensor: false
+                            }
+                        }, function (error, response, body) {
+                            logger.trace("Pickup location checking.");
+                            
+                            body = JSON.parse(body);
+                            
+                            logger.trace("error = ",error);
+                            logger.trace("response.status = ",response.statusCode);
+                            logger.trace("body.results = ",body.results);
+                            logger.trace("body = ",body);
+                            
+                            if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
+                                
+                                var obj = {};
+                                _.filter(body.results[0].address_components, function (comp) {
+                                    logger.trace("comp = ",comp);
+                                    if (_.indexOf(comp.types, "locality") > -1) {
+                                        obj.City = comp.long_name;
+                                    } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
+                                        obj.State = comp.short_name;
+                                    } else if (_.indexOf(comp.types, "postal_code") > -1) {
+                                        obj.ZIP = comp.short_name;
+                                    }
+                                });
+                                logger.trace("Destination = ",obj);
+                                callback(null,pickup_obj,obj);
                             } else {
-                                // Fare calculation
-                                var base = fare_info.fare.base * 1;
-                                var per_min = fare_info.fare.per_min * 1;
-                                var per_mile = fare_info.fare.per_mile * 1;
-                                var service_fee = fare_info.fare.service_fee * 1;
-                                var minimum_charge = fare_info.fare.minimum_charge * 1;
-                                
-                                var duration_min = ((distance_data.durationValue * 1) / 60);
-                                var per_meter = per_mile/1609.34;
-                                var final_fare = base + (duration_min * per_min) + (per_meter * distance_data.distanceValue) + service_fee;
-                                
-                                if(final_fare < minimum_charge){
-                                    final_fare = minimum_charge;
-                                }
-                                logger.trace('fare = ',final_fare);
-                                callback(null,{"message":"Fare has been calculate","fare":final_fare});
+                                callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                             }
                         });
-                    } else {
-                        // Interstate strip
-                        callback({"status":config.BAD_REQUEST,"err":"Fare calculation of interstate trip is under development"});
+                    },
+                    function(pickup_obj,dest_obj,callback){
+                        if((_.indexOf(["NY","NJ"],pickup_obj.State) > -1) && (_.indexOf(["NY","NJ"],dest_obj.State) > -1)){
+                            logger.trace("state is from NY and NJ");
+                            distance.get({
+                                origin: req.body.pick_lat+','+req.body.pick_long,
+                                destination: req.body.dest_lat+','+req.body.dest_long,
+                                mode: 'driving',
+                                units: 'imperial'
+                            },function(err, data) {
+                                if (err) {
+                                    callback({"status":config.INTERNAL_SERVER_ERROR,"err":err});
+                                } else {
+                                    console.log("distance info = ",data);
+                                    callback(null,pickup_obj,dest_obj,data)
+                                }
+                            });
+                        } else {
+                            logger.trace("State is not from NY and NJ");
+                            // We are not providing service in given area
+                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                        }
+                    },
+                    function(pickup_obj,dest_obj,distance_data,callback){
+                        if(pickup_obj.State == dest_obj.State){
+                            var state = "";
+                            if(pickup_obj.State == "NY"){
+                                state = "NYC";
+                            } else if(pickup_obj.State == "NJ"){
+                                state = "New Jersey";
+                            } else {
+                                callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            }
+                            fare_helper.find_fare_by_state(state,function(fare_info){
+                                if(fare_info.status === 0){
+                                    callback({"status":config.INTERNAL_SERVER_ERROR,"err":"There is an issue in fetching fare details"});
+                                } else if(fare_info.status === 404 || !fare_info.fare){
+                                    callback({"status":config.BAD_REQUEST,"err":"No fare data available for given state"});
+                                } else {
+                                    // Fare calculation
+                                    var base = fare_info.fare.base * 1;
+                                    var per_min = fare_info.fare.per_min * 1;
+                                    var per_mile = fare_info.fare.per_mile * 1;
+                                    var service_fee = fare_info.fare.service_fee * 1;
+                                    var minimum_charge = fare_info.fare.minimum_charge * 1;
+                                    
+                                    var duration_min = ((distance_data.durationValue * 1) / 60);
+                                    var per_meter = per_mile/1609.34;
+                                    var final_fare = base + (duration_min * per_min) + (per_meter * distance_data.distanceValue) + service_fee;
+                                    
+                                    if(final_fare < minimum_charge){
+                                        final_fare = minimum_charge;
+                                    }
+                                    logger.trace('fare = ',final_fare);
+                                    callback(null,{"message":"Fare has been calculate","fare":final_fare});
+                                }
+                            });
+                        } else {
+                            // Interstate strip
+                            callback({"status":config.BAD_REQUEST,"err":"Fare calculation of interstate trip is under development"});
+                        }
                     }
-                }
-            ],function(err,result){
-                if (err) {
-                    res.status(err.status).json({"message": err.err});
-                } else {
-                    res.status(config.OK_STATUS).json(result);
-                }
-            });
+                ],function(err,result){
+                    if (err) {
+                        res.status(err.status).json({"message": err.err});
+                    } else {
+                        res.status(config.OK_STATUS).json(result);
+                    }
+                });
+            }
+            
         } else {
             logger.trace("Invalid request");
             var result = {
