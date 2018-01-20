@@ -13,25 +13,24 @@ var logger = config.logger;
 var category_helper = require('../../helpers/help_category_helper');
 
 /**
- * @api {post} /category Get all category
+ * @api {get} /category Get all category
  * @apiName Get all category
  * @apiGroup Admin
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
- * @apiParam {String} name Name of category
- * @apiParam {String} [parent_id] Parent category Id
- * @apiParam {String} [content] Additional description for category
- * @apiParam {File} [icon] Icon image of user
- * 
- * @apiDescription  You need to pass form-data
- * 
- * @apiSuccess (Success 200) {JSON} driver Driver details
+ * @apiSuccess (Success 200) {JSON} category Category details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get('/',function(req,res){
     category_helper.get_all_category(function(category_data){
-        res.status(config.OK_STATUS).json(category_data);
+        if(category_data.status == 1){
+            res.status(config.OK_STATUS).json({"categories":category_data.categories});
+        } else if(category_data.status == 0) {
+            res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
+        } else {
+            res.status(config.BAD_REQUEST).json({"error":category_data.err});
+        }
     });
 });
 
@@ -45,6 +44,7 @@ router.get('/',function(req,res){
  * @apiParam {String} name Name of category
  * @apiParam {String} [parent_id] Parent category Id
  * @apiParam {String} [content] Additional description for category
+ * @apiParam {String} [is_active] Activation status for category
  * @apiParam {File} [icon] Icon image of user
  * 
  * @apiDescription  You need to pass form-data
@@ -106,6 +106,9 @@ router.post('/create',function(req, res){
                     }
                     if(image_name && image_name != null){
                         obj.image = image_name;
+                    }
+                    if(req.body.is_active && req.body.is_active != null){
+                        obj.is_active = req.body.is_active;
                     }
                     category_helper.insert_category(obj,function(resp){
                         if(resp.status == 0){
@@ -213,6 +216,9 @@ router.post('/update',function(req, res){
                     }
                     if(image_name && image_name != null){
                         obj.image = image_name;
+                    }
+                    if(req.body.is_active && req.body.is_active != null){
+                        obj.is_active = req.body.is_active;
                     }
                     category_helper.update_category_by_id(req.body.id,obj,function(resp){
                         if(resp.status == 0){

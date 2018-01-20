@@ -8,6 +8,7 @@ var HelpCategory = new Schema({
     name: String,
     image: String,
     content: String,
+    is_active: {type:Boolean, default:true},
     parent_id: mongoose.Schema.Types.ObjectId
 }, {versionKey: false});
 

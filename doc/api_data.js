@@ -44,6 +44,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "is_active",
+            "description": "<p>Activation status for category</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "File",
             "optional": true,
             "field": "icon",
@@ -62,6 +69,68 @@ define({ "api": [
             "optional": false,
             "field": "driver",
             "description": "<p>Driver details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/category.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "delete",
+    "url": "/category",
+    "title": "Delete category",
+    "name": "Delete_category",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Category Id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
           }
         ]
       }
