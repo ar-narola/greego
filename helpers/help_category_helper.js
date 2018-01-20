@@ -7,6 +7,33 @@ var config = require("../config");
 var logger = config.logger;
 
 /*
+ * find_category_by_id is used to fetch single category by category_id
+ * 
+ * @param   category_id   Specify category_id of category
+ * 
+ * @return  status  0 - If any error occur in finding category, with error
+ *          status  1 - If Category found, with found category document
+ *          status  404 - If Category not found, with appropriate error message
+ * 
+ * @developed by "ar"
+ */
+category_helper.find_category_by_id = function(category_id,callback){
+    HelpCategory.findOne({ _id: category_id })
+            .populate({path:'parent_id','model':'help_categories'})
+            .lean().exec(function (err, category_data) {
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            if(category_data){
+                callback({"status":1,"category":category_data});
+            } else {
+                callback({"status":404,"err":"Category not available"});
+            }
+        }
+    });
+};
+
+/*
  * insert_category is used to insert category in database
  * 
  * @param   category_object     JSON object consist of all property that need to insert in collection

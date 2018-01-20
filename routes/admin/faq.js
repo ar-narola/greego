@@ -36,6 +36,28 @@ router.get('/',function(req,res){
 });
 
 /**
+ * @api {get} /faq Get all faqs
+ * @apiName Get all faqs
+ * @apiGroup Admin
+ * 
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * 
+ * @apiSuccess (Success 200) {JSON} faqs FAQ details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/',function(req,res){
+    faq_helper.get_all_faq(function(faq_data){
+        if(faq_data.status == 1){
+            res.status(config.OK_STATUS).json({"faqs":faq_data.faqs});
+        } else if(faq_data.status == 0) {
+            res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
+        } else {
+            res.status(config.BAD_REQUEST).json({"error":faq_data.err});
+        }
+    });
+});
+
+/**
  * @api {post} /faq Create faq
  * @apiName Create faq
  * @apiGroup Admin

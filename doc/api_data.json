@@ -403,6 +403,179 @@
     "groupTitle": "Admin"
   },
   {
+    "type": "get",
+    "url": "/faq",
+    "title": "Get all faqs",
+    "name": "Get_all_faqs",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "faqs",
+            "description": "<p>FAQ details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/faq.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
+    "url": "/category/faq",
+    "title": "Get all faqs for given category",
+    "name": "Get_all_faqs_for_given_category",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "category_id",
+            "description": "<p>category Id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "faqs",
+            "description": "<p>FAQ details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/category.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
+    "url": "/category/details",
+    "title": "Retrive category details",
+    "name": "Retrive_category_details",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "category_id",
+            "description": "<p>category Id</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "category",
+            "description": "<p>Category details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/category.js",
+    "groupTitle": "Admin"
+  },
+  {
     "type": "post",
     "url": "/category/update",
     "title": "Update category",
