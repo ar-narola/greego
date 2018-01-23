@@ -1,5 +1,5 @@
 var HelpCategory = require("../models/help_category");
-var faq_helper = require('faq_helper');
+var faq_helper = require('./faq_helper');
 var category_helper = {};
 var async = require('async');
 var _ = require('underscore');
