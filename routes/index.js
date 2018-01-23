@@ -41,7 +41,7 @@ router.get('/socket',function(req,res){
  * @apiSuccess (Success 200) {JSON} categories Category details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/',function(req,res){
+router.get('/category',function(req,res){
     category_helper.get_all_category(function(category_data){
         if(category_data.status == 1){
             res.status(config.OK_STATUS).json({"categories":category_data.categories});
