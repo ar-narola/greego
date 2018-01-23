@@ -178,7 +178,7 @@ category_helper.find_category_by_parent_id = function (parent_id, callback) {
         if(err){
             callback(err);
         } else {
-            callback({"status":1,"category":category});
+            callback({"status":1,"category":result});
         }
     });
 
