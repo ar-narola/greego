@@ -144,6 +144,7 @@ category_helper.find_category_by_parent_id = function (parent_id, callback) {
                             inner_callback({"status": 0, "err": err});
                         } else {
                             if (category_data) {
+                                console.log("1 ===> ",category_data);
                                 inner_callback(null, category_data);
                             } else {
                                 inner_callback({"status": 404, "err": "No category available"});
@@ -157,19 +158,22 @@ category_helper.find_category_by_parent_id = function (parent_id, callback) {
                     inner_callback({"status": 0, "err": err});
                 } else {
                     category_data.subcategory = sub_category;
+                    console.log("2 ===> ",category_data);
                     inner_callback(null, category_data);
                 }
             });
         },
         function (category, inner_callback) {
-            async.each(category.sub_category, function (cat, callback) {
-                faq_helper.get_faq_by_category(cat._id,function(faqs){
-                    cat.faqs = faqs;
+            async.each(category.subcategory, function (cat, callback) {
+                faq_helper.get_faq_by_category(cat._id,function(faqs_data){
+                    cat.faqs = faqs_data.faqs;
+                    callback();
                 });
             }, function (err) {
                 if (err) {
                     inner_callback({"status": 0, "err": err});
                 } else {
+                    console.log("3 ===> ",category);
                     inner_callback(null,category);
                 }
             });

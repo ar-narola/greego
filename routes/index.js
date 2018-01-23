@@ -204,7 +204,7 @@ router.get('/get_subcategory',function(req,res){
         if (result.isEmpty()) {
             category_helper.find_category_by_parent_id(req.query.category_id,function(category_data){
                 if(category_data.status == 1){
-                    res.status(config.OK_STATUS).json({"categories":category_data.categories});
+                    res.status(config.OK_STATUS).json({"categories":category_data.category});
                 } else if(category_data.status == 0) {
                     res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
                 } else {
