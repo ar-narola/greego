@@ -133,4 +133,21 @@ category_helper.get_all_category = function(callback){
         });
 }
 
+category_helper.find_category_by_parent_id = function(parent_id,callback){
+    HelpCategory.find({'parent_id':{$eq:parent_id}})
+        .populate({'path':'parent_id','model':'help_categories'})
+        .lean()
+        .exec(function (err, category_data) {
+            if (err) {
+                callback({"status":0,"err":err});
+            } else {
+                if(category_data){
+                    callback({"status":1,"categories":category_data});
+                } else {
+                    callback({"status":404,"err":"No category available"});
+                }
+            }
+        });
+}
+
 module.exports = category_helper;

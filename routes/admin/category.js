@@ -14,28 +14,6 @@ var category_helper = require('../../helpers/help_category_helper');
 var faq_helper = require('../../helpers/faq_helper');
 
 /**
- * @api {get} /category Get all category
- * @apiName Get all category
- * @apiGroup Admin
- * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
- * @apiSuccess (Success 200) {JSON} categories Category details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get('/',function(req,res){
-    category_helper.get_all_category(function(category_data){
-        if(category_data.status == 1){
-            res.status(config.OK_STATUS).json({"categories":category_data.categories});
-        } else if(category_data.status == 0) {
-            res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
-        } else {
-            res.status(config.BAD_REQUEST).json({"error":category_data.err});
-        }
-    });
-});
-
-/**
  * @api {post} /category/create Create category
  * @apiName Create category
  * @apiGroup Admin
@@ -290,82 +268,5 @@ router.delete('/',function(req, res){
         }
     });
 });
-
-/**
- * @api {get} /category/details Retrive category details
- * @apiName Retrive category details
- * @apiGroup Admin
- * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
- * @apiParam {String} category_id category Id
- * 
- * @apiSuccess (Success 200) {JSON} category Category details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get('/details',function(req,res){
-    var schema = {
-        "category_id":{
-            notEmpty: true,
-            errorMessage: "Category id is required"
-        }
-    };
-
-    req.checkQuery(schema);
-    req.getValidationResult().then(function (result) {
-        if (result.isEmpty()) {
-            category_helper.find_category_by_id(req.query.category_id,function(category_data){
-                if(category_data.status == 1){
-                    res.status(config.OK_STATUS).json({"category":category_data.category});
-                } else if(category_data.status == 0) {
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
-                } else {
-                    res.status(config.BAD_REQUEST).json({"error":category_data.err});
-                }
-            });
-        } else {
-            var result = {
-                message: "Validation Error",
-                error: result.array()
-            };
-            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
-        }
-    });
-});
-
-/**
- * @api {get} /category/faq Get all faqs for given category
- * @apiName Get all faqs for given category
- * @apiGroup Admin
- * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
- * @apiParam {String} category_id category Id
- * 
- * @apiSuccess (Success 200) {JSON} faqs FAQ details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get('/faq',function(req,res){
-    var schema = {
-        "category_id":{
-            notEmpty: true,
-            errorMessage: "Category id is required"
-        }
-    };
-
-    req.checkQuery(schema);
-    req.getValidationResult().then(function (result) {
-        faq_helper.get_faq_by_category(req.query.category_id,function(faq_data){
-            if(faq_data.status == 1){
-                res.status(config.OK_STATUS).json({"faqs":faq_data.faqs});
-            } else if(faq_data.status == 0) {
-                res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
-            } else {
-                res.status(config.BAD_REQUEST).json({"error":faq_data.err});
-            }
-        });
-    });
-});
-
 
 module.exports = router;

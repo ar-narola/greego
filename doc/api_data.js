@@ -306,154 +306,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/category",
-    "title": "Get all category",
-    "name": "Get_all_category",
-    "group": "Admin",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "categories",
-            "description": "<p>Category details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/category.js",
-    "groupTitle": "Admin"
-  },
-  {
-    "type": "get",
-    "url": "/faq",
-    "title": "Get all faqs",
-    "name": "Get_all_faqs",
-    "group": "Admin",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "faqs",
-            "description": "<p>FAQ details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/faq.js",
-    "groupTitle": "Admin"
-  },
-  {
-    "type": "get",
-    "url": "/faq",
-    "title": "Get all faqs",
-    "name": "Get_all_faqs",
-    "group": "Admin",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "faqs",
-            "description": "<p>FAQ details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/faq.js",
-    "groupTitle": "Admin"
-  },
-  {
-    "type": "get",
-    "url": "/category/faq",
+    "url": "/category_faq",
     "title": "Get all faqs for given category",
     "name": "Get_all_faqs_for_given_category",
     "group": "Admin",
@@ -510,12 +363,12 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/category.js",
+    "filename": "routes/index.js",
     "groupTitle": "Admin"
   },
   {
     "type": "get",
-    "url": "/category/details",
+    "url": "/category_details",
     "title": "Retrive category details",
     "name": "Retrive_category_details",
     "group": "Admin",
@@ -572,28 +425,15 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/category.js",
+    "filename": "routes/index.js",
     "groupTitle": "Admin"
   },
   {
     "type": "get",
-    "url": "/faq/details",
+    "url": "/faq_details",
     "title": "Retrive faq details",
     "name": "Retrive_faq_details",
     "group": "Admin",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
     "parameter": {
       "fields": {
         "Parameter": [
@@ -634,7 +474,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/faq.js",
+    "filename": "routes/index.js",
     "groupTitle": "Admin"
   },
   {
@@ -1648,6 +1488,78 @@ define({ "api": [
             "optional": false,
             "field": "message",
             "description": "<p>Validation or error message. (Any error or user not available)</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/index.js",
+    "groupTitle": "Root"
+  },
+  {
+    "type": "get",
+    "url": "/category",
+    "title": "Get all category",
+    "name": "Get_all_category",
+    "group": "Root",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "categories",
+            "description": "<p>Category details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/index.js",
+    "groupTitle": "Root"
+  },
+  {
+    "type": "get",
+    "url": "/faq",
+    "title": "Get all faqs",
+    "name": "Get_all_faqs",
+    "group": "Root",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "faqs",
+            "description": "<p>FAQ details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
           }
         ]
       }

@@ -12,51 +12,6 @@ var logger = config.logger;
 
 var faq_helper = require('../../helpers/faq_helper');
 
-
-/**
- * @api {get} /faq Get all faqs
- * @apiName Get all faqs
- * @apiGroup Admin
- * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
- * @apiSuccess (Success 200) {JSON} faqs FAQ details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get('/',function(req,res){
-    faq_helper.get_all_faq(function(faq_data){
-        if(faq_data.status == 1){
-            res.status(config.OK_STATUS).json({"faqs":faq_data.faqs});
-        } else if(faq_data.status == 0) {
-            res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
-        } else {
-            res.status(config.BAD_REQUEST).json({"error":faq_data.err});
-        }
-    });
-});
-
-/**
- * @api {get} /faq Get all faqs
- * @apiName Get all faqs
- * @apiGroup Admin
- * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
- * @apiSuccess (Success 200) {JSON} faqs FAQ details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get('/',function(req,res){
-    faq_helper.get_all_faq(function(faq_data){
-        if(faq_data.status == 1){
-            res.status(config.OK_STATUS).json({"faqs":faq_data.faqs});
-        } else if(faq_data.status == 0) {
-            res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
-        } else {
-            res.status(config.BAD_REQUEST).json({"error":faq_data.err});
-        }
-    });
-});
-
 /**
  * @api {post} /faq Create faq
  * @apiName Create faq
@@ -212,48 +167,6 @@ router.delete('/',function(req, res){
                     res.status(config.INTERNAL_SERVER_ERROR).json({"error":resp.err});
                 } else {
                     res.status(config.OK_STATUS).json({"message":"FAQ has been deleted successfully"});
-                }
-            });
-        } else {
-            var result = {
-                message: "Validation Error",
-                error: result.array()
-            };
-            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
-        }
-    });
-});
-
-/**
- * @api {get} /faq/details Retrive faq details
- * @apiName Retrive faq details
- * @apiGroup Admin
- * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
- * @apiParam {String} faq_id faq Id
- * 
- * @apiSuccess (Success 200) {JSON} faq Faq details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get('/details',function(req,res){
-    var schema = {
-        "faq_id":{
-            notEmpty: true,
-            errorMessage: "Faq id is required"
-        }
-    };
-
-    req.checkQuery(schema);
-    req.getValidationResult().then(function (result) {
-        if (result.isEmpty()) {
-            faq_helper.find_faq_by_id(req.query.faq_id,function(faq_data){
-                if(faq_data.status == 1){
-                    res.status(config.OK_STATUS).json({"faq":faq_data.faq});
-                } else if(faq_data.status == 0) {
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
-                } else {
-                    res.status(config.BAD_REQUEST).json({"error":faq_data.err});
                 }
             });
         } else {
