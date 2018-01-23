@@ -61,7 +61,7 @@ router.get('/',function(req,res){
  * @apiSuccess (Success 200) {JSON} faqs FAQ details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/',function(req,res){
+router.get('/faq',function(req,res){
     faq_helper.get_all_faq(function(faq_data){
         if(faq_data.status == 1){
             res.status(config.OK_STATUS).json({"faqs":faq_data.faqs});
@@ -128,7 +128,7 @@ router.get('/category_details',function(req,res){
  * @apiSuccess (Success 200) {JSON} faqs FAQ details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/faq',function(req,res){
+router.get('/category_faq',function(req,res){
     var schema = {
         "category_id":{
             notEmpty: true,
@@ -160,7 +160,7 @@ router.get('/faq',function(req,res){
  * @apiSuccess (Success 200) {JSON} faq Faq details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/details',function(req,res){
+router.get('/faq_details',function(req,res){
     var schema = {
         "faq_id":{
             notEmpty: true,
