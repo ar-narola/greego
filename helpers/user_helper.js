@@ -428,4 +428,24 @@ user_helper.sendOTPtoUser = function (user,callback){
     });
 }
 
+/*
+ * delete_user_by_id is used to delete user in database
+ * 
+ * @param   user_id String  _id of user that need to be delete
+ * 
+ * @return  status  0 - If any error occur in deletion of user, with error
+ *          status  1 - If user deleted successfully, with appropriate message
+ * 
+ * @developed by "ar"
+ */
+user_helper.delete_user_by_id = function(user_id,callback){
+    User.remove({_id:{$eq : user_id}},function(err,delete_resp){
+        if (err) {
+            callback({"status":0,"err":err});
+        } else {
+            callback({"status":1,"message":"Record has been deleted"});
+        }
+    });
+};
+
 module.exports = user_helper;
