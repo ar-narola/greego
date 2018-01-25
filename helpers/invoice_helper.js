@@ -16,7 +16,8 @@ invoice_helper.get_paid_invoice_for_driver = function (driver_id, callback) {
             if (invoice_data.length > 0) {
                 
                 _.map(invoice_data, function(invoice){ 
-                    invoice.start_date = moment(invoice.start_date).format('MMMM Do YYYY, h:mm:ss a');
+                    invoice.start_date = moment(invoice.start_date).format('MMMM Do YYYY');
+                    invoice.end_date = moment(invoice.end_date).format('MMMM Do YYYY');
                     return invoice; 
                 });
                 
