@@ -109,10 +109,6 @@ router.put('/update', function (req, res) {
     logger.debug("req.body = ",req.body);
     logger.debug("req.files = ",req.files);
 
-    console.log("data = ",req.body);
-    console.log("drive type = ",req.body.drive_type);
-    console.log("type = ",typeof(req.body.drive_type));
-
     async.waterfall([
         function (callback) {
             if(req.body.email){
@@ -383,9 +379,11 @@ router.put('/update', function (req, res) {
             }
             
             if (req.body.drive_type) {
+                req.body.drive_type = JSON.parse(req.body.drive_type);
                 driver_obj.drive_type = req.body.drive_type;
             }
             if (req.body.transmission_type) {
+                req.body.transmission_type = JSON.parse(req.body.transmission_type);
                 driver_obj.transmission_type = req.body.transmission_type;
             }
             if (req.body.bank_routing_no) {
