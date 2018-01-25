@@ -38,5 +38,8 @@ module.exports = {
     "DATABASE_ERROR_STATUS": 422,
     "INTERNAL_SERVER_ERROR": 500,
     
-    "logger": log4js.getLogger( "development" )
+    "logger": log4js.getLogger( "development" ),
+    
+    "DRIVER_DOC_URL" : "http://52.45.35.157:4000/uploads/driver_doc/",
+    "ADMIN_EMAIL" : "info@gnsfin.com"
 };

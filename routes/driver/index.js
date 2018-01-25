@@ -464,12 +464,70 @@ router.put('/update', function (req, res) {
                 if(err){
                     callback(err);
                 } else {
-                    callback(null,image_names);
+                    callback(null,image_names,user_obj);
                 }
             });
         },
-        function(image_names,callback){
-            callback(null);
+        function(image_names,user_obj,callback){
+            if(image_names){
+                var msg = "Hi,<br/><br/>";
+                    msg += "Driver having name <b>"+user_obj.first_name+" "+user_obj.last_name+"</b> has uploaded below documents. Please review it.<br/>";
+                    msg += "<table>";
+                        msg += "<tr>";
+                            msg += "<th>Type of document</th>";
+                            msg += "<th>Path to access document</th>";
+                        msg += "</tr>";
+                        
+                        if(image_names.license && image_names.license != null){
+                            msg += "<tr>";
+                                msg += "<td>License</td>";
+                                msg += "<td>"+config.DRIVER_DOC_URL+image_names.license+"</td>";
+                            msg += "</tr>";
+                        }
+                        
+                        if(image_names.birth_certi && image_names.birth_certi != null){
+                            msg += "<tr>";
+                                msg += "<td>Birth Certificate</td>";
+                                msg += "<td>"+config.DRIVER_DOC_URL+image_names.birth_certi+"</td>";
+                            msg += "</tr>";
+                        }
+                        
+                        if(image_names.home_insurance && image_names.home_insurance != null){
+                            msg += "<tr>";
+                                msg += "<td>Home Insurance</td>";
+                                msg += "<td>"+config.DRIVER_DOC_URL+image_names.home_insurance+"</td>";
+                            msg += "</tr>";
+                        }
+                        
+                        if(image_names.auto_insurance && image_names.auto_insurance != null){
+                            msg += "<tr>";
+                                msg += "<td>Auto Insurance</td>";
+                                msg += "<td>"+config.DRIVER_DOC_URL+image_names.auto_insurance+"</td>";
+                            msg += "</tr>";
+                        }
+                        
+                        if(image_names.pay_stub && image_names.pay_stub != null){
+                            msg += "<tr>";
+                                msg += "<td>Uber Pay Stub</td>";
+                                msg += "<td>"+config.DRIVER_DOC_URL+image_names.pay_stub+"</td>";
+                            msg += "</tr>";
+                        }
+                        
+                    msg += "</table>";
+                    
+                    msg += "Thanks,<br/>Greego Team<hr/>";
+                    msg += "<h5>If you're having trouble clicking the given link, copy and paste URL into your web browser.";
+
+                    mail_helper.send(config.ADMIN_EMAIL,'"Greego Inc." support@greego.co', 'Driver has updated his document', '', msg, function (resp) {
+                        if(resp.status === 0){
+                            callback({"status":config.INTERNAL_SERVER_ERROR,"err":"Error occured in sending mail"});
+                        } else {
+                            callback(null);
+                        }
+                    });
+            } else {
+                callback(null);
+            }
         },
         function(callback){
             // Find driver by user id
