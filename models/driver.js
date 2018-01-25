@@ -17,7 +17,7 @@ var DriverSchema = new Schema({
     state:String,
     zipcode:String,
     drive_type: [{type: String, enum: ["Sedan", "SUV", "Van"]}],
-    transmission_type: {type: String, enum: ["Automatic", "Manual"]},
+    transmission_type: [{type: String, enum: ["Automatic", "Manual"]}],
     license: String,
     birth_certi: String,
     home_insurance: String,
