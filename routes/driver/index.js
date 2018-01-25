@@ -109,6 +109,10 @@ router.put('/update', function (req, res) {
     logger.debug("req.body = ",req.body);
     logger.debug("req.files = ",req.files);
 
+    console.log("data = ",req.body);
+    console.log("drive type = ",req.body.drive_type);
+    console.log("type = ",typeof(req.body.drive_type));
+
     async.waterfall([
         function (callback) {
             if(req.body.email){
@@ -462,9 +466,12 @@ router.put('/update', function (req, res) {
                 if(err){
                     callback(err);
                 } else {
-                    callback(null);
+                    callback(null,image_names);
                 }
             });
+        },
+        function(image_names,callback){
+            callback(null);
         },
         function(callback){
             // Find driver by user id
