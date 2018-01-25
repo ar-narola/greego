@@ -12,6 +12,7 @@ var config = require('../../config');
 var driver_helper = require("../../helpers/driver_helper");
 var user_helper = require("../../helpers/user_helper");
 var trip_helper = require("../../helpers/trip_helper");
+var mail_helper = require("../../helpers/mail_helper");
 
 var logger = config.logger;
 
