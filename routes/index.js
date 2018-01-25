@@ -818,6 +818,8 @@ router.post('/driver_signup', function (req, res) {
     };
     req.checkBody(schema);
 
+    console.log(req.body);
+    console.log("type = ",typeof(req.body.drive_type));
 //    console.log("drive type = ",req.body.drive_type);
 //    console.log("0th element = ",req.body.drive_type[0]);
     console.log("drive type = ",JSON.parse(req.body.drive_type));
