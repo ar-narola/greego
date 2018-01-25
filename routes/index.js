@@ -730,6 +730,11 @@ router.get('/refresh_token', function (req, res) {
  * @apiParam {String} bank_routing_no Bank routing number
  * @apiParam {String} bank_account_no Bank account number
  * @apiParam {String} ssn Social security number
+ * @apiParam {String} address Driver's Address 
+ * @apiParam {String} city City
+ * @apiParam {String} state State
+ * @apiParam {String} zipcode Zipcode
+
  * 
  * @apiDescription You need to pass form-data
  * 
@@ -793,7 +798,23 @@ router.post('/driver_signup', function (req, res) {
             notEmpty: true,
             errorMessage: "Social security number is required",
             isNumeric:{errorMessage: "SSN must contain digits only"},
-        }
+        },
+        'address':{
+            notEmpty: true,
+            errorMessage: "Address is required"
+        },
+        'city':{
+            notEmpty: true,
+            errorMessage: "City is required"
+        },
+        'state':{
+            notEmpty: true,
+            errorMessage: "State is required"
+        },
+        'zipcode':{
+            notEmpty: true,
+            errorMessage: "Zipcode is required"
+        },
     };
     req.checkBody(schema);
 
@@ -1049,7 +1070,11 @@ router.post('/driver_signup', function (req, res) {
                         };
 
                         var driver_obj = {
-                            "residential_status":req.body.residential_status
+                            "residential_status":req.body.residential_status,
+                            "address":req.body.address,
+                            "city":req.body.city,
+                            "state":req.body.state,
+                            "zipcode":req.body.zipcode
                         };
 
                         if(req.body.transmission_type){

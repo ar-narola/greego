@@ -12,6 +12,10 @@ var RateSchema = new Schema({
 
 var DriverSchema = new Schema({
     residential_status: {type: String,enum:["Citizen","Greencard","Visa"]},
+    address:String,
+    city:String,
+    state:String,
+    zipcode:String,
     drive_type: [{type: String, enum: ["Sedan", "SUV", "Van"]}],
     transmission_type: {type: String, enum: ["Automatic", "Manual"]},
     license: String,
