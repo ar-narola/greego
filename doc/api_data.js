@@ -883,6 +883,34 @@ define({ "api": [
             "optional": true,
             "field": "ssn",
             "description": "<p>Social security number</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "address",
+            "description": "<p>Address</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "city",
+            "description": "<p>City</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "state",
+            "description": "<p>State</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "zipcode",
+            "description": "<p>Zipcode</p>"
           }
         ]
       }

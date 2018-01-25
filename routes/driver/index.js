@@ -44,6 +44,10 @@ router.get('/get_details',function(req,res){
                 "residential_status":driver_data.driver.driver_id.residential_status,
                 "user_avatar":(driver_data.driver.user_avatar)?driver_data.driver.user_avatar:null,
                 "emergency_contact":(driver_data.driver.emergency_contact)?driver_data.driver.emergency_contact:null,
+                "address":(driver_data.driver.driver_id.address)?driver_data.driver.driver_id.address:null,
+                "city":(driver_data.driver.driver_id.city)?driver_data.driver.driver_id.city:null,
+                "state":(driver_data.driver.driver_id.state)?driver_data.driver.driver_id.state:null,
+                "zipcode":(driver_data.driver.driver_id.zipcode)?driver_data.driver.driver_id.zipcode:null,
 
                 "drive_type":(driver_data.driver.driver_id.drive_type)?driver_data.driver.driver_id.drive_type:null,
                 "transmission_type":(driver_data.driver.driver_id.transmission_type)?driver_data.driver.driver_id.transmission_type:null,
@@ -87,7 +91,11 @@ router.get('/get_details',function(req,res){
  * @apiParam {File} [pay_stub] Image of Uber pay stub
  * @apiParam {String} [bank_routing_no] Bank routing number
  * @apiParam {String} [bank_account_no] Bank account number
- * @apiParam {String} [ssn] Social security number
+ * @apiParam {String} [ssn] Social security number 
+ * @apiParam {String} [address] Address
+ * @apiParam {String} [city] City
+ * @apiParam {String} [state] State
+ * @apiParam {String} [zipcode] Zipcode
  * 
  * @apiDescription You need to pass form-data
  * 
@@ -385,6 +393,18 @@ router.put('/update', function (req, res) {
             if (req.body.ssn) {
                 driver_obj.ssn = req.body.ssn;
             }
+            if (req.body.address) {
+                driver_obj.address = req.body.address;
+            }
+            if (req.body.city) {
+                driver_obj.city = req.body.city;
+            }
+            if (req.body.state) {
+                driver_obj.state = req.body.state;
+            }
+            if (req.body.zipcode) {
+                driver_obj.zipcode = req.body.zipcode;
+            }
             
             if(image_names && image_names.license && image_names.license != null){
                 driver_obj.license = image_names.license;
@@ -466,6 +486,11 @@ router.put('/update', function (req, res) {
                         "residential_status":driver_data.driver.residential_status,
                         "user_avatar":(driver_data.driver.user_avatar)?driver_data.driver.user_avatar:null,
                         "emergency_contact":(driver_data.driver.emergency_contact)?driver_data.driver.emergency_contact:null,
+
+                        "address":(driver_data.driver.driver_id.address)?driver_data.driver.driver_id.address:null,
+                        "city":(driver_data.driver.driver_id.city)?driver_data.driver.driver_id.city:null,
+                        "state":(driver_data.driver.driver_id.state)?driver_data.driver.driver_id.state:null,
+                        "zipcode":(driver_data.driver.driver_id.zipcode)?driver_data.driver.driver_id.zipcode:null,
 
                         "drive_type":(driver_data.driver.driver_id.drive_type)?driver_data.driver.driver_id.drive_type:null,
                         "transmission_type":(driver_data.driver.driver_id.transmission_type)?driver_data.driver.driver_id.transmission_type:null,
