@@ -822,9 +822,6 @@ router.post('/driver_signup', function (req, res) {
     console.log("type = ",typeof(req.body.drive_type));
 //    console.log("drive type = ",req.body.drive_type);
 //    console.log("0th element = ",req.body.drive_type[0]);
-    console.log("drive type = ",JSON.parse(req.body.drive_type));
-    req.body.drive_type = JSON.parse(req.body.drive_type);
-    console.log("0th element = ",req.body.drive_type[0]);
 
     res.status(200).json(req.body);
     req.getValidationResult().then(function (result) {
