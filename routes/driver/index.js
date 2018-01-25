@@ -472,7 +472,7 @@ router.put('/update', function (req, res) {
         function(image_names,user_obj,callback){
             if(image_names){
                 var msg = "Hi,<br/><br/>";
-                    msg += "Driver having name <b>"+user_obj.first_name+" "+user_obj.last_name+"</b> has uploaded below documents. Please review it.<br/>";
+                    msg += "Driver having name <b>"+user.first_name+" "+user.last_name+"</b> has uploaded below documents. Please review it.<br/>";
                     msg += "<table>";
                         msg += "<tr>";
                             msg += "<th>Type of document</th>";
