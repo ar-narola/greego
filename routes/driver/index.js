@@ -12,6 +12,7 @@ var config = require('../../config');
 var driver_helper = require("../../helpers/driver_helper");
 var user_helper = require("../../helpers/user_helper");
 var trip_helper = require("../../helpers/trip_helper");
+var invoice_helper = require("../../helpers/invoice_helper");
 var mail_helper = require("../../helpers/mail_helper");
 
 var logger = config.logger;
@@ -472,7 +473,7 @@ router.put('/update', function (req, res) {
         function(image_names,user_obj,callback){
             if(image_names){
                 var msg = "Hi,<br/><br/>";
-                    msg += "Driver having name <b>"+user_obj.first_name+" "+user_obj.last_name+"</b> has uploaded below documents. Please review it.<br/>";
+                    msg += "Driver having name <b>"+user_obj.first_name+" "+user_obj.last_name+"</b> has uploaded below documents. Please review it.<br/><br/>";
                     msg += "<table>";
                         msg += "<tr>";
                             msg += "<th>Type of document</th>";
@@ -514,7 +515,7 @@ router.put('/update', function (req, res) {
                             msg += "</tr>";
                         }
                         
-                    msg += "</table>";
+                    msg += "</table><br/>";
                     
                     msg += "Thanks,<br/>Greego Team<hr/>";
                     msg += "<h5>If you're having trouble clicking the given link, copy and paste URL into your web browser.";
@@ -667,5 +668,21 @@ router.get('/statistics',function(req,res){
         }
     });
 });
+
+router.get('/paid_invoice',function(req,res){
+    invoice_helper.get_paid_invoice_for_driver(req.userInfo.id,function(invoice_data){
+        if(invoice_data.status == 0){
+            // error in finding trips
+            res.status(config.BAD_REQUEST).json({"error":"Error has occured while finding invoice"});
+        } else if(invoice_data.status == 404) {
+            // No trips available
+            res.status(config.BAD_REQUEST).json({"error":"No paid invoice found"});
+        } else {
+            // Valid trips
+            res.status(config.OK_STATUS).json({"invoice":invoice_data.invoice});
+        }
+    });
+});
+
 
 module.exports = router;
