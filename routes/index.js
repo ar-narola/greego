@@ -1920,8 +1920,9 @@ router.post('/contact_support', function (req, res) {
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
             
+            console.log("attachments = ",req.body);
             console.log("attachments = ",req.files);
-            console.log("attachment length = ",req.files.attachments.length);
+            console.log("attachment length = ",req.body.attachments.length);
 //            res.status(200).json({"attch":req.files});
             
             var msg = "Hello,</b><br/><br/>";
