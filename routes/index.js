@@ -1919,16 +1919,14 @@ router.post('/contact_support', function (req, res) {
 
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            
+            req.files.attachments = [];
             console.log("attachments = ",req.body);
             console.log("attachments = ",req.files);
-//            console.log("attachment length = ",req.body.attachments.length);
-//            res.status(200).json({"attch":req.files});
             
             _.each(req.files,function(file,index){
+                req.files.attachments.push(file);
                 console.log("In each");
                 console.log("file = ",file);
-                console.log("index = ",index);
             });
             
             var msg = "Hello,</b><br/><br/>";
@@ -1959,7 +1957,7 @@ router.post('/contact_support', function (req, res) {
             
             msg += "<br/>Thanks,<br/>Greego Team<hr/>";
             
-            if(req.files && req.files.length > 0){
+            if(req.files && req.files.attachments.length > 0){
                 console.log("Found attachment");
                 var attachments = [];
                 async.eachSeries(req.files,function(file,callback){
