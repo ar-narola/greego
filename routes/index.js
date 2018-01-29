@@ -1925,6 +1925,12 @@ router.post('/contact_support', function (req, res) {
             console.log("attachment length = ",req.body.attachments.length);
 //            res.status(200).json({"attch":req.files});
             
+            _.each(req.files,function(file,index){
+                console.log("In each");
+                console.log("file = ",file);
+                console.log("index = ",index);
+            });
+            
             var msg = "Hello,</b><br/><br/>";
             msg += "You got new inquiry for greego. Please check below details<br/><br/>";
             
