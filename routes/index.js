@@ -1966,7 +1966,7 @@ router.post('/contact_support', function (req, res) {
                     }
                     callback();
                 },function(err){
-                    mail_helper.send_with_attachment("ar@narola.email", '"Greego Inquiry" support@greego.co', 'New inquiry for greego', '', msg, attachments, function (resp) {
+                    mail_helper.send_with_attachment("support@greego.co", '"Greego Inquiry" support@greego.co', 'New inquiry for greego', '', msg, attachments, function (resp) {
                         if (resp.status === 0) {
                             res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error occured in sending inquiry"});
                         } else {
@@ -1976,7 +1976,7 @@ router.post('/contact_support', function (req, res) {
                 });
                 
             } else {
-                mail_helper.send("ar@narola.email", '"Greego Inquiry" support@greego.co', 'New inquiry for greego', '', msg, function (resp) {
+                mail_helper.send("support@greego.co", '"Greego Inquiry" support@greego.co', 'New inquiry for greego', '', msg, function (resp) {
                     if (resp.status === 0) {
                         res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error occured in sending inquiry"});
                     } else {
