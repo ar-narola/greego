@@ -1873,8 +1873,8 @@ router.post('/calculate_fare', function (req, res) {
 });
 
 /**
- * @api {post} /calculate_fare Calculate fare
- * @apiName Calculate fare
+ * @api {post} /contact_support Contact support
+ * @apiName Contact support
  * @apiGroup Root
  * 
  * @apiParam {String} email Email address of user
@@ -1952,10 +1952,11 @@ router.post('/contact_support', function (req, res) {
             
             msg += "<br/>Thanks,<br/>Greego Team<hr/>";
             
-            if(req.files && req.files.attachments.length > 0){
+            if(req.files && req.files.length > 0){
                 console.log("Found attachment");
                 var attachments = [];
-                async.eachSeries(req.files.attachments,function(file,callback){
+                async.eachSeries(req.files,function(file,callback){
+                    console.log("file = ",file);
                     attachments.push({filename:file.name,content:file.data});
                     callback();
                 },function(err){
