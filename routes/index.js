@@ -28,9 +28,9 @@ router.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '../doc', 'index.html'));
 });
 
-router.get('/socket',function(req,res){
+router.get('/socket', function (req, res) {
     logger.trace("Web page for socket loaded");
-    res.render('index', { title: 'Express' });
+    res.render('index', {title: 'Express'});
 });
 
 /**
@@ -41,14 +41,14 @@ router.get('/socket',function(req,res){
  * @apiSuccess (Success 200) {JSON} categories Category details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/category',function(req,res){
-    category_helper.get_all_category(function(category_data){
-        if(category_data.status == 1){
-            res.status(config.OK_STATUS).json({"categories":category_data.categories});
-        } else if(category_data.status == 0) {
-            res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
+router.get('/category', function (req, res) {
+    category_helper.get_all_category(function (category_data) {
+        if (category_data.status == 1) {
+            res.status(config.OK_STATUS).json({"categories": category_data.categories});
+        } else if (category_data.status == 0) {
+            res.status(config.INTERNAL_SERVER_ERROR).json({"error": category_data.err});
         } else {
-            res.status(config.BAD_REQUEST).json({"error":category_data.err});
+            res.status(config.BAD_REQUEST).json({"error": category_data.err});
         }
     });
 });
@@ -61,18 +61,17 @@ router.get('/category',function(req,res){
  * @apiSuccess (Success 200) {JSON} faqs FAQ details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/faq',function(req,res){
-    faq_helper.get_all_faq(function(faq_data){
-        if(faq_data.status == 1){
-            res.status(config.OK_STATUS).json({"faqs":faq_data.faqs});
-        } else if(faq_data.status == 0) {
-            res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
+router.get('/faq', function (req, res) {
+    faq_helper.get_all_faq(function (faq_data) {
+        if (faq_data.status == 1) {
+            res.status(config.OK_STATUS).json({"faqs": faq_data.faqs});
+        } else if (faq_data.status == 0) {
+            res.status(config.INTERNAL_SERVER_ERROR).json({"error": faq_data.err});
         } else {
-            res.status(config.BAD_REQUEST).json({"error":faq_data.err});
+            res.status(config.BAD_REQUEST).json({"error": faq_data.err});
         }
     });
 });
-
 
 /**
  * @api {get} /category_details Retrive category details
@@ -86,9 +85,9 @@ router.get('/faq',function(req,res){
  * @apiSuccess (Success 200) {JSON} category Category details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/category_details',function(req,res){
+router.get('/category_details', function (req, res) {
     var schema = {
-        "category_id":{
+        "category_id": {
             notEmpty: true,
             errorMessage: "Category id is required"
         }
@@ -97,13 +96,13 @@ router.get('/category_details',function(req,res){
     req.checkQuery(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            category_helper.find_category_by_id(req.query.category_id,function(category_data){
-                if(category_data.status == 1){
-                    res.status(config.OK_STATUS).json({"category":category_data.category});
-                } else if(category_data.status == 0) {
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
+            category_helper.find_category_by_id(req.query.category_id, function (category_data) {
+                if (category_data.status == 1) {
+                    res.status(config.OK_STATUS).json({"category": category_data.category});
+                } else if (category_data.status == 0) {
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"error": category_data.err});
                 } else {
-                    res.status(config.BAD_REQUEST).json({"error":category_data.err});
+                    res.status(config.BAD_REQUEST).json({"error": category_data.err});
                 }
             });
         } else {
@@ -128,9 +127,9 @@ router.get('/category_details',function(req,res){
  * @apiSuccess (Success 200) {JSON} faqs FAQ details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/category_faq',function(req,res){
+router.get('/category_faq', function (req, res) {
     var schema = {
-        "category_id":{
+        "category_id": {
             notEmpty: true,
             errorMessage: "Category id is required"
         }
@@ -138,13 +137,13 @@ router.get('/category_faq',function(req,res){
 
     req.checkQuery(schema);
     req.getValidationResult().then(function (result) {
-        faq_helper.get_faq_by_category(req.query.category_id,function(faq_data){
-            if(faq_data.status == 1){
-                res.status(config.OK_STATUS).json({"faqs":faq_data.faqs});
-            } else if(faq_data.status == 0) {
-                res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
+        faq_helper.get_faq_by_category(req.query.category_id, function (faq_data) {
+            if (faq_data.status == 1) {
+                res.status(config.OK_STATUS).json({"faqs": faq_data.faqs});
+            } else if (faq_data.status == 0) {
+                res.status(config.INTERNAL_SERVER_ERROR).json({"error": faq_data.err});
             } else {
-                res.status(config.BAD_REQUEST).json({"error":faq_data.err});
+                res.status(config.BAD_REQUEST).json({"error": faq_data.err});
             }
         });
     });
@@ -160,9 +159,9 @@ router.get('/category_faq',function(req,res){
  * @apiSuccess (Success 200) {JSON} faq Faq details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/faq_details',function(req,res){
+router.get('/faq_details', function (req, res) {
     var schema = {
-        "faq_id":{
+        "faq_id": {
             notEmpty: true,
             errorMessage: "Faq id is required"
         }
@@ -171,13 +170,13 @@ router.get('/faq_details',function(req,res){
     req.checkQuery(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            faq_helper.find_faq_by_id(req.query.faq_id,function(faq_data){
-                if(faq_data.status == 1){
-                    res.status(config.OK_STATUS).json({"faq":faq_data.faq});
-                } else if(faq_data.status == 0) {
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"error":faq_data.err});
+            faq_helper.find_faq_by_id(req.query.faq_id, function (faq_data) {
+                if (faq_data.status == 1) {
+                    res.status(config.OK_STATUS).json({"faq": faq_data.faq});
+                } else if (faq_data.status == 0) {
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"error": faq_data.err});
                 } else {
-                    res.status(config.BAD_REQUEST).json({"error":faq_data.err});
+                    res.status(config.BAD_REQUEST).json({"error": faq_data.err});
                 }
             });
         } else {
@@ -190,25 +189,24 @@ router.get('/faq_details',function(req,res){
     });
 });
 
-
-router.get('/get_subcategory',function(req,res){
+router.get('/get_subcategory', function (req, res) {
     var schema = {
-        "category_id":{
+        "category_id": {
             notEmpty: true,
             errorMessage: "Category id is required"
         }
     };
-    
+
     req.checkQuery(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            category_helper.find_category_by_parent_id(req.query.category_id,function(category_data){
-                if(category_data.status == 1){
-                    res.status(config.OK_STATUS).json({"categories":category_data.category});
-                } else if(category_data.status == 0) {
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"error":category_data.err});
+            category_helper.find_category_by_parent_id(req.query.category_id, function (category_data) {
+                if (category_data.status == 1) {
+                    res.status(config.OK_STATUS).json({"categories": category_data.category});
+                } else if (category_data.status == 0) {
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"error": category_data.err});
                 } else {
-                    res.status(config.BAD_REQUEST).json({"error":category_data.err});
+                    res.status(config.BAD_REQUEST).json({"error": category_data.err});
                 }
             });
         } else {
@@ -220,7 +218,6 @@ router.get('/get_subcategory',function(req,res){
         }
     });
 });
-
 
 /**
  * @api {post} /user_login User Login
@@ -239,7 +236,7 @@ router.get('/get_subcategory',function(req,res){
  */
 router.post('/user_login', function (req, res) {
     logger.trace("API - User login called");
-    logger.debug("req.body = ",req.body);
+    logger.debug("req.body = ", req.body);
     var schema = {
         'email': {
             notEmpty: true,
@@ -262,7 +259,7 @@ router.post('/user_login', function (req, res) {
                     logger.trace("Checking for user availability");
                     user_helper.find_user_by_email(req.body.email, function (user_resp) {
                         if (user_resp.status === 0) {
-                            logger.error("Error in finding user by email in user_login API. Err = ",user_resp.err);
+                            logger.error("Error in finding user by email in user_login API. Err = ", user_resp.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 1) {
                             logger.trace("User found. Executing next instruction");
@@ -296,7 +293,7 @@ router.post('/user_login', function (req, res) {
                                 logger.trace("Token generated. Executing next instruction");
                                 callback(null, {"user": user, "token": token, "refresh_token": refreshToken});
                             } else if (update_resp.status === 0) {
-                                logger.error("Error in updating user in user_login API. Err = ",update_resp.err);
+                                logger.error("Error in updating user in user_login API. Err = ", update_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
                             } else {
                                 logger.info("Token has generated. but user has not updated.");
@@ -320,7 +317,7 @@ router.post('/user_login', function (req, res) {
                 message: "Validation Error",
                 error: result.array()
             };
-            logger.error("Validation Error = ",result);
+            logger.error("Validation Error = ", result);
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
     });
@@ -343,7 +340,7 @@ router.post('/user_login', function (req, res) {
  */
 router.post('/admin_login', function (req, res) {
     logger.trace("API - User login called");
-    logger.debug("req.body = ",req.body);
+    logger.debug("req.body = ", req.body);
     var schema = {
         'email': {
             notEmpty: true,
@@ -366,7 +363,7 @@ router.post('/admin_login', function (req, res) {
                     logger.trace("Checking for user availability");
                     user_helper.find_user_by_email(req.body.email, function (user_resp) {
                         if (user_resp.status === 0) {
-                            logger.error("Error in finding user by email in user_login API. Err = ",user_resp.err);
+                            logger.error("Error in finding user by email in user_login API. Err = ", user_resp.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 1) {
                             logger.trace("User found. Executing next instruction");
@@ -400,7 +397,7 @@ router.post('/admin_login', function (req, res) {
                                 logger.trace("Token generated. Executing next instruction");
                                 callback(null, {"user": user, "token": token, "refresh_token": refreshToken});
                             } else if (update_resp.status === 0) {
-                                logger.error("Error in updating user in user_login API. Err = ",update_resp.err);
+                                logger.error("Error in updating user in user_login API. Err = ", update_resp.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
                             } else {
                                 logger.info("Token has generated. but user has not updated.");
@@ -424,7 +421,7 @@ router.post('/admin_login', function (req, res) {
                 message: "Validation Error",
                 error: result.array()
             };
-            logger.error("Validation Error = ",result);
+            logger.error("Validation Error = ", result);
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
     });
@@ -456,7 +453,7 @@ router.post('/admin_login', function (req, res) {
  */
 router.post('/user_signup', function (req, res) {
     logger.trace("API - User signup called");
-    logger.debug("req.body = ",req.body);
+    logger.debug("req.body = ", req.body);
     var schema = {
         'first_name': {
             notEmpty: true,
@@ -478,7 +475,7 @@ router.post('/user_signup', function (req, res) {
         'phone': {
             notEmpty: true,
             errorMessage: "Phone number is required",
-            isNumeric:{errorMessage: "Phone number must contain digits only"},
+            isNumeric: {errorMessage: "Phone number must contain digits only"},
         },
         'password': {
             notEmpty: true,
@@ -511,7 +508,7 @@ router.post('/user_signup', function (req, res) {
                     // Car reference is valid, Check user validity
                     user_helper.find_user_by_email(req.body.email, function (user_resp) {
                         if (user_resp.status === 0) {
-                            logger.error("Error occured in finding user by email in user signup. Err = ",user_resp.err);
+                            logger.error("Error occured in finding user by email in user signup. Err = ", user_resp.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 1) {
                             logger.info("User with given email is already exist.");
@@ -541,7 +538,7 @@ router.post('/user_signup', function (req, res) {
                                     logger.error("There was an issue in uploading image");
                                     callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
                                 } else {
-                                    logger.trace("image has been uploaded. Image name = ",filename);
+                                    logger.trace("image has been uploaded. Image name = ", filename);
                                     callback(null, filename);
                                 }
                             });
@@ -564,19 +561,19 @@ router.post('/user_signup', function (req, res) {
                         "country_code": req.body.country_code,
                         "phone": req.body.phone,
                         "password": req.body.password,
-                        "role":"rider",
-                        "car":{
-                            "brand":req.body.car_brand,
-                            "model":req.body.car_model,
-                            "color":req.body.car_color,
-                            "transmission_type":req.body.transmission_type
+                        "role": "rider",
+                        "car": {
+                            "brand": req.body.car_brand,
+                            "model": req.body.car_model,
+                            "color": req.body.car_color,
+                            "transmission_type": req.body.transmission_type
                         }
                     };
 
                     if (image_name) {
                         user_obj.user_avatar = image_name;
                     }
-                    
+
                     if (req.body.car_year) {
                         user_obj.car.year = req.body.car_year;
                     }
@@ -586,20 +583,20 @@ router.post('/user_signup', function (req, res) {
 
                     user_helper.insert_user(user_obj, function (user_data) {
                         if (user_data.status === 0) {
-                            logger.error("There was an issue in user registration. Err = ",user_data.err);
+                            logger.error("There was an issue in user registration. Err = ", user_data.err);
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in user registration"});
                         } else {
                             logger.debug("User inserted. Executed next instruction");
-                            callback(null,user_data.user);
+                            callback(null, user_data.user);
                         }
                     });
                 },
-                function(user,callback){
-                    user_helper.sendOTPtoUser(user,function(data){
-                        if(data.status == config.OK_STATUS){
-                            callback(null,data.result);
+                function (user, callback) {
+                    user_helper.sendOTPtoUser(user, function (data) {
+                        if (data.status == config.OK_STATUS) {
+                            callback(null, data.result);
                         } else {
-                            user_helper.delete_user_by_id(user._id,function(){
+                            user_helper.delete_user_by_id(user._id, function () {
                                 callback(data);
                             });
                         }
@@ -607,8 +604,8 @@ router.post('/user_signup', function (req, res) {
                 }
             ], function (err, result) {
                 if (err) {
-                    if(err.status == config.VALIDATION_FAILURE_STATUS){
-                        res.status(err.status).json({"message": err.err,"error":err.error});
+                    if (err.status == config.VALIDATION_FAILURE_STATUS) {
+                        res.status(err.status).json({"message": err.err, "error": err.error});
                     } else {
                         res.status(err.status).json({"message": err.err});
                     }
@@ -618,7 +615,7 @@ router.post('/user_signup', function (req, res) {
                 }
             });
         } else {
-            logger.error("Validation error ",result);
+            logger.error("Validation error ", result);
             var result = {
                 message: "Validation Error",
                 error: result.array()
@@ -643,7 +640,7 @@ router.post('/user_signup', function (req, res) {
  */
 router.get('/refresh_token', function (req, res) {
     logger.trace("API - Refresh token");
-    logger.debug("req.headers = ",req.headers);
+    logger.debug("req.headers = ", req.headers);
     var token = req.headers['refresh_token'];
     if (token) {
         logger.trace("Request is valid");
@@ -652,7 +649,7 @@ router.get('/refresh_token', function (req, res) {
                 logger.trace("Verifing refresh token");
                 jwt.verify(token, config.REFRESH_TOKEN_SECRET_KEY, function (err, decoded) {
                     if (err) {
-                        logger.error("Invalid token. Err = ",err.message);
+                        logger.error("Invalid token. Err = ", err.message);
                         callback({"status": config.UNAUTHORIZED, "err": err.message});
                     } else {
                         logger.trace("Finding user by id");
@@ -664,7 +661,7 @@ router.get('/refresh_token', function (req, res) {
                                 loggger.info("User not found");
                                 callback({"status": config.BAD_REQUEST, "err": "User not found"});
                             } else {
-                                logger.error("Error occured in finding user by id in refresh token API. Err = ",user_data.err);
+                                logger.error("Error occured in finding user by id in refresh token API. Err = ", user_data.err);
                                 callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_data.err});
                             }
                         });
@@ -675,7 +672,7 @@ router.get('/refresh_token', function (req, res) {
                 // Setup JWT token
                 logger.trace("Generating tokrn");
                 var refreshToken = jwt.sign({id: user._id, role: role}, config.REFRESH_TOKEN_SECRET_KEY, {});
-                
+
                 logger.trace("Uodating user");
                 user_helper.update_user_by_id(user._id, {"refresh_token": refreshToken}, function (update_resp) {
                     if (update_resp.status === 1) {
@@ -686,7 +683,7 @@ router.get('/refresh_token', function (req, res) {
                         logger.debug("token has generated for user")
                         callback(null, {"token": token, "refresh_token": refreshToken});
                     } else if (update_resp.status === 0) {
-                        logger.error("Error has occured in updating user in refresh token API. Err = ",update_resp.err);
+                        logger.error("Error has occured in updating user in refresh token API. Err = ", update_resp.err);
                         callback({"status": config.INTERNAL_SERVER_ERROR, "err": update_resp.err, "err_msg": "There is an issue while updating user record"});
                     } else {
                         logger.error("Error has occured in updating user in refresh token API.");
@@ -694,12 +691,12 @@ router.get('/refresh_token', function (req, res) {
                     }
                 });
             }], function (err, resp) {
-                if (err) {
-                    res.status(err.status).json({"message": err.err});
-                } else {
-                    res.status(config.OK_STATUS).json(resp);
-                }
-            });
+            if (err) {
+                res.status(err.status).json({"message": err.err});
+            } else {
+                res.status(config.OK_STATUS).json(resp);
+            }
+        });
     } else {
         logger.trace("Request is invalid - Token missing");
         return res.status(config.UNAUTHORIZED).json({"message": 'Invalid refresh token'});
@@ -734,7 +731,7 @@ router.get('/refresh_token', function (req, res) {
  * @apiParam {String} city City
  * @apiParam {String} state State
  * @apiParam {String} zipcode Zipcode
-
+ 
  * 
  * @apiDescription You need to pass form-data
  * 
@@ -743,7 +740,7 @@ router.get('/refresh_token', function (req, res) {
  */
 router.post('/driver_signup', function (req, res) {
     logger.trace("API - Driver signup");
-    logger.debug("req.body = ",req.body);
+    logger.debug("req.body = ", req.body);
     var schema = {
         'first_name': {
             notEmpty: true,
@@ -756,7 +753,7 @@ router.post('/driver_signup', function (req, res) {
         'email': {
             notEmpty: true,
             errorMessage: "Email address is required",
-            isEmail: {errorMessage:"Please enter valid email address"}
+            isEmail: {errorMessage: "Please enter valid email address"}
         },
         'country_code': {
             notEmpty: true,
@@ -765,7 +762,7 @@ router.post('/driver_signup', function (req, res) {
         'phone': {
             notEmpty: true,
             errorMessage: "Phone number is required",
-            isNumeric:{errorMessage: "Phone number must contain digits only"},
+            isNumeric: {errorMessage: "Phone number must contain digits only"},
 //            isLength:{min : 10, max : 10, errorMessage: "Phone number must contain 10 digits"}
         },
         'password': {
@@ -786,32 +783,32 @@ router.post('/driver_signup', function (req, res) {
         },
         'bank_routing_no': {
             notEmpty: true,
-            isNumeric:{errorMessage: "Bank routing number must contain digits only"},
+            isNumeric: {errorMessage: "Bank routing number must contain digits only"},
             errorMessage: "Bank routing number is required"
         },
         'bank_account_no': {
             notEmpty: true,
-            isNumeric:{errorMessage: "Bank account number must contain digits only"},
+            isNumeric: {errorMessage: "Bank account number must contain digits only"},
             errorMessage: "Bank account number is required"
         },
         'ssn': {
             notEmpty: true,
             errorMessage: "Social security number is required",
-            isNumeric:{errorMessage: "SSN must contain digits only"},
+            isNumeric: {errorMessage: "SSN must contain digits only"},
         },
-        'address':{
+        'address': {
             notEmpty: true,
             errorMessage: "Address is required"
         },
-        'city':{
+        'city': {
             notEmpty: true,
             errorMessage: "City is required"
         },
-        'state':{
+        'state': {
             notEmpty: true,
             errorMessage: "State is required"
         },
-        'zipcode':{
+        'zipcode': {
             notEmpty: true,
             errorMessage: "Zipcode is required"
         },
@@ -820,26 +817,26 @@ router.post('/driver_signup', function (req, res) {
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
             /*if(req.files && req.files['license'] && req.files['birth_certi'] && req.files['insurance']){
-                logger.trace("Request is valid");
-                req.body.drive_type = JSON.parse(req.body.drive_type);*/
-                async.waterfall([
-                    function (callback) {
-                        // Check driver's validity
-                        logger.trace("Check driver's validity - by email");
-                        // Car reference is valid, Check user validity
-                        user_helper.find_user_by_email(req.body.email, function (user_resp) {
-                            if (user_resp.status === 0) {
-                                logger.error("Error occured in finding user by email in driver signup. Err = ",user_resp.err);
-                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
-                            } else if (user_resp.status === 1) {
-                                logger.info("User with given email is already exist.");
-                                callback({"status": config.BAD_REQUEST, "err": "User with given email is already exist"});
-                            } else {
-                                logger.trace("User found. Executing next instruction");
-                                callback(null);
-                            }
-                        });
-                    },
+             logger.trace("Request is valid");
+             req.body.drive_type = JSON.parse(req.body.drive_type);*/
+            async.waterfall([
+                function (callback) {
+                    // Check driver's validity
+                    logger.trace("Check driver's validity - by email");
+                    // Car reference is valid, Check user validity
+                    user_helper.find_user_by_email(req.body.email, function (user_resp) {
+                        if (user_resp.status === 0) {
+                            logger.error("Error occured in finding user by email in driver signup. Err = ", user_resp.err);
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
+                        } else if (user_resp.status === 1) {
+                            logger.info("User with given email is already exist.");
+                            callback({"status": config.BAD_REQUEST, "err": "User with given email is already exist"});
+                        } else {
+                            logger.trace("User found. Executing next instruction");
+                            callback(null);
+                        }
+                    });
+                },
 //                    function (callback) {
 //                        // Check driver's validity
 //                        logger.trace("Check driver's validity - by phone");
@@ -856,335 +853,335 @@ router.post('/driver_signup', function (req, res) {
 //                            }
 //                        });
 //                    },
-                    function(callback){
-                        async.parallel({
-                            license:function(inner_callback){
-                                if(req.files && req.files['license']){
-                                    logger.trace("Uploading license image");
-                                    var file = req.files['license'];
-                                    var dir = "./uploads/driver_doc";
-                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+                function (callback) {
+                    async.parallel({
+                        license: function (inner_callback) {
+                            if (req.files && req.files['license']) {
+                                logger.trace("Uploading license image");
+                                var file = req.files['license'];
+                                var dir = "./uploads/driver_doc";
+                                var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-                                    if (mimetype.indexOf(file.mimetype) !== -1) {
-                                        if (!fs.existsSync(dir)) {
-                                            fs.mkdirSync(dir);
-                                        }
-                                        //var extention = path.extname(file.name);
-                                        var extension = '.jpg';
-                                        var filename = "license_" + new Date().getTime() + extension;
-                                        file.mv(dir + '/' + filename, function (err) {
-                                            if (err) {
-                                                logger.trace("There was an issue in uploading license image");
-                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading license image"});
-                                            } else {
-                                                logger.trace("license image has uploaded for driver");
-                                                inner_callback(null, filename);
-                                            }
-                                        });
-                                    } else {
-                                        logger.trace("license is not available");
-                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of license invalid"});
+                                if (mimetype.indexOf(file.mimetype) !== -1) {
+                                    if (!fs.existsSync(dir)) {
+                                        fs.mkdirSync(dir);
                                     }
+                                    //var extention = path.extname(file.name);
+                                    var extension = '.jpg';
+                                    var filename = "license_" + new Date().getTime() + extension;
+                                    file.mv(dir + '/' + filename, function (err) {
+                                        if (err) {
+                                            logger.trace("There was an issue in uploading license image");
+                                            inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading license image"});
+                                        } else {
+                                            logger.trace("license image has uploaded for driver");
+                                            inner_callback(null, filename);
+                                        }
+                                    });
                                 } else {
                                     logger.trace("license is not available");
-                                    inner_callback(null, null);
+                                    inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of license invalid"});
                                 }
-                            },
-                            birth_certi : function(inner_callback){
-                                if(req.files && req.files['birth_certi']){
-                                    logger.trace("Uploading birth_certi image");
-                                    var file = req.files['birth_certi'];
-                                    var dir = "./uploads/driver_doc";
-                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+                            } else {
+                                logger.trace("license is not available");
+                                inner_callback(null, null);
+                            }
+                        },
+                        birth_certi: function (inner_callback) {
+                            if (req.files && req.files['birth_certi']) {
+                                logger.trace("Uploading birth_certi image");
+                                var file = req.files['birth_certi'];
+                                var dir = "./uploads/driver_doc";
+                                var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-                                    if (mimetype.indexOf(file.mimetype) !== -1) {
-                                        if (!fs.existsSync(dir)) {
-                                            fs.mkdirSync(dir);
-                                        }
+                                if (mimetype.indexOf(file.mimetype) !== -1) {
+                                    if (!fs.existsSync(dir)) {
+                                        fs.mkdirSync(dir);
+                                    }
 //                                        var extention = path.extname(file.name);
-                                        var extension = '.jpg';
-                                        var filename = "birth_" + new Date().getTime() + extension;
-                                        file.mv(dir + '/' + filename, function (err) {
-                                            if (err) {
-                                                logger.trace("There was an issue in uploading birth_certi image");
-                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading birth certificate image"});
-                                            } else {
-                                                logger.trace("birth_certi image has uploaded for driver");
-                                                inner_callback(null, filename);
-                                            }
-                                        });
-                                    } else {
-                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of birth certificate is invalid"});
-                                    }
-                                } else {
-                                    logger.trace("birth certi is not available");
-                                    inner_callback(null,null);
-                                }
-                            },
-                            home_insurance : function(inner_callback){
-                                if(req.files && req.files['home_insurance']){
-                                    logger.trace("Uploading home_insurance image");
-                                    var file = req.files['home_insurance'];
-                                    var dir = "./uploads/driver_doc";
-                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-                                    if (mimetype.indexOf(file.mimetype) !== -1) {
-                                        if (!fs.existsSync(dir)) {
-                                            fs.mkdirSync(dir);
+                                    var extension = '.jpg';
+                                    var filename = "birth_" + new Date().getTime() + extension;
+                                    file.mv(dir + '/' + filename, function (err) {
+                                        if (err) {
+                                            logger.trace("There was an issue in uploading birth_certi image");
+                                            inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading birth certificate image"});
+                                        } else {
+                                            logger.trace("birth_certi image has uploaded for driver");
+                                            inner_callback(null, filename);
                                         }
-                                        //var extention = path.extname(file.name);
-                                        var extension = '.jpg';
-                                        var filename = "home_insurance_" + new Date().getTime() + extension;
-                                        file.mv(dir + '/' + filename, function (err) {
-                                            if (err) {
-                                                logger.trace("There was an issue in uploading home_insurance image");
-                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
-                                            } else {
-                                                logger.trace("home_insurance image has uploaded for driver");
-                                                inner_callback(null, filename);
-                                            }
-                                        });
-                                    } else {
-                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of insurance is invalid"});
-                                    }
-                                } else {
-                                    logger.trace("home insurance is not available");
-                                    inner_callback(null,null);
-                                }
-                            },
-                            auto_insurance : function(inner_callback){
-                                if(req.files && req.files['auto_insurance']){
-                                    logger.trace("Uploading auto_insurance image");
-                                    var file = req.files['auto_insurance'];
-                                    var dir = "./uploads/driver_doc";
-                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-                                    if (mimetype.indexOf(file.mimetype) !== -1) {
-                                        if (!fs.existsSync(dir)) {
-                                            fs.mkdirSync(dir);
-                                        }
-                                        var extension = '.jpg';
-                                        var filename = "auto_insurance_" + new Date().getTime() + extension;
-                                        file.mv(dir + '/' + filename, function (err) {
-                                            if (err) {
-                                                logger.trace("There was an issue in uploading auto_insurance image");
-                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
-                                            } else {
-                                                logger.trace("auto_insurance image has uploaded for driver");
-                                                inner_callback(null, filename);
-                                            }
-                                        });
-                                    } else {
-                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of auto insurance is invalid"});
-                                    }
-                                } else {
-                                    logger.trace("auto insurance is not available");
-                                    inner_callback(null,null);
-                                }
-                            },
-                            avatar:function(inner_callback){
-                                // Upload driver avatar
-                                if (req.files && req.files['avatar']) {
-                                    logger.trace("Uploading avatar image");
-                                    var file = req.files['avatar'];
-                                    var dir = "./uploads/user_avatar";
-                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-                                    if (mimetype.indexOf(file.mimetype) != -1) {
-                                        if (!fs.existsSync(dir)) {
-                                            fs.mkdirSync(dir);
-                                        }
-//                                        extension = path.extname(file.name);
-                                        var extension = '.jpg';
-                                        filename = "user_" + new Date().getTime() + extension;
-                                        file.mv(dir + '/' + filename, function (err) {
-                                            if (err) {
-                                                logger.trace("There was an issue in uploading image");
-                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading avatar of user"});
-                                            } else {
-                                                logger.trace("Avatar image has uploaded for driver");
-                                                inner_callback(null, filename);
-                                            }
-                                        });
-                                    } else {
-                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of avatar is invalid"});
-                                    }
-                                } else {
-                                    logger.trace("avatar is not available");
-                                    inner_callback(null, null);
-                                }
-                            },
-                            pay_stub:function(inner_callback){
-                                // Upload driver avatar
-                                if (req.files && req.files['pay_stub']) {
-                                    logger.trace("Uploading pay_stub image");
-                                    var file = req.files['pay_stub'];
-                                    var dir = "./uploads/driver_doc";
-                                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-                                    if (mimetype.indexOf(file.mimetype) !== -1) {
-                                        if (!fs.existsSync(dir)) {
-                                            fs.mkdirSync(dir);
-                                        }
-                                        var extension = '.jpg';
-                                        var filename = "pay_stub_" + new Date().getTime() + extension;
-                                        file.mv(dir + '/' + filename, function (err) {
-                                            if (err) {
-                                                logger.trace("There was an issue in uploading pay_stub image");
-                                                inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of pay_stub"});
-                                            } else {
-                                                logger.trace("Pay_stub image has uploaded for driver");
-                                                inner_callback(null, filename);
-                                            }
-                                        });
-                                    } else {
-                                        inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of pay stub is invalid"});
-                                    }
-                                } else {
-                                    logger.trace("pay_stub is not available");
-                                    inner_callback(null, null);
-                                }
-                            }
-                        },function(err,results){
-                            if(err){
-                                logger.trace("Error in image uploading : ",err);
-                                callback(err.resp);
-                            } else {
-                                logger.trace("Executing next instruction : ",results);
-                                callback(null,results);
-                            }
-                        });
-                    },
-                    function (image_names, callback) {
-                        // Driver Insertion
-                        logger.trace("Inserting driver in db");
-                        var user_obj = {
-                            "first_name": req.body.first_name,
-                            "last_name": req.body.last_name,
-                            "email": req.body.email,
-                            "country_code": req.body.country_code,
-                            "phone": req.body.phone,
-                            "password": req.body.password,
-                            "role": "driver"
-                        };
-
-                        var driver_obj = {
-                            "residential_status":req.body.residential_status,
-                            "address":req.body.address,
-                            "city":req.body.city,
-                            "state":req.body.state,
-                            "zipcode":req.body.zipcode
-                        };
-
-                        if(req.body.transmission_type){
-                            driver_obj.transmission_type = req.body.transmission_type;
-                        }
-                        if(req.body.bank_routing_no){
-                            driver_obj.bank_routing_no = req.body.bank_routing_no;
-                        }
-                        if(req.body.bank_account_no){
-                            driver_obj.bank_account_no = req.body.bank_account_no;
-                        }
-                        if(req.body.ssn){
-                            driver_obj.ssn = req.body.ssn;
-                        }
-                        if(image_names && image_names.license && image_names.license != null){
-                            driver_obj.license = image_names.license;
-                        }
-                        if(image_names && image_names.birth_certi && image_names.birth_certi != null){
-                            driver_obj.birth_certi = image_names.birth_certi;
-                        }
-                        if(image_names && image_names.home_insurance && image_names.home_insurance != null){
-                            driver_obj.home_insurance = image_names.home_insurance;
-                        }
-                        if(image_names && image_names.auto_insurance && image_names.auto_insurance != null){
-                            driver_obj.auto_insurance = image_names.auto_insurance;
-                        }
-                        if(image_names && image_names.pay_stub && image_names.pay_stub != null){
-                            driver_obj.pay_stub = image_names.pay_stub;
-                        }
-                        if (image_names && image_names.avatar && image_names.avatar != null) {
-                            user_obj.user_avatar = image_names.avatar;
-                        }
-
-                        driver_helper.insert_driver(driver_obj, function (driver_data) {
-                            if (driver_data.status === 0) {
-                                logger.trace("Error occured while inserting driver : err",driver_data);
-                                callback({"status": config.INTERNAL_SERVER_ERROR,"err": "There was an issue in driver registration"});
-                            } else {
-                                logger.trace("Driver instance created");
-                                if(req.body.drive_type){
-                                    driver_helper.add_drive_type_to_driver(driver_data.driver._id,req.body.drive_type,function(){
-                                        logger.trace("driver type has now associated with driver");
                                     });
+                                } else {
+                                    inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of birth certificate is invalid"});
                                 }
-                                user_obj.driver_id = driver_data.driver._id;
-                                callback(null,user_obj);
-                            }
-                        });
-                    },
-                    function(user_obj,callback){
-                        logger.trace("Creating user instance");
-                        user_helper.insert_user(user_obj, function (user_data) {
-                            if (user_data.status === 0) {
-                                logger.error("There was an issue in driver registration. Err = ",user_data.err);
-                                callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in driver registration"});
                             } else {
-                                logger.debug("Driver registered. Executed next instruction");
-                                callback(null,user_data.user);
+                                logger.trace("birth certi is not available");
+                                inner_callback(null, null);
                             }
-                        });
-                    },
-                    function(user,callback){
-                        logger.trace("Going to send OTP");
-                        user_helper.sendOTPtoUser(user,function(data){
-                            logger.debug("OTP response = ",data);
-                            if(data.status == config.OK_STATUS){
-                                callback(null,data.result);
+                        },
+                        home_insurance: function (inner_callback) {
+                            if (req.files && req.files['home_insurance']) {
+                                logger.trace("Uploading home_insurance image");
+                                var file = req.files['home_insurance'];
+                                var dir = "./uploads/driver_doc";
+                                var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+
+                                if (mimetype.indexOf(file.mimetype) !== -1) {
+                                    if (!fs.existsSync(dir)) {
+                                        fs.mkdirSync(dir);
+                                    }
+                                    //var extention = path.extname(file.name);
+                                    var extension = '.jpg';
+                                    var filename = "home_insurance_" + new Date().getTime() + extension;
+                                    file.mv(dir + '/' + filename, function (err) {
+                                        if (err) {
+                                            logger.trace("There was an issue in uploading home_insurance image");
+                                            inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
+                                        } else {
+                                            logger.trace("home_insurance image has uploaded for driver");
+                                            inner_callback(null, filename);
+                                        }
+                                    });
+                                } else {
+                                    inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of insurance is invalid"});
+                                }
                             } else {
-                                callback(data);
+                                logger.trace("home insurance is not available");
+                                inner_callback(null, null);
                             }
-                        });
-                    }
-                ], function (err, result) {
-                    if (err) {
-                        if(err.status == config.VALIDATION_FAILURE_STATUS){
-                            res.status(err.status).json({"message": err.err,"error":err.error});
-                        } else {
-                            res.status(err.status).json({"message": err.err});
+                        },
+                        auto_insurance: function (inner_callback) {
+                            if (req.files && req.files['auto_insurance']) {
+                                logger.trace("Uploading auto_insurance image");
+                                var file = req.files['auto_insurance'];
+                                var dir = "./uploads/driver_doc";
+                                var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+
+                                if (mimetype.indexOf(file.mimetype) !== -1) {
+                                    if (!fs.existsSync(dir)) {
+                                        fs.mkdirSync(dir);
+                                    }
+                                    var extension = '.jpg';
+                                    var filename = "auto_insurance_" + new Date().getTime() + extension;
+                                    file.mv(dir + '/' + filename, function (err) {
+                                        if (err) {
+                                            logger.trace("There was an issue in uploading auto_insurance image");
+                                            inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of home_insurance"});
+                                        } else {
+                                            logger.trace("auto_insurance image has uploaded for driver");
+                                            inner_callback(null, filename);
+                                        }
+                                    });
+                                } else {
+                                    inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of auto insurance is invalid"});
+                                }
+                            } else {
+                                logger.trace("auto insurance is not available");
+                                inner_callback(null, null);
+                            }
+                        },
+                        avatar: function (inner_callback) {
+                            // Upload driver avatar
+                            if (req.files && req.files['avatar']) {
+                                logger.trace("Uploading avatar image");
+                                var file = req.files['avatar'];
+                                var dir = "./uploads/user_avatar";
+                                var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+
+                                if (mimetype.indexOf(file.mimetype) != -1) {
+                                    if (!fs.existsSync(dir)) {
+                                        fs.mkdirSync(dir);
+                                    }
+//                                        extension = path.extname(file.name);
+                                    var extension = '.jpg';
+                                    filename = "user_" + new Date().getTime() + extension;
+                                    file.mv(dir + '/' + filename, function (err) {
+                                        if (err) {
+                                            logger.trace("There was an issue in uploading image");
+                                            inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading avatar of user"});
+                                        } else {
+                                            logger.trace("Avatar image has uploaded for driver");
+                                            inner_callback(null, filename);
+                                        }
+                                    });
+                                } else {
+                                    inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of avatar is invalid"});
+                                }
+                            } else {
+                                logger.trace("avatar is not available");
+                                inner_callback(null, null);
+                            }
+                        },
+                        pay_stub: function (inner_callback) {
+                            // Upload driver avatar
+                            if (req.files && req.files['pay_stub']) {
+                                logger.trace("Uploading pay_stub image");
+                                var file = req.files['pay_stub'];
+                                var dir = "./uploads/driver_doc";
+                                var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+
+                                if (mimetype.indexOf(file.mimetype) !== -1) {
+                                    if (!fs.existsSync(dir)) {
+                                        fs.mkdirSync(dir);
+                                    }
+                                    var extension = '.jpg';
+                                    var filename = "pay_stub_" + new Date().getTime() + extension;
+                                    file.mv(dir + '/' + filename, function (err) {
+                                        if (err) {
+                                            logger.trace("There was an issue in uploading pay_stub image");
+                                            inner_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image of pay_stub"});
+                                        } else {
+                                            logger.trace("Pay_stub image has uploaded for driver");
+                                            inner_callback(null, filename);
+                                        }
+                                    });
+                                } else {
+                                    inner_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format of pay stub is invalid"});
+                                }
+                            } else {
+                                logger.trace("pay_stub is not available");
+                                inner_callback(null, null);
+                            }
                         }
-                    } else {
-                        res.status(config.OK_STATUS).json({"message": "Registration done successfully"});
+                    }, function (err, results) {
+                        if (err) {
+                            logger.trace("Error in image uploading : ", err);
+                            callback(err.resp);
+                        } else {
+                            logger.trace("Executing next instruction : ", results);
+                            callback(null, results);
+                        }
+                    });
+                },
+                function (image_names, callback) {
+                    // Driver Insertion
+                    logger.trace("Inserting driver in db");
+                    var user_obj = {
+                        "first_name": req.body.first_name,
+                        "last_name": req.body.last_name,
+                        "email": req.body.email,
+                        "country_code": req.body.country_code,
+                        "phone": req.body.phone,
+                        "password": req.body.password,
+                        "role": "driver"
+                    };
+
+                    var driver_obj = {
+                        "residential_status": req.body.residential_status,
+                        "address": req.body.address,
+                        "city": req.body.city,
+                        "state": req.body.state,
+                        "zipcode": req.body.zipcode
+                    };
+
+                    if (req.body.transmission_type) {
+                        driver_obj.transmission_type = req.body.transmission_type;
                     }
-                });
-            /*} else {
-                var messages = []
-                if(!req.files){
-                    messages = [{"msg":"Image of license is required"},{"msg":"Image of birth certificate is required"},{"msg":"Image of insurance is required"}];
-                } else {
-                    if(!req.files['license']){
-                        messages.push({"msg":"Image of license is required"});
+                    if (req.body.bank_routing_no) {
+                        driver_obj.bank_routing_no = req.body.bank_routing_no;
                     }
-                    if(!req.files['birth_certi']){
-                        messages.push({"msg":"Image of birth certificate is required"});
+                    if (req.body.bank_account_no) {
+                        driver_obj.bank_account_no = req.body.bank_account_no;
                     }
-                    if(!req.files['insurance']){
-                        messages.push({"msg":"Image of insurance is required"});
+                    if (req.body.ssn) {
+                        driver_obj.ssn = req.body.ssn;
                     }
+                    if (image_names && image_names.license && image_names.license != null) {
+                        driver_obj.license = image_names.license;
+                    }
+                    if (image_names && image_names.birth_certi && image_names.birth_certi != null) {
+                        driver_obj.birth_certi = image_names.birth_certi;
+                    }
+                    if (image_names && image_names.home_insurance && image_names.home_insurance != null) {
+                        driver_obj.home_insurance = image_names.home_insurance;
+                    }
+                    if (image_names && image_names.auto_insurance && image_names.auto_insurance != null) {
+                        driver_obj.auto_insurance = image_names.auto_insurance;
+                    }
+                    if (image_names && image_names.pay_stub && image_names.pay_stub != null) {
+                        driver_obj.pay_stub = image_names.pay_stub;
+                    }
+                    if (image_names && image_names.avatar && image_names.avatar != null) {
+                        user_obj.user_avatar = image_names.avatar;
+                    }
+
+                    driver_helper.insert_driver(driver_obj, function (driver_data) {
+                        if (driver_data.status === 0) {
+                            logger.trace("Error occured while inserting driver : err", driver_data);
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in driver registration"});
+                        } else {
+                            logger.trace("Driver instance created");
+                            if (req.body.drive_type) {
+                                driver_helper.add_drive_type_to_driver(driver_data.driver._id, req.body.drive_type, function () {
+                                    logger.trace("driver type has now associated with driver");
+                                });
+                            }
+                            user_obj.driver_id = driver_data.driver._id;
+                            callback(null, user_obj);
+                        }
+                    });
+                },
+                function (user_obj, callback) {
+                    logger.trace("Creating user instance");
+                    user_helper.insert_user(user_obj, function (user_data) {
+                        if (user_data.status === 0) {
+                            logger.error("There was an issue in driver registration. Err = ", user_data.err);
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in driver registration"});
+                        } else {
+                            logger.debug("Driver registered. Executed next instruction");
+                            callback(null, user_data.user);
+                        }
+                    });
+                },
+                function (user, callback) {
+                    logger.trace("Going to send OTP");
+                    user_helper.sendOTPtoUser(user, function (data) {
+                        logger.debug("OTP response = ", data);
+                        if (data.status == config.OK_STATUS) {
+                            callback(null, data.result);
+                        } else {
+                            callback(data);
+                        }
+                    });
                 }
-                var result = {
-                    message: "Validation Error",
-                    error: result.array()
-                };
-                logger.error("Validation error. ",result);
-                res.status(config.VALIDATION_FAILURE_STATUS).json(result);
-            }*/
+            ], function (err, result) {
+                if (err) {
+                    if (err.status == config.VALIDATION_FAILURE_STATUS) {
+                        res.status(err.status).json({"message": err.err, "error": err.error});
+                    } else {
+                        res.status(err.status).json({"message": err.err});
+                    }
+                } else {
+                    res.status(config.OK_STATUS).json({"message": "Registration done successfully"});
+                }
+            });
+            /*} else {
+             var messages = []
+             if(!req.files){
+             messages = [{"msg":"Image of license is required"},{"msg":"Image of birth certificate is required"},{"msg":"Image of insurance is required"}];
+             } else {
+             if(!req.files['license']){
+             messages.push({"msg":"Image of license is required"});
+             }
+             if(!req.files['birth_certi']){
+             messages.push({"msg":"Image of birth certificate is required"});
+             }
+             if(!req.files['insurance']){
+             messages.push({"msg":"Image of insurance is required"});
+             }
+             }
+             var result = {
+             message: "Validation Error",
+             error: result.array()
+             };
+             logger.error("Validation error. ",result);
+             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+             }*/
         } else {
             var result = {
                 message: "Validation Error",
                 error: result.array()
             };
-            logger.error("Validation error. ",result);
+            logger.error("Validation error. ", result);
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
         }
     });
@@ -1204,7 +1201,7 @@ router.post('/driver_signup', function (req, res) {
  */
 router.post('/email_availability', function (req, res) {
     logger.trace("API - Email availability called");
-    logger.debug("req.body = ",req.body);
+    logger.debug("req.body = ", req.body);
     var schema = {
         'email': {
             notEmpty: true,
@@ -1220,18 +1217,18 @@ router.post('/email_availability', function (req, res) {
             // Check email availability for user role
             user_helper.find_user_by_email(req.body.email, function (user_resp) {
                 if (user_resp.status === 0) {
-                    logger.error("Error occured in finding user by email. Err = ",user_resp.err);
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
+                    logger.error("Error occured in finding user by email. Err = ", user_resp.err);
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"message": user_resp.err});
                 } else if (user_resp.status === 1) {
                     logger.info("User with given email is already exist.");
-                    res.status(config.BAD_REQUEST).json({"message":"User with given email is already exist"});
+                    res.status(config.BAD_REQUEST).json({"message": "User with given email is already exist"});
                 } else {
                     logger.trace("User found");
-                    res.status(config.OK_STATUS).json({"message":"User available"});
+                    res.status(config.OK_STATUS).json({"message": "User available"});
                 }
             });
         } else {
-            logger.error("Validation error ",result);
+            logger.error("Validation error ", result);
             var result = {
                 message: "Validation Error",
                 error: result.array()
@@ -1256,7 +1253,7 @@ router.post('/email_availability', function (req, res) {
  */
 router.post('/phone_availability', function (req, res) {
     logger.trace("API - Phone availability called");
-    logger.debug("req.body = ",req.body);
+    logger.debug("req.body = ", req.body);
     var schema = {
         'country_code': {
             notEmpty: true,
@@ -1265,7 +1262,7 @@ router.post('/phone_availability', function (req, res) {
         'phone': {
             notEmpty: true,
             errorMessage: "Phone number is required",
-            isNumeric:{errorMessage: "Phone number must contain digits only"},
+            isNumeric: {errorMessage: "Phone number must contain digits only"},
         },
     };
     req.checkBody(schema);
@@ -1274,20 +1271,20 @@ router.post('/phone_availability', function (req, res) {
         if (result.isEmpty()) {
             logger.trace("Request is valid. ");
             // Check email availability for user role
-            user_helper.find_user_by_phone(req.body.country_code,req.body.phone, function (user_resp) {
+            user_helper.find_user_by_phone(req.body.country_code, req.body.phone, function (user_resp) {
                 if (user_resp.status === 0) {
-                    logger.error("Error occured in finding user by phone. Err = ",user_resp.err);
-                    res.status(config.INTERNAL_SERVER_ERROR).json({"message":user_resp.err});
+                    logger.error("Error occured in finding user by phone. Err = ", user_resp.err);
+                    res.status(config.INTERNAL_SERVER_ERROR).json({"message": user_resp.err});
                 } else if (user_resp.status === 1) {
                     logger.info("User with given phone number is already exist.");
-                    res.status(config.BAD_REQUEST).json({"message":"User with given phone number is already exist"});
+                    res.status(config.BAD_REQUEST).json({"message": "User with given phone number is already exist"});
                 } else {
                     logger.trace("Phone number is available");
-                    res.status(config.OK_STATUS).json({"message":"Phone number is available"});
+                    res.status(config.OK_STATUS).json({"message": "Phone number is available"});
                 }
             });
         } else {
-            logger.error("Validation error ",result);
+            logger.error("Validation error ", result);
             var result = {
                 message: "Validation Error",
                 error: result.array()
@@ -1309,7 +1306,7 @@ router.post('/phone_availability', function (req, res) {
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post('/send_link_for_forget_password',function(req,res){
+router.post('/send_link_for_forget_password', function (req, res) {
     var schema = {
         'email': {
             notEmpty: true,
@@ -1335,24 +1332,24 @@ router.post('/send_link_for_forget_password',function(req,res){
                     });
                 },
                 function (user, callback) {
-                    
-					var site_link = config.SITE_URL+'reset_password/'+user._id;
-					if(user.role == "admin"){
-						site_link = config.SITE_URL+'admin/reset_password/'+user._id;
-					}
-					
-                    var msg = "Hi <b>"+user.first_name+",</b><br/><br/>";
+
+                    var site_link = config.SITE_URL + 'reset_password/' + user._id;
+                    if (user.role == "admin") {
+                        site_link = config.SITE_URL + 'admin/reset_password/' + user._id;
+                    }
+
+                    var msg = "Hi <b>" + user.first_name + ",</b><br/><br/>";
                     msg += "You recently requested to reset your password for your greego account.<br/>";
-                    msg += "Click on <a href="+site_link+">"+site_link+"</a> to reset it.<br/><br/>";
+                    msg += "Click on <a href=" + site_link + ">" + site_link + "</a> to reset it.<br/><br/>";
                     msg += "Thanks,<br/>Greego Team<hr/>";
                     msg += "<h5>If you're having trouble clicking the given link, copy and paste URL into your web browser.<br/>";
                     msg += "If you did not request a password reset, please reply to let us know.</h5>"
-                    
-                    mail_helper.send(req.body.email,'"Greego Password Recovery" support@greego.co', 'Reset password link for Greego account', '', msg, function (resp) {
-                        if(resp.status === 0){
-                            callback({"status":config.INTERNAL_SERVER_ERROR,"err":"Error occured in sending mail"});
+
+                    mail_helper.send(req.body.email, '"Greego Password Recovery" support@greego.co', 'Reset password link for Greego account', '', msg, function (resp) {
+                        if (resp.status === 0) {
+                            callback({"status": config.INTERNAL_SERVER_ERROR, "err": "Error occured in sending mail"});
                         } else {
-                            callback(null,{"message":"Reset password link has been sent to given email"});
+                            callback(null, {"message": "Reset password link has been sent to given email"});
                         }
                     });
                 }
@@ -1386,7 +1383,7 @@ router.post('/send_link_for_forget_password',function(req,res){
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post('/reset_password',function(req,res){
+router.post('/reset_password', function (req, res) {
     var schema = {
         'key': {
             notEmpty: true,
@@ -1398,12 +1395,12 @@ router.post('/reset_password',function(req,res){
         }
     };
     req.checkBody(schema);
-    
+
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
             async.waterfall([
-                function(callback){
-                    user_helper.find_user_by_id(req.body.key,function(user_resp){
+                function (callback) {
+                    user_helper.find_user_by_id(req.body.key, function (user_resp) {
                         if (user_resp.status === 0) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 404) {
@@ -1413,18 +1410,18 @@ router.post('/reset_password',function(req,res){
                         }
                     });
                 },
-                function(callback){
-                    user_helper.update_user_by_id(req.body.key,{"password":req.body.password,"password_changed_date":Date.now()},function(user_data){
+                function (callback) {
+                    user_helper.update_user_by_id(req.body.key, {"password": req.body.password, "password_changed_date": Date.now()}, function (user_data) {
                         if (user_data.status === 0) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in updating password"});
                         } else if (user_data.status === 2) {
                             callback({"status": config.BAD_REQUEST, "err": "There was an issue in updating password"});
                         } else {
-                            callback(null,{"message":"Password changed successfully"});
+                            callback(null, {"message": "Password changed successfully"});
                         }
                     });
                 }
-            ],function(err,result){
+            ], function (err, result) {
                 if (err) {
                     res.status(err.status).json({"message": err.err});
                 } else {
@@ -1449,14 +1446,14 @@ router.post('/reset_password',function(req,res){
  * @apiSuccess (Success 200) {Array} brands Listing of available car brands
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/car_brands',function(req,res){
-    car_model_helper.get_distinct_brand(function(brand_data){
-        if(brand_data.status === 0){
-            res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in fetching brand details"});
-        } else if(brand_data.status === 404) {
-            res.status(config.BAD_REQUEST).json({"message":"No brand found"});
+router.get('/car_brands', function (req, res) {
+    car_model_helper.get_distinct_brand(function (brand_data) {
+        if (brand_data.status === 0) {
+            res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error has occured in fetching brand details"});
+        } else if (brand_data.status === 404) {
+            res.status(config.BAD_REQUEST).json({"message": "No brand found"});
         } else {
-            res.status(config.OK_STATUS).json({"brands":brand_data.car_brand});
+            res.status(config.OK_STATUS).json({"brands": brand_data.car_brand});
         }
     });
 });
@@ -1471,19 +1468,19 @@ router.get('/car_brands',function(req,res){
  * @apiSuccess (Success 200) {Array} models Listing of available car models
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/car_model_by_brand',function(req,res){
-    if(req.query.brand) {
-        car_model_helper.get_car_model_by_brand(req.query.brand,function(model_data){
-            if(model_data.status === 0){
-                res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in fetching model details"});
-            } else if(model_data.status === 404) {
-                res.status(config.BAD_REQUEST).json({"message":"No Model found for given brand"});
+router.get('/car_model_by_brand', function (req, res) {
+    if (req.query.brand) {
+        car_model_helper.get_car_model_by_brand(req.query.brand, function (model_data) {
+            if (model_data.status === 0) {
+                res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error has occured in fetching model details"});
+            } else if (model_data.status === 404) {
+                res.status(config.BAD_REQUEST).json({"message": "No Model found for given brand"});
             } else {
-                res.status(config.OK_STATUS).json({"models":model_data.car_model});
+                res.status(config.OK_STATUS).json({"models": model_data.car_model});
             }
         });
     } else {
-        res.status(config.VALIDATION_FAILURE_STATUS).json({"message":"Brand name is required"});
+        res.status(config.VALIDATION_FAILURE_STATUS).json({"message": "Brand name is required"});
     }
 });
 
@@ -1497,19 +1494,19 @@ router.get('/car_model_by_brand',function(req,res){
  * @apiSuccess (Success 200) {Array} cars Listing of available car with year
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/car_year_by_model',function(req,res){
-    if(req.query.model) {
-        car_model_helper.get_car_year_by_model(req.query.model,function(car_data){
-            if(car_data.status === 0){
-                res.status(config.INTERNAL_SERVER_ERROR).json({"message":"Error has occured in fetching car details"});
-            } else if(car_data.status === 404) {
-                res.status(config.BAD_REQUEST).json({"message":"No car found for given model"});
+router.get('/car_year_by_model', function (req, res) {
+    if (req.query.model) {
+        car_model_helper.get_car_year_by_model(req.query.model, function (car_data) {
+            if (car_data.status === 0) {
+                res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error has occured in fetching car details"});
+            } else if (car_data.status === 404) {
+                res.status(config.BAD_REQUEST).json({"message": "No car found for given model"});
             } else {
-                res.status(config.OK_STATUS).json({"cars":car_data.car});
+                res.status(config.OK_STATUS).json({"cars": car_data.car});
             }
         });
     } else {
-        res.status(config.VALIDATION_FAILURE_STATUS).json({"message":"Brand name is required"});
+        res.status(config.VALIDATION_FAILURE_STATUS).json({"message": "Brand name is required"});
     }
 });
 
@@ -1535,15 +1532,15 @@ router.post('/sendotp', function (req, res) {
         'phone': {
             notEmpty: true,
             errorMessage: "Mobile number is required.",
-            isNumeric:{errorMessage: "Phone number must contain digits only"}
+            isNumeric: {errorMessage: "Phone number must contain digits only"}
         }
     };
     req.checkBody(schema);
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
             async.waterfall([
-                function(callback){
-                    user_helper.find_user_by_phone(req.body.country_code,req.body.phone,function(user_resp){
+                function (callback) {
+                    user_helper.find_user_by_phone(req.body.country_code, req.body.phone, function (user_resp) {
                         if (user_resp.status === 0) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 404) {
@@ -1553,19 +1550,19 @@ router.post('/sendotp', function (req, res) {
                         }
                     });
                 },
-                function(user,callback){
-                    user_helper.sendOTPtoUser(user,function(data){
-                        if(data.status == config.OK_STATUS){
-                            callback(null,data.result);
+                function (user, callback) {
+                    user_helper.sendOTPtoUser(user, function (data) {
+                        if (data.status == config.OK_STATUS) {
+                            callback(null, data.result);
                         } else {
                             callback(data);
                         }
                     });
                 }
-            ],function(err,result){
+            ], function (err, result) {
                 if (err) {
-                    if(err.status == config.VALIDATION_FAILURE_STATUS){
-                        res.status(err.status).json({"message": err.err,"error":err.error});
+                    if (err.status == config.VALIDATION_FAILURE_STATUS) {
+                        res.status(err.status).json({"message": err.err, "error": err.error});
                     } else {
                         res.status(err.status).json({"message": err.err});
                     }
@@ -1606,7 +1603,7 @@ router.post('/verifyotp', function (req, res) {
         'phone': {
             notEmpty: true,
             errorMessage: "Phone number is required.",
-            isNumeric:{errorMessage: "Phone number must contain digits only"},
+            isNumeric: {errorMessage: "Phone number must contain digits only"},
         },
         'otp': {
             notEmpty: true,
@@ -1614,39 +1611,39 @@ router.post('/verifyotp', function (req, res) {
         }
     };
     req.checkBody(schema);
-    
+
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
             async.waterfall([
-                function(callback){
-                    user_helper.find_user_by_phone(req.body.country_code,req.body.phone,function(user_resp){
+                function (callback) {
+                    user_helper.find_user_by_phone(req.body.country_code, req.body.phone, function (user_resp) {
                         if (user_resp.status === 0) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": user_resp.err});
                         } else if (user_resp.status === 404) {
                             callback({"status": config.BAD_REQUEST, "err": "User not exist"});
                         } else {
-                            if(user_resp.user.phone_verified === true) {
-                                callback({"status":config.BAD_REQUEST,"err":"Phone number is already verified"});
-                            } else if(user_resp.user.otp != req.body.otp) {
-                                callback({"status":config.BAD_REQUEST,"err":"Invalid otp"});
+                            if (user_resp.user.phone_verified === true) {
+                                callback({"status": config.BAD_REQUEST, "err": "Phone number is already verified"});
+                            } else if (user_resp.user.otp != req.body.otp) {
+                                callback({"status": config.BAD_REQUEST, "err": "Invalid otp"});
                             } else {
-                                callback(null,user_resp.user);
+                                callback(null, user_resp.user);
                             }
                         }
                     });
                 },
-                function(user,callback){
-                    user_helper.update_user_by_id(user._id,{"otp":"","phone_verified":true},function(user_data){
+                function (user, callback) {
+                    user_helper.update_user_by_id(user._id, {"otp": "", "phone_verified": true}, function (user_data) {
                         if (user_data.status === 0) {
                             callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There was an issue in updating otp details in database"});
                         } else if (user_data.status === 2) {
                             callback({"status": config.BAD_REQUEST, "err": "There was an issue in updating otp details in database"});
                         } else {
-                            callback(null,{"message":"OTP has been verified successfully"});
+                            callback(null, {"message": "OTP has been verified successfully"});
                         }
                     });
                 }
-            ],function(err,result){
+            ], function (err, result) {
                 if (err) {
                     res.status(err.status).json({"message": err.err});
                 } else {
@@ -1678,9 +1675,9 @@ router.post('/verifyotp', function (req, res) {
  * @apiSuccess (Success 200) {String} message Success message.
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post('/calculate_fare',function(req,res){
+router.post('/calculate_fare', function (req, res) {
     logger.trace("API - Calculate fare called");
-    logger.debug("req.body = ",req.body);
+    logger.debug("req.body = ", req.body);
     var schema = {
         'pick_lat': {
             notEmpty: true,
@@ -1700,85 +1697,85 @@ router.post('/calculate_fare',function(req,res){
         }
     };
     req.checkBody(schema);
-    
+
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            if((req.body.pick_lat == req.body.dest_lat) && (req.body.pick_long == req.body.dest_long)){
-                res.status(config.BAD_REQUEST).json({"message":"Pickup and destination localtion can't be same"});
+            if ((req.body.pick_lat == req.body.dest_lat) && (req.body.pick_long == req.body.dest_long)) {
+                res.status(config.BAD_REQUEST).json({"message": "Pickup and destination localtion can't be same"});
             } else {
                 logger.trace("Valid request");
                 async.waterfall([
-                    function(callback){
+                    function (callback) {
                         logger.trace("Checking pickup location");
                         request({
                             uri: 'https://maps.googleapis.com/maps/api/geocode/json',
                             qs: {
                                 latlng: req.body.pick_lat + ',' + req.body.pick_long,
-                                key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
+                                key: 'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
                                 sensor: false
                             }
                         }, function (error, response, body) {
                             logger.trace("Pickup location checking.");
-                            
+
                             body = JSON.parse(body);
-                            
-                            logger.trace("error = ",error);
-                            logger.trace("response.status = ",response.statusCode);
-                            
-                            logger.trace("body.results = ",body.results);
-                            logger.trace("body = ",body);
-                            
+
+                            logger.trace("error = ", error);
+                            logger.trace("response.status = ", response.statusCode);
+
+                            logger.trace("body.results = ", body.results);
+                            logger.trace("body = ", body);
+
                             if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
-                                
+
                                 var obj = {};
-                                
+
                                 _.filter(body.results[0].address_components, function (comp) {
-                                    
-                                    logger.trace("comp = ",comp);
-                                    
+
+                                    logger.trace("comp = ", comp);
+
                                     if (_.indexOf(comp.types, "locality") > -1) {
-                                        logger.trace("locality for pickup location : ",comp.long_name);
+                                        logger.trace("locality for pickup location : ", comp.long_name);
                                         obj.City = comp.long_name;
                                     } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
-                                        logger.trace("administrative_area_level_1 for pickup location : ",comp.short_name);
+                                        logger.trace("administrative_area_level_1 for pickup location : ", comp.short_name);
                                         obj.State = comp.short_name;
                                     } else if (_.indexOf(comp.types, "postal_code") > -1) {
-                                        logger.trace("postal_code for pickup location : ",comp.short_name);
+                                        logger.trace("postal_code for pickup location : ", comp.short_name);
                                         obj.ZIP = comp.short_name;
                                     }
                                 });
-                                logger.trace("Source = ",obj);
-                                
+                                logger.trace("Source = ", obj);
+
                                 callback(null, obj);
                             } else {
-                                callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                                callback({"status": config.BAD_REQUEST, "err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                             }
                         });
                     },
-                    function(pickup_obj,callback){
+                    function (pickup_obj, callback) {
                         logger.trace("Checking destination location");
                         request({
                             uri: 'https://maps.googleapis.com/maps/api/geocode/json',
                             qs: {
                                 latlng: req.body.dest_lat + ',' + req.body.dest_long,
-                                key:'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
+                                key: 'AIzaSyBs4mHzrv6ri0sdkyhcAMuEF0yr-azS9BI',
                                 sensor: false
                             }
                         }, function (error, response, body) {
                             logger.trace("Pickup location checking.");
-                            
+
                             body = JSON.parse(body);
-                            
-                            logger.trace("error = ",error);
-                            logger.trace("response.status = ",response.statusCode);
-                            logger.trace("body.results = ",body.results);
-                            logger.trace("body = ",body);
-                            
+
+                            logger.trace("error = ", error);
+                            logger.trace("response.status = ", response.statusCode);
+                            logger.trace("body.results = ", body.results);
+                            logger.trace("body = ", body);
+
                             if (!error && response.statusCode == 200 && body && body.results && body.results[0]) {
-                                
+
                                 var obj = {};
                                 _.filter(body.results[0].address_components, function (comp) {
-                                    logger.trace("comp = ",comp);
+                                    logger.trace("comp = ", comp);
                                     if (_.indexOf(comp.types, "locality") > -1) {
                                         obj.City = comp.long_name;
                                     } else if (_.indexOf(comp.types, "administrative_area_level_1") > -1) {
@@ -1787,50 +1784,50 @@ router.post('/calculate_fare',function(req,res){
                                         obj.ZIP = comp.short_name;
                                     }
                                 });
-                                logger.trace("Destination = ",obj);
-                                callback(null,pickup_obj,obj);
+                                logger.trace("Destination = ", obj);
+                                callback(null, pickup_obj, obj);
                             } else {
-                                callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                                callback({"status": config.BAD_REQUEST, "err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                             }
                         });
                     },
-                    function(pickup_obj,dest_obj,callback){
-                        if((_.indexOf(["NY","NJ"],pickup_obj.State) > -1) && (_.indexOf(["NY","NJ"],dest_obj.State) > -1)){
+                    function (pickup_obj, dest_obj, callback) {
+                        if ((_.indexOf(["NY", "NJ"], pickup_obj.State) > -1) && (_.indexOf(["NY", "NJ"], dest_obj.State) > -1)) {
                             logger.trace("state is from NY and NJ");
                             distance.get({
-                                origin: req.body.pick_lat+','+req.body.pick_long,
-                                destination: req.body.dest_lat+','+req.body.dest_long,
+                                origin: req.body.pick_lat + ',' + req.body.pick_long,
+                                destination: req.body.dest_lat + ',' + req.body.dest_long,
                                 mode: 'driving',
                                 units: 'imperial'
-                            },function(err, data) {
+                            }, function (err, data) {
                                 if (err) {
-                                    callback({"status":config.INTERNAL_SERVER_ERROR,"err":err});
+                                    callback({"status": config.INTERNAL_SERVER_ERROR, "err": err});
                                 } else {
-                                    console.log("distance info = ",data);
-                                    callback(null,pickup_obj,dest_obj,data)
+                                    console.log("distance info = ", data);
+                                    callback(null, pickup_obj, dest_obj, data)
                                 }
                             });
                         } else {
                             logger.trace("State is not from NY and NJ");
                             // We are not providing service in given area
-                            callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                            callback({"status": config.BAD_REQUEST, "err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                         }
                     },
-                    function(pickup_obj,dest_obj,distance_data,callback){
-                        if(pickup_obj.State == dest_obj.State){
+                    function (pickup_obj, dest_obj, distance_data, callback) {
+                        if (pickup_obj.State == dest_obj.State) {
                             var state = "";
-                            if(pickup_obj.State == "NY"){
+                            if (pickup_obj.State == "NY") {
                                 state = "NYC";
-                            } else if(pickup_obj.State == "NJ"){
+                            } else if (pickup_obj.State == "NJ") {
                                 state = "New Jersey";
                             } else {
-                                callback({"status": config.BAD_REQUEST,"err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
+                                callback({"status": config.BAD_REQUEST, "err": "Unfortunately we are currently unavailable in this area. Please check back soon."});
                             }
-                            fare_helper.find_fare_by_state(state,function(fare_info){
-                                if(fare_info.status === 0){
-                                    callback({"status":config.INTERNAL_SERVER_ERROR,"err":"There is an issue in fetching fare details"});
-                                } else if(fare_info.status === 404 || !fare_info.fare){
-                                    callback({"status":config.BAD_REQUEST,"err":"No fare data available for given state"});
+                            fare_helper.find_fare_by_state(state, function (fare_info) {
+                                if (fare_info.status === 0) {
+                                    callback({"status": config.INTERNAL_SERVER_ERROR, "err": "There is an issue in fetching fare details"});
+                                } else if (fare_info.status === 404 || !fare_info.fare) {
+                                    callback({"status": config.BAD_REQUEST, "err": "No fare data available for given state"});
                                 } else {
                                     // Fare calculation
                                     var base = fare_info.fare.base * 1;
@@ -1838,24 +1835,24 @@ router.post('/calculate_fare',function(req,res){
                                     var per_mile = fare_info.fare.per_mile * 1;
                                     var service_fee = fare_info.fare.service_fee * 1;
                                     var minimum_charge = fare_info.fare.minimum_charge * 1;
-                                    
+
                                     var duration_min = ((distance_data.durationValue * 1) / 60);
-                                    var per_meter = per_mile/1609.34;
+                                    var per_meter = per_mile / 1609.34;
                                     var final_fare = base + (duration_min * per_min) + (per_meter * distance_data.distanceValue) + service_fee;
-                                    
-                                    if(final_fare < minimum_charge){
+
+                                    if (final_fare < minimum_charge) {
                                         final_fare = minimum_charge;
                                     }
-                                    logger.trace('fare = ',final_fare);
-                                    callback(null,{"message":"Fare has been calculate","fare":final_fare});
+                                    logger.trace('fare = ', final_fare);
+                                    callback(null, {"message": "Fare has been calculate", "fare": final_fare});
                                 }
                             });
                         } else {
                             // Interstate strip
-                            callback({"status":config.BAD_REQUEST,"err":"Fare calculation of interstate trip is under development"});
+                            callback({"status": config.BAD_REQUEST, "err": "Fare calculation of interstate trip is under development"});
                         }
                     }
-                ],function(err,result){
+                ], function (err, result) {
                     if (err) {
                         res.status(err.status).json({"message": err.err});
                     } else {
@@ -1863,7 +1860,7 @@ router.post('/calculate_fare',function(req,res){
                     }
                 });
             }
-            
+
         } else {
             logger.trace("Invalid request");
             var result = {
@@ -1874,5 +1871,121 @@ router.post('/calculate_fare',function(req,res){
         }
     });
 });
+
+/**
+ * @api {post} /calculate_fare Calculate fare
+ * @apiName Calculate fare
+ * @apiGroup Root
+ * 
+ * @apiParam {String} email Email address of user
+ * @apiParam {String} subject Subject of email address
+ * @apiParam {String} name Name of user
+ * @apiParam {String} phone Phone number of user
+ * @apiParam {String} description Email message
+ * @apiParam {File} [attachments] Attached files
+ * 
+ * @apiDescription  You need to pass form-data
+ * 
+ * @apiSuccess (Success 200) {String} message Success message.
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post('/contact_support', function (req, res) {
+    logger.trace("API - Contact support send mail called");
+    logger.debug("req.body = ", req.body);
+    var schema = {
+        'email': {
+            notEmpty: true,
+            errorMessage: "Email is required.",
+            isEmail: {errorMessage: "Please enter valid email address"}
+        },
+        'subject': {
+            notEmpty: true,
+            errorMessage: "Subject is required."
+        },
+        'name': {
+            notEmpty: true,
+            errorMessage: "Name is required."
+        },
+        'phone': {
+            notEmpty: true,
+            errorMessage: "Phone number is required."
+        },
+        'description': {
+            notEmpty: true,
+            errorMessage: "Description is required."
+        }
+    };
+    req.checkBody(schema);
+
+    req.getValidationResult().then(function (result) {
+        if (result.isEmpty()) {
+            
+            console.log("attachments = ",req.files);
+            console.log("attachment length = ",req.files.attachments.length);
+//            res.status(200).json({"attch":req.files});
+            
+            var msg = "Hello,</b><br/><br/>";
+            msg += "You got new inquiry for greego. Please check below details<br/><br/>";
+            
+            msg += "<table>";
+                msg += "<tr>";
+                    msg += "<td width='200'><b>User's Name</b></td>";
+                    msg += "<td>"+req.body.name+"</td>";
+                msg += "</tr>";
+                msg += "<tr>";
+                    msg += "<td><b>User's Email</b></td>";
+                    msg += "<td>"+req.body.email+"</td>";
+                msg += "</tr>";
+                msg += "<tr>";
+                    msg += "<td><b>Subject</b></td>";
+                    msg += "<td>"+req.body.subject+"</td>";
+                msg += "</tr>";
+                msg += "<tr>";
+                    msg += "<td><b>Phone</b></td>";
+                    msg += "<td>"+req.body.phone+"</td>";
+                msg += "</tr>";
+                msg += "<tr>";
+                    msg += "<td><b>Description</b></td>";
+                    msg += "<td>"+req.body.description+"</td>";
+                msg += "</tr>";
+            msg += "</table>";
+            
+            msg += "<br/>Thanks,<br/>Greego Team<hr/>";
+            
+            if(req.files && req.files.attachments.length > 0){
+                console.log("Found attachment");
+                var attachments = [];
+                async.eachSeries(req.files.attachments,function(file,callback){
+                    attachments.push({filename:file.name,content:file.data});
+                    callback();
+                },function(err){
+                    mail_helper.send_with_attachment("ar@narola.email", '"Greego Inquiry" support@greego.co', 'New inquiry for greego', '', msg, attachments, function (resp) {
+                        if (resp.status === 0) {
+                            res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error occured in sending inquiry"});
+                        } else {
+                            res.status(config.OK_STATUS).json({"message": "Inquiry has been sent to support team"});
+                        }
+                    });
+                });
+                
+            } else {
+                mail_helper.send("ar@narola.email", '"Greego Inquiry" support@greego.co', 'New inquiry for greego', '', msg, function (resp) {
+                    if (resp.status === 0) {
+                        res.status(config.INTERNAL_SERVER_ERROR).json({"message": "Error occured in sending inquiry"});
+                    } else {
+                        res.status(config.OK_STATUS).json({"message": "Inquiry has been sent to support team"});
+                    }
+                });
+            }
+        } else {
+            logger.trace("Invalid request");
+            var result = {
+                message: "Validation Error",
+                error: result.array()
+            };
+            res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        }
+    });
+})
 
 module.exports = router;

@@ -1216,6 +1216,91 @@ define({ "api": [
     "title": "Calculate fare",
     "name": "Calculate_fare",
     "group": "Root",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email address of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "subject",
+            "description": "<p>Subject of email address</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "phone",
+            "description": "<p>Phone number of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Email message</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "attachments",
+            "description": "<p>Attached files</p>"
+          }
+        ]
+      }
+    },
+    "description": "<p>You need to pass form-data</p>",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/index.js",
+    "groupTitle": "Root"
+  },
+  {
+    "type": "post",
+    "url": "/calculate_fare",
+    "title": "Calculate fare",
+    "name": "Calculate_fare",
+    "group": "Root",
     "header": {
       "fields": {
         "Header": [
