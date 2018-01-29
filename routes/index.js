@@ -1922,7 +1922,7 @@ router.post('/contact_support', function (req, res) {
             
             console.log("attachments = ",req.body);
             console.log("attachments = ",req.files);
-            console.log("attachment length = ",req.body.attachments.length);
+//            console.log("attachment length = ",req.body.attachments.length);
 //            res.status(200).json({"attch":req.files});
             
             _.each(req.files,function(file,index){
