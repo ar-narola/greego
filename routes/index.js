@@ -1919,8 +1919,9 @@ router.post('/contact_support', function (req, res) {
 
     req.getValidationResult().then(function (result) {
         if (result.isEmpty()) {
-            req.files.attachments = [];
+            
             if(req.files){
+				req.files.attachments = [];
 				_.each(req.files,function(file,index){
 					req.files.attachments.push(file);
 				});
@@ -1951,7 +1952,9 @@ router.post('/contact_support', function (req, res) {
                     msg += "<td>"+req.body.description+"</td>";
                 msg += "</tr>";
             msg += "</table>";
-            
+            if(req.files && req.files.attachments.length > 0){
+				msg += "<br/>Please check attached documents.<br/>";
+			}
             msg += "<br/>Thanks,<br/>Greego Team<hr/>";
             
             if(req.files && req.files.attachments.length > 0){
