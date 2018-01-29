@@ -1962,7 +1962,9 @@ router.post('/contact_support', function (req, res) {
                 var attachments = [];
                 async.eachSeries(req.files,function(file,callback){
                     console.log("file = ",file);
-                    attachments.push({filename:file.name,content:file.data});
+                    if(file.name){
+                        attachments.push({filename:file.name,content:file.data});
+                    }
                     callback();
                 },function(err){
                     mail_helper.send_with_attachment("ar@narola.email", '"Greego Inquiry" support@greego.co', 'New inquiry for greego', '', msg, attachments, function (resp) {
