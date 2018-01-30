@@ -1864,7 +1864,7 @@ router.post('/calculate_fare', function (req, res) {
         } else {
             logger.trace("Invalid request");
             var result = {
-                message: "Validation Error",
+                message: "Please select valid address",
                 error: result.array()
             };
             res.status(config.VALIDATION_FAILURE_STATUS).json(result);
